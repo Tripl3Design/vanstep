@@ -1,0 +1,41 @@
+{
+  "hosting": {
+    "headers": [
+      {
+        "source": "**",
+        "headers": [
+          {
+            "key": "Content-Security-Policy",
+            "value": "frame-ancestors https://www.tripledesign.nl https://tripledesign.nl https://www.vanwoerdenwonen.nl https://vanwoerdenwonen.nl"
+          },
+          {
+            "key": "Access-Control-Allow-Origin",
+            "value": "*"
+          },
+          {
+            "key": "Permissions-Policy",
+            "value": "xr-spatial-tracking=(self)"
+          },
+          {
+            "key": "Cross-Origin-Embedder-Policy",
+            "value": "require-corp"
+          },
+          {
+            "key": "Cross-Origin-Opener-Policy",
+            "value": "same-origin"
+          }
+        ]
+      }
+    ],
+    "target": "van-woerden-wonen",
+    "public": "dist",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "package-lock.json",
+      "package.json",
+      "**/TemplateData/**",
+      "**/projects/van-woerden-wonen-levante/"
+    ]
+  }
+}
