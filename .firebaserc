@@ -1,14 +1,13 @@
 {
   "projects": {
-    "default": "gelderland-furnitise",
-    "main": "furnitisemain",
-    "Gelderland": "gelderland-furnitise"
+    "default": "vanwoerdenwonen",
+    "Vanwoerdenwonen": "tripletise_vanwoerdenwonen"
   },
   "targets": {
-    "gelderland-furnitise": {
+    "tripletise_vanwoerdenwonen": {
       "hosting": {
-        "van-woerden-wonen": [
-          "van-woerden-wonen-levante"
+        "vanwoerdenwonen": [
+          "vanwoerdenwonen-levante"
         ]
       }
     }
