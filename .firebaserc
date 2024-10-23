@@ -1,12 +1,19 @@
 {
   "projects": {
     "default": "vanwoerdenwonen",
-    "Vanwoerdenwonen": "tripletise_vanwoerdenwonen"
+    "Vanwoerdenwonen": "vanwoerdenwonen-tripletise"
   },
   "targets": {
-    "tripletise_vanwoerdenwonen": {
+    "vanwoerdenwonen-tripletise": {
       "hosting": {
         "vanwoerdenwonen": [
+          "vanwoerdenwonen-levante"
+        ]
+      }
+    },
+    "vanwoerdenwonen": {
+      "hosting": {
+        "vanwoerdenwonen-tripletise": [
           "vanwoerdenwonen-levante"
         ]
       }
