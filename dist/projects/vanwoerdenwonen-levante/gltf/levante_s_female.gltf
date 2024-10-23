@@ -1,0 +1,194 @@
+{
+  "accessors": [
+    {
+      "bufferView": 0,
+      "componentType": 5126,
+      "count": 17814,
+      "max": [
+        87.73765563964844,
+        2.3213744163513184,
+        18.647703170776367
+      ],
+      "min": [
+        50.80287551879883,
+        -79.74297332763672,
+        -8.866267204284668
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 0,
+      "byteOffset": 12,
+      "componentType": 5126,
+      "count": 17814,
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 1,
+      "componentType": 5125,
+      "count": 105312,
+      "type": "SCALAR"
+    },
+    {
+      "bufferView": 0,
+      "byteOffset": 570048,
+      "componentType": 5126,
+      "count": 945,
+      "max": [
+        85.76963806152344,
+        -0.14591550827026367,
+        18.31285858154297
+      ],
+      "min": [
+        61.32164764404297,
+        -78.427734375,
+        -1.5093872547149658
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 0,
+      "byteOffset": 570060,
+      "componentType": 5126,
+      "count": 945,
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 421248,
+      "componentType": 5125,
+      "count": 4536,
+      "type": "SCALAR"
+    }
+  ],
+  "asset": {
+    "version": "2.0"
+  },
+  "bufferViews": [
+    {
+      "buffer": 0,
+      "byteLength": 600288,
+      "byteStride": 32,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 439392,
+      "byteOffset": 600288,
+      "target": 34963
+    }
+  ],
+  "buffers": [
+    {
+      "byteLength": 1039680,
+      "uri": "levante_s_female.bin"
+    }
+  ],
+  "materials": [
+    {
+      "name": "default",
+      "pbrMetallicRoughness": {
+        "baseColorFactor": [
+          0.0,
+          0.1333329975605011,
+          1.0,
+          1.0
+        ],
+        "metallicFactor": 0.0,
+        "roughnessFactor": 0.0
+      }
+    },
+    {
+      "name": "duotone",
+      "pbrMetallicRoughness": {
+        "baseColorFactor": [
+          1.0,
+          0.34666699171066284,
+          0.0,
+          1.0
+        ],
+        "metallicFactor": 0.0,
+        "roughnessFactor": 0.0
+      }
+    }
+  ],
+  "meshes": [
+    {
+      "name": "levante_s_female",
+      "primitives": [
+        {
+          "attributes": {
+            "NORMAL": 1,
+            "POSITION": 0
+          },
+          "indices": 2,
+          "material": 0,
+          "mode": 4
+        },
+        {
+          "attributes": {
+            "NORMAL": 4,
+            "POSITION": 3
+          },
+          "indices": 5,
+          "material": 1,
+          "mode": 4
+        }
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "matrix": [
+        0.0254,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0254,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0254,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "mesh": 0,
+      "name": "levante_s_female"
+    },
+    {
+      "children": [
+        0
+      ],
+      "matrix": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -1.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        -0.8805074951171875,
+        0.4172193492889404,
+        -0.9294781494140625,
+        1.0
+      ]
+    }
+  ],
+  "scenes": [
+    {
+      "nodes": [
+        1
+      ]
+    }
+  ]
+}

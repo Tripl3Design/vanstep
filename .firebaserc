@@ -1,0 +1,18 @@
+{
+  "projects": {
+    "default": "gelderland-furnitise",
+    "main": "furnitisemain",
+    "Gelderland": "gelderland-furnitise"
+  },
+  "targets": {
+    "gelderland-furnitise": {
+      "hosting": {
+        "van-woerden-wonen": [
+          "van-woerden-wonen-levante"
+        ]
+      }
+    }
+  },
+  "etags": {},
+  "dataconnectEmulatorConfig": {}
+}

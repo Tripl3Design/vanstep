@@ -1,0 +1,176 @@
+#modelviewer {
+    width: 100%;
+    height: 100%
+}
+
+#controlpanel {
+    width: 100%;
+    height: 100%;
+    display: block;
+    overflow-y: scroll
+}
+
+.accordion-button::after {
+    position: absolute;
+    top: 22px;
+    right: 0px
+}
+
+.accordion-button:not(.collapsed)::after {
+    position: absolute;
+    top: 22px;
+    right: 0px
+}
+
+#furnitise-loading {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    display: none;
+    background-color: #fff
+}
+
+#furnitise-progress-bar-empty {
+    height: 20px
+}
+
+#furnitise-progress-bar-full {
+    height: 24px
+}
+
+.fadein {
+    animation: fadein 2s
+}
+
+@keyframes fadein {
+    from {
+        opacity: 0
+    }
+
+    to {
+        opacity: 1
+    }
+}
+
+
+
+
+#modelviewer {
+    width: 100%;
+    height: 100%;
+}
+
+#controlpanel {
+    width: 100%;
+    height: 100%;
+    display: block;
+    overflow-y: scroll;
+}
+
+.accordion-button:not(.collapsed) {
+    background-color: red; /* or any color you prefer */
+    color: red; /* Optional: Set a text color to ensure readability */
+    box-shadow: none; /* Optional: Remove the box shadow */
+}
+
+.accordion-button-bg {
+    background-color: red; /* To ensure consistent styling */
+    color: #000; /* Set a text color for inactive state as well */
+    border: none; /* Optional: Remove border if needed */
+}
+
+
+.accordion-button::after {
+    position: absolute;
+    top: 22px;
+    right: 0px;
+}
+
+
+
+:root {
+    --bs-primary: red;
+    --bs-accordion-color:red;
+  }
+
+
+
+
+#furnitise-loading {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    display: none;
+    background-color: #fff;
+}
+
+#furnitise-progress-bar-empty {
+    height: 20px;
+}
+
+#furnitise-progress-bar-full {
+    height: 24px;
+}
+
+.fadein {
+    animation: fadein 2s;
+}
+
+@keyframes fadein {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+
+
+
+
+
+@font-face {
+    font-family: 'Helvetica Neue';
+    src: url('font/HelveticaNeueMedium.otf') format('otf');
+    font-weight: normal;
+    font-style: normal;
+  }
+
+  body {
+    font-family: 'Helvetica Neue', sans-serif;
+  }
+
+.brandlogo {
+
+    width: (calc(5.5rem + 6vw));
+}
+
+.productname {
+ 
+    font-size: (calc(1.75rem + .75vw));
+}
+
+
+.colorButton {
+    box-shadow: none; /* From .shadow-none */
+    border: 1px solid white; /* From .border-white */
+}
+
+.colorButton:hover {
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* From .shadow */
+}
+
+.colorButtonActive {
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* From .shadow */
+    border: 1px solid white; /* From .border-white */
+}
+
+.colorButtonDisabled {
+    filter: grayscale(100%);
+    opacity: 0.5;
+    box-shadow: none; /* From .shadow-none */
+}

@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="en">
+
+<head prefix="og: https://ogp.me/ns#">
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="img/ico/favicon.ico" type="image/x-icon">
+  <script>
+    console.log('%cThis configurator is made by TripleDesign. Visit tripledesign.nl for more info!', 'background:red;color:#fff;font-weight: bold;')
+    const brand = 'vanwoerdenwonen';
+    const product = 'levante';
+    const title = 'levante';
+    console.log(brand);
+    console.log(product);
+  </script>
+
+  <!-- Google Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap">
+  <link rel="stylesheet" href="css/styles.min.css">
+
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@v0.167.1/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@v0.167.1/examples/jsm/"
+      }
+    }
+</script>
+
+  <!-- modelviewer AR -->
+  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+
+  <!-- MakePDF -->
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.12/pdfmake.min.js'></script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.12/vfs_fonts.js'></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/swiped-events@1.2.0/dist/swiped-events.min.js"></script>
+  <!--<script src="https://furnitisemain.web.app/js/swiped-events.min.js"></script>-->
+
+  <script src="js/ua-parser.min.js"></script>
+  <script src='js/controlpanel.js'></script>
+  <script src='js/colorChanger.js'></script>
+  <script src='projects/vanwoerdenwonen-levante/pdf.js'></script>
+  <script src='projects/vanwoerdenwonen-levante/pricing.js'></script>
+
+  <script src='projects/vanwoerdenwonen-levante/settings.js'></script>
+
+  <script>
+    /*
+    "use strict"
+        if (window.top == window.self) {
+          window.location.href = 'http://furnitise.nl';
+        }
+        */
+
+    window.addEventListener("orientationchange", function () {
+      window.location.reload();
+    });
+
+    const capitalizeFirstLetter = (str) => str.charAt(0).toUpperCase() + str.slice(1);
+    document.title = `${capitalizeFirstLetter(title)} | ${capitalizeFirstLetter(brand)}`;
+
+    const parser = new UAParser(); // Instantiate the parser
+    const device = parser.getDevice();
+
+    const windowWidth = window.innerWidth;
+    const windowHeight = window.innerHeight;
+
+    function bodyOnload() {
+      handleModelSelection();
+    }
+  </script>
+</head>
+
+<body onload="bodyOnload();">
+  <div class="container-fluid m-0 p-0">
+    <div class="row m-0 p-0 overflow-hidden">
+
+      <script>
+        // mobile version
+        if (windowHeight > windowWidth) {
+
+          document.write( /*html*/ `
+          <model-viewer id="ar-viewer" style="display: none" src="" ar ar-modes="webxr scene-viewer quick-look" camera-controls disable-pan ar-scale="fixed" ar-placement="floor"></model-viewer>
+
+            <div style="height: 100%; background: #d4d4d4;" class="col-12 vh-100 m-0 p-0" id="modelviewerCol">
+                            <div class="position-absolute w-100">
+                              <div style="letter-spacing: 1.5px;" class="h2 text-center text-uppercase m-0 p-0 mt-4" id="producttitleMobile">
+                                ${title}
+                              </div>
+                              <div style="letter-spacing: 1.5px;" class="h2 text-center text-uppercase m-0 p-0" id="productsubtitleMobile">
+                                ${producttype}
+                              </div>
+                                <!-- you can add controls in the canvas here -->
+                             </div>
+
+
+                             <div style="position: fixed; bottom: 100px;" class="col-12 w-100 text-center">
+                              <div class="btn-group btn-group-lg" role="group" aria-label="buttongroup">
+                                <!--<div type="button" class="btn bg-transparent" onclick=""><span class="material-symbols-outlined">share</span></div>-->
+                               
+                                  <button type="button" class="d-flex btn rounded-pill btn-sm btn-dark me-2" onclick="downloadPdf()">
+                                      <span class="material-symbols-outlined m-0 p-1">picture_as_pdf</span><span style="font-size: .75rem; margin-top: 6px;">&nbsp;&nbsp;offerte&nbsp;&nbsp;</span>
+                                    </button>
+
+                            
+                              <!--     <div  type="button" class="btn bg-transparent">
+                                 <span class="material-symbols-outlined">view_in_ar</span>
+                                    <span class="material-symbols-outlined m-0 p-1">view_in_ar</span><span class="mt-1 h6">&nbsp;&nbsp;view in your space&nbsp;&nbsp;</span>-->
+
+                                    <button id="viewAr" type="button" class="d-flex btn rounded-pill btn-sm btn-dark ms-2">
+                                      <span class="material-symbols-outlined m-0 p-1">view_in_ar</span><span style="font-size: .75rem; margin-top: 6px;">&nbsp;&nbsp;view in your space&nbsp;&nbsp;</span>
+                                    </button>
+                                    
+                              </div>
+                            </div>
+                            `);
+        } else {
+          document.write( /*html*/`
+            <div style="height: 100%; background: #d4d4d4;" class="col-md-6 col-12 vh-100 m-0 p-0" id="modelviewerCol">
+<div class="brandlogo position-absolute top-0 start-0    pt-5    ps-5"><img src="img/logo_${brand}.webp" class="img-fluid"></div>
+
+                            <div class="row m-0 p-0">
+                              <div class="col-md-6 col-12 position-absolute bottom-0 m-0 p-0">
+                                <!-- you can add controls in the canvas here -->
+                                 <div class="col-12 position-absolute bottom-0 m-0 p-3 z-0 d-flex justify-content-between">
+                               
+                                  <div class="text-start">
+                                       <!-- only van doesburg 
+                                     <button id="startNewButton" type="button" class="d-flex btn btn-sm btn-outline-dark rounded-0 p-1 m-1">
+                                      #
+                                    </button>-->
+                                  </div>
+                                  <!-- only van doesburg -->
+                                  <div class="text-end">
+                                    <button id="downloadModel" type="button" class="btn btn-sm btn-outline-dark rounded-0 p-1 m-1">
+                                      <span class="material-symbols-outlined m-0 p-1">download</span>
+                                    </button>
+                                    <button id="fullscreen" type="button" class="btn btn-sm btn-outline-dark rounded-0 p-1 m-1">
+                                      <span class="material-symbols-outlined m-0 p-1">open_in_full</span>
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            `);
+        }
+        // mobile version
+        if (windowHeight > windowWidth) {
+          const halfHeight = window.innerHeight / 2;
+          const fullHeight = window.innerHeight - 86;
+          const minHeight = 80;
+          document.write( /*html*/ `
+            <div style="height: ${fullHeight + 'px'};" class="overflow-hidden" id="modelviewer"></div>
+          `);
+        } else {
+          document.write( /*html*/ `
+            <div class="overflow-hidden" id="modelviewer"></div>
+          `);
+        }
+      </script>
+    </div>
+
+    <script>
+      // mobile version
+      if (windowHeight > windowWidth) {
+        document.write( /*html*/`
+          <div id="mobileOffcanvas" style="height: 80px;" class="offcanvas show offcanvas-bottom shadow-l rounded-top-5 rounded-bottom-0  m-0 p-0" data-bs-backdrop="false" tabindex="-1" aria-labelledby="mobileOffcanvasLabel">
+              <div id="collapseOffcanvas" style="color: #000; height: 80px; width: 100%; position: relative; z-index: 10;" class="bg-white rounded-top-5 rounded-bottom-0 border-0 text-center border-bottom border-1 border-dark m-0 p-0">
+                <svg width="200" height="8" viewBox="0 0 202 10" xmlns="http://www.w3.org/2000/svg" style="cursor: pointer; margin-top: 15px;">
+                    <line x1="2" y1="5" x2="200" y2="5" stroke="black" stroke-width="8" stroke-linecap="round"/>
+                </svg>
+                <div class="productInfoPrice text-center text-black ps-3"></div>
+              </div>
+              <div id="offcanvasContent" style="height: calc(100% - 80px); width: 100%; overflow: auto;" class="overflow-x-hidden">
+          `);
+        const modelviewer = document.getElementById('modelviewer');
+        const mobileOffcanvas = document.getElementById('mobileOffcanvas');
+        const collapseOffcanvas = document.getElementById('collapseOffcanvas');
+
+        const minHeight = 80;
+        const halfHeight = window.visualViewport.height / 2;
+        const fullHeight = window.visualViewport.height - 86;
+
+        // Stel de offcanvas standaard in op halfHeight
+        mobileOffcanvas.style.height = halfHeight + 'px';
+        modelviewer.style.height = halfHeight + 'px';
+
+        // Swipe start (touchstart)
+        collapseOffcanvas.addEventListener('touchstart', function (e) {
+          mobileOffcanvas.style.transition = 'none';
+          modelviewer.style.transition = 'none';
+
+          startY = e.touches[0].clientY;
+          currentHeight = mobileOffcanvas.offsetHeight;
+        });
+
+        // Swipe bewegen (touchmove)
+        collapseOffcanvas.addEventListener('touchmove', function (e) {
+          const moveY = e.touches[0].clientY;
+          const deltaY = startY - moveY;
+          let newHeight = currentHeight + deltaY;
+
+          // Pas de hoogte aan binnen de grenzen
+          if (newHeight >= minHeight && newHeight <= fullHeight) {
+            mobileOffcanvas.style.height = newHeight + 'px';
+          }
+        });
+
+        // Swipe eindigen (touchend)
+        collapseOffcanvas.addEventListener('touchend', function () {
+          mobileOffcanvas.style.transition = 'height 0.3s ease';
+          modelviewer.style.transition = 'height 0.3s ease';
+
+          const offcanvasHeight = mobileOffcanvas.offsetHeight;
+
+          // Snap naar de dichtstbijzijnde hoogte
+          if (offcanvasHeight < halfHeight / 2) {
+            mobileOffcanvas.style.height = minHeight + 'px';
+            modelviewer.style.height = fullHeight + 'px';
+          } else if (offcanvasHeight >= halfHeight / 2 && offcanvasHeight < (halfHeight + fullHeight) / 2) {
+            mobileOffcanvas.style.height = halfHeight + 'px';
+            modelviewer.style.height = halfHeight + 'px';
+          } else {
+            mobileOffcanvas.style.height = fullHeight + 'px';
+            modelviewer.style.height = halfHeight + 'px';
+          }
+        });
+
+        // Swipe omhoog (swiped-up)
+        collapseOffcanvas.addEventListener('swiped-up', function () {
+          // Voeg transitie toe voor swipe-up actie
+          mobileOffcanvas.style.transition = 'height 0.3s ease';
+          modelviewer.style.transition = 'height 0.3s ease';
+
+          if (mobileOffcanvas.style.height === minHeight + 'px') {
+            mobileOffcanvas.style.height = halfHeight + 'px';
+            modelviewer.style.height = halfHeight + 'px';
+          } else if (mobileOffcanvas.style.height === halfHeight + 'px') {
+            mobileOffcanvas.style.height = fullHeight + 'px';
+            modelviewer.style.height = halfHeight + 'px';
+          }
+        });
+
+        // Swipe omlaag (swiped-down)
+        collapseOffcanvas.addEventListener('swiped-down', function () {
+          // Voeg transitie toe voor swipe-down actie
+          mobileOffcanvas.style.transition = 'height 0.3s ease';
+          modelviewer.style.transition = 'height 0.3s ease';
+
+          if (mobileOffcanvas.style.height === fullHeight + 'px') {
+            mobileOffcanvas.style.height = halfHeight + 'px';
+            modelviewer.style.height = halfHeight + 'px';
+          } else if (mobileOffcanvas.style.height === halfHeight + 'px') {
+            mobileOffcanvas.style.height = minHeight + 'px';
+            modelviewer.style.height = fullHeight + 'px';
+          }
+        });
+        document.write( /*html*/ `
+                        <div class="offcanvas-body small">
+                        <div class="p-1 m-0">
+                        `);
+      } else {
+        document.write( /*html*/ `
+                        <div class="col-6 vh-100 m-0 p-0" id="controlpanelCol">
+                          <div class="m-0 p-0" id="controlpanel">
+                            <div class="px-xxl-5 px-xl-4 px-lg-3 px-md-3 px-sm-3    pt-xxl-5 pt-xl-4 pt-lg-3 pt-md-3 pt-sm-3    pb-0    m-0">
+                        `);
+      }
+      // desktop versie
+      if (windowHeight < windowWidth) {
+        document.write( /*html*/ `
+                        <div class="row m-0 p-0">
+                          <div class="col-12 m-0 p-0    pb-xxl-4 pb-xl-3 pb-lg-2 pb-md-2 pb-sm-2">
+                              <h3 class="productname text-start text-uppercase m-0 p-0" id="producttitle">
+                                ${title}
+                              </h3>
+                          </div>
+                        </div>
+                        `);
+      }
+    </script>
+
+    <div id="controlpanelContainer"></div>
+  </div>
+
+  <script>
+    // desktop versie
+    if (windowHeight < windowWidth) {
+      document.write( /*html*/ `
+        <div class="row sticky-bottom bg-white m-0 p-0">
+          <div class="row py-0    px-xxl-5 px-xl-4 px-3    m-0">
+            <div class="border-top border-2 border-dark"></div>
+              <div class="productInfoPrice col-6    m-0 p-0 pt-xxl-4 pt-xl-4 pt-3"></div>
+
+              <div class="col-6 p-0 m-0 pt-3">
+
+                <button onclick="downloadPdf()" type="button" class="float-end d-flex btn btn-sm btn-outline-dark rounded-0">
+                  <span class="material-symbols-outlined mt-1">picture_as_pdf</span>&nbsp;&nbsp;<span id="quote" class="mt-1 h6">quote</span>
+              </button>
+
+                </div> 
+              <div class="productInfoPriceRegion col-12 m-0 p-0 pb-3">
+              
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>     
+    `);
+    }
+  </script>
+  </div>
+
+
+  <!-- Bootstrap Modal for deleteAll-->
+  <div class="modal fade" id="deleteAllModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content" style="border-radius: 0; border: 1px solid #343a40;">
+        <div class="modal-body">
+          #
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-sm btn-danger rounded-0 mt-3" data-bs-dismiss="modal">Nee</button>
+          <button type="button" class="btn btn-sm btn-success rounded-0 mt-3" id="confirmDelete">Ja</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+    crossorigin="anonymous"></script>
+</body>
+
+</html>

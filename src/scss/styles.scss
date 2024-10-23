@@ -1,0 +1,161 @@
+/*
+.colorButton,
+.textureButton {
+    border:  (calc(.25rem + 1vw));
+    box-shadow: none;
+}
+*/
+
+#modelviewer {
+    width: 100%;
+    height: 100%;
+}
+
+#controlpanel {
+    width: 100%;
+    height: 100%;
+    display: block;
+    overflow-y: scroll;
+}
+
+.accordion-button::after {
+    position: absolute;
+    top: 22px;
+    right: 0px;
+}
+
+.accordion-button:not(.collapsed)::after {
+    position: absolute;
+    top: 22px;
+    right: 0px;
+}
+
+#furnitise-loading {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    display: none;
+    background-color: #fff;
+}
+
+#furnitise-progress-bar-empty {
+    height: 20px;
+}
+
+#furnitise-progress-bar-full {
+    height: 24px;
+}
+
+.fadein {
+    animation: fadein 2s;
+}
+
+@keyframes fadein {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+//bootstrap override
+//$font-family-base: 'Roboto', sans-serif;
+
+$accordion-icon-color: #000;
+$accordion-icon-active-color: #000;
+
+$accordion-button-active-bg: transparent;
+$accordion-button-active-color: #000;
+
+$accordion-icon-width: (
+    calc(.75rem + .75vw)
+);
+$accordion-icon-transform: rotate(-180deg);
+
+$accordion-button-icon: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><line x1='0' y1='8' x2='16' y2='8' stroke='black'/><line x1='8' y1='0' x2='8' y2='16' stroke='black'/></svg>");
+$accordion-button-active-icon: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><line x1='0' y1='8' x2='16' y2='8' stroke='black'/></svg>");
+
+$component-active-bg: #000;
+
+//$carousel-control-color: #000;
+//$carousel-control-width: 8%;
+//$carousel-control-icon-width: (
+//    calc(.75rem + .75vw)
+//);
+
+//$carousel-control-prev-icon-bg:      url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='#{$carousel-control-color}'><path d='M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z'/></svg>");
+//$carousel-control-next-icon-bg:      url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='#{$carousel-control-color}'><path d='M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z'/></svg>");
+
+
+//$carousel-control-prev-icon-bg: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><polyline points='15,0 4,8 15,15' fill='none' stroke='black'/></svg>");
+//$carousel-control-next-icon-bg: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><polyline points='4,0 15,8 4,15' fill='none' stroke='black'/></svg>");
+
+
+// Import all of Bootstrap's CSS
+@import "../../node_modules/bootstrap/scss/bootstrap";
+
+@font-face {
+    font-family: 'Helvetica Neue';
+    src: url('font/HelveticaNeueMedium.otf') format('otf'),
+         url('path/to/your-font.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+  }
+
+  body {
+    font-family: 'Helvetica Neue', sans-serif;
+  }
+
+.brandlogo {
+    //1.25rem = 20px
+    width: (calc(5.5rem + 6vw));
+}
+
+.productname {
+    //1.25rem = 20px
+    @include font-size(calc(1.75rem + .75vw));
+}
+
+$utilities: map-merge(
+  $utilities, (
+    "border": map-merge(
+      map-get($utilities, "border"),
+      ( responsive: true ),
+    ),
+  )
+);
+
+$utilities: map-merge(
+  $utilities, (
+    "border-width": map-merge(
+      map-get($utilities, "border-width"),
+      ( responsive: true ),
+    ),
+  )
+);
+
+@import "../../node_modules/bootstrap/scss/utilities/api";
+
+.colorButton {
+    @extend .shadow-none;
+    @extend .border-white;
+}
+
+.colorButton:hover {
+    @extend .shadow;
+}
+
+.colorButtonActive  {
+    @extend .shadow;
+    @extend .border-white;
+}
+
+.colorButtonDisabled {
+    filter: grayscale(100%);
+    opacity: 0.5;
+    @extend .shadow-none;
+}
+
