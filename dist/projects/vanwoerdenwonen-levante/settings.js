@@ -25,7 +25,7 @@ function updateFeaturedModel(model) {
             if (mainModule && typeof mainModule.loadModelData === 'function') {
                 mainModule.loadModelData(model);
             }
-            if (viewer) {
+           if (viewer) {
                 viewer.focus();
             }
         })
@@ -91,7 +91,7 @@ function updateControlPanel(model, selectedLayer, expandedLayer) {
 
     // duotone
     let duotoneCheckbox = document.getElementById('duotone');
-    if (model.upholsteryDuotone != null) {
+    if (model.upholsteryDuotone) {
         duotoneCheckbox.checked = true;
     } else {
         duotoneCheckbox.checked = false;
@@ -157,7 +157,7 @@ function updateControlPanel(model, selectedLayer, expandedLayer) {
             if (/^[a-zA-Z]+$/.test(model.upholstery.category)) {
                 document.getElementById(`colorText`).innerHTML = '<img src="' + model.upholstery.pathThumb + '" class="rounded-pill shadow" style="width: calc(1rem + 1vw);">&nbsp;&nbsp;&nbsp;&nbsp;stof ' + model.upholstery.category;
             } else {
-                document.getElementById(`colorText`).innerHTML = '<img src="' + model.upholstery.pathThumb + '" class="rounded-pill shadow" style="width: calc(1rem + 1vw);">&nbsp;&nbsp;&nbsp;&nbsp;leer ' + model.upholstery.category;
+                document.getElementById(`colorText`).innerHTML = '<img src="' + model.upholstery.pathThumb + '" class="rounded-pill shadow" style="width: calc(1rem + 1vw);">&nbsp;&nbsp;&nbsp;&nbsp;boucle ' + model.upholstery.category;
             }
             document.getElementById(`colorText`).classList.remove('fst-italic');
             showSelected(true);
@@ -179,13 +179,13 @@ function updateControlPanel(model, selectedLayer, expandedLayer) {
     if (/^[a-zA-Z]+$/.test(model.upholstery.category)) {
         document.getElementById(`colorText`).innerHTML = '<img src="' + model.upholstery.pathThumb + '" class="rounded-pill shadow" style="width: calc(1rem + 1vw);">&nbsp;&nbsp;&nbsp;&nbsp;stof ' + model.upholstery.category;
     } else {
-        document.getElementById(`colorText`).innerHTML = '<img src="' + model.upholstery.pathThumb + '" class="rounded-pill shadow" style="width: calc(1rem + 1vw);">&nbsp;&nbsp;&nbsp;&nbsp;leer ' + model.upholstery.category;
+        document.getElementById(`colorText`).innerHTML = '<img src="' + model.upholstery.pathThumb + '" class="rounded-pill shadow" style="width: calc(1rem + 1vw);">&nbsp;&nbsp;&nbsp;&nbsp;boucle ' + model.upholstery.category;
     }
     document.getElementById(`upholsteryColorsIndex_${upholsteryIndex}`).classList.remove('colorButton');
     document.getElementById(`upholsteryColorsIndex_${upholsteryIndex}`).classList.add('colorButtonActive');
 
     // upholsteryDuotone
-    if (model.upholsteryDuotone != null) {
+    if (model.upholsteryDuotone) {
         let upholsteryDuotoneCategory = document.querySelectorAll(`input[type=radio][name="upholsteriesDuotoneCategory"]`);
         upholsteryDuotoneCategory.forEach(radio => { radio.replaceWith(radio.cloneNode(true)) });
         upholsteryDuotoneCategory = document.querySelectorAll(`input[type=radio][name="upholsteriesDuotoneCategory"]`);
@@ -222,7 +222,7 @@ function updateControlPanel(model, selectedLayer, expandedLayer) {
                 if (/^[a-zA-Z]+$/.test(model.upholsteryDuotone.category)) {
                     document.getElementById(`colorDuotoneText`).innerHTML = '<img src="' + model.upholsteryDuotone.pathThumb + '" class="rounded-pill shadow" style="width: calc(1rem + 1vw);">&nbsp;&nbsp;&nbsp;&nbsp;stof ' + model.upholsteryDuotone.category;
                 } else {
-                    document.getElementById(`colorDuotoneText`).innerHTML = '<img src="' + model.upholsteryDuotone.pathThumb + '" class="rounded-pill shadow" style="width: calc(1rem + 1vw);">&nbsp;&nbsp;&nbsp;&nbsp;leer ' + model.upholsteryDuotone.category;
+                    document.getElementById(`colorDuotoneText`).innerHTML = '<img src="' + model.upholsteryDuotone.pathThumb + '" class="rounded-pill shadow" style="width: calc(1rem + 1vw);">&nbsp;&nbsp;&nbsp;&nbsp;boucle ' + model.upholsteryDuotone.category;
                 }
                 document.getElementById(`colorDuotoneText`).classList.remove('fst-italic');
                 showSelected(true);
@@ -244,7 +244,7 @@ function updateControlPanel(model, selectedLayer, expandedLayer) {
         if (/^[a-zA-Z]+$/.test(model.upholsteryDuotone.category)) {
             document.getElementById(`colorDuotoneText`).innerHTML = '<img src="' + model.upholsteryDuotone.pathThumb + '" class="rounded-pill shadow" style="width: calc(1rem + 1vw);">&nbsp;&nbsp;&nbsp;&nbsp;stof ' + model.upholsteryDuotone.category;
         } else {
-            document.getElementById(`colorDuotoneText`).innerHTML = '<img src="' + model.upholsteryDuotone.pathThumb + '" class="rounded-pill shadow" style="width: calc(1rem + 1vw);">&nbsp;&nbsp;&nbsp;&nbsp;leer ' + model.upholsteryDuotone.category;
+            document.getElementById(`colorDuotoneText`).innerHTML = '<img src="' + model.upholsteryDuotone.pathThumb + '" class="rounded-pill shadow" style="width: calc(1rem + 1vw);">&nbsp;&nbsp;&nbsp;&nbsp;boucle ' + model.upholsteryDuotone.category;
         }
         document.getElementById(`upholsteryDuotoneColorsIndex_${upholsteryDuotoneIndex}`).classList.remove('colorButton');
         document.getElementById(`upholsteryDuotoneColorsIndex_${upholsteryDuotoneIndex}`).classList.add('colorButtonActive');
@@ -553,7 +553,7 @@ function initSettings(model) {
             addTextures(`upholsteryColors`, ALLCOLORS.upholsteries, containerElemsUpholsteries);
         }
     }
-    if (model.upholsteryDuotone != null) {
+    if (model.upholsteryDuotone) {
         accordions.upholsteryDuotone = {
             title: "bekleding rug",
             options: [`colorDuotone`],

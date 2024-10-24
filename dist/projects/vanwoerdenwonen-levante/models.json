@@ -1,21 +1,21 @@
 [
   {
     "id": 1,
-    "name": "voorbeeld opstelling 1",
-    "image": "projects/vanwoerdenwonen-levante/img/thumbnails/voorbeeld-opstelling-4.webp",
+    "name": "voorbeeld opstelling 4",
+    "image": "projects/vanwoerdenwonen-levante/img/thumbnails/voorbeeld-opstelling-4.jpg",
     "background": {
       "original": "d4d4d4"
     },
-    "type": "art5310",
+    "type": "art2502",
     "seatHeight": 47,
     "legs": "legsStraight",
     "upholstery": {
-      "hexColor": "165580",
+      "hexColor": "566b33",
       "category": "2"
     },
     "upholsteryDuotone": {
-      "hexColor": "a5313a",
-      "category": "4"
+      "hexColor": "566b33",
+      "category": "2"
     }
   },
   {
@@ -29,11 +29,11 @@
     "seatHeight": 47,
     "legs": "legsStraight",
     "upholstery": {
-      "hexColor": "165580",
+      "hexColor": "b9a89e",
       "category": "2"
     },
     "upholsteryDuotone": {
-      "hexColor": "a5313a",
+      "hexColor": "b9a89e",
       "category": "4"
     }
   },
@@ -44,15 +44,15 @@
     "background": {
       "original": "d4d4d4"
     },
-    "type": "art5310",
+    "type": "art5313",
     "seatHeight": 47,
     "legs": "legsStraight",
     "upholstery": {
-      "hexColor": "165580",
+      "hexColor": "8a8188",
       "category": "2"
     },
     "upholsteryDuotone": {
-      "hexColor": "a5313a",
+      "hexColor": "8a8188",
       "category": "4"
     }
   }

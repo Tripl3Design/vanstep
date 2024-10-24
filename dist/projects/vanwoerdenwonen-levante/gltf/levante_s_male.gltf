@@ -64,7 +64,7 @@
       "bufferView": 0,
       "byteOffset": 3584,
       "componentType": 5126,
-      "count": 18097,
+      "count": 23247,
       "max": [
         68.49159240722656,
         18.365737915039063,
@@ -81,8 +81,15 @@
       "bufferView": 0,
       "byteOffset": 3596,
       "componentType": 5126,
-      "count": 18097,
+      "count": 23247,
       "type": "VEC3"
+    },
+    {
+      "bufferView": 0,
+      "byteOffset": 3608,
+      "componentType": 5126,
+      "count": 23247,
+      "type": "VEC2"
     },
     {
       "bufferView": 1,
@@ -93,9 +100,9 @@
     },
     {
       "bufferView": 0,
-      "byteOffset": 582688,
+      "byteOffset": 747488,
       "componentType": 5126,
-      "count": 722,
+      "count": 824,
       "max": [
         67.97172546386719,
         15.929189682006836,
@@ -110,10 +117,17 @@
     },
     {
       "bufferView": 0,
-      "byteOffset": 582700,
+      "byteOffset": 747500,
       "componentType": 5126,
-      "count": 722,
+      "count": 824,
       "type": "VEC3"
+    },
+    {
+      "bufferView": 0,
+      "byteOffset": 747512,
+      "componentType": 5126,
+      "count": 824,
+      "type": "VEC2"
     },
     {
       "bufferView": 1,
@@ -129,21 +143,38 @@
   "bufferViews": [
     {
       "buffer": 0,
-      "byteLength": 605792,
+      "byteLength": 773856,
       "byteStride": 32,
       "target": 34962
     },
     {
       "buffer": 0,
       "byteLength": 435024,
-      "byteOffset": 605792,
+      "byteOffset": 773856,
       "target": 34963
     }
   ],
   "buffers": [
     {
-      "byteLength": 1040816,
+      "byteLength": 1208880,
       "uri": "levante_s_male.bin"
+    }
+  ],
+  "images": [
+    {
+      "uri": "boucle_Normal.png"
+    },
+    {
+      "uri": "defaultbasecolortexture.jpeg"
+    },
+    {
+      "uri": "defaultmetallicroughnesstex.jpeg"
+    },
+    {
+      "uri": "boucle_Normal.png"
+    },
+    {
+      "uri": "duotonemetallicroughnesstex.jpeg"
     }
   ],
   "materials": [
@@ -175,27 +206,38 @@
     },
     {
       "name": "default",
+      "normalTexture": {
+        "index": 0,
+        "scale": -1.0
+      },
       "pbrMetallicRoughness": {
-        "baseColorFactor": [
-          0.0,
-          0.1333329975605011,
-          1.0,
-          1.0
-        ],
+        "baseColorTexture": {
+          "index": 1
+        },
         "metallicFactor": 0.0,
+        "metallicRoughnessTexture": {
+          "index": 2
+        },
         "roughnessFactor": 0.0
       }
     },
     {
       "name": "duotone",
+      "normalTexture": {
+        "index": 3,
+        "scale": -1.0
+      },
       "pbrMetallicRoughness": {
         "baseColorFactor": [
-          1.0,
-          0.34666699171066284,
+          0.0759321004152298,
           0.0,
+          0.9491530060768127,
           1.0
         ],
         "metallicFactor": 0.0,
+        "metallicRoughnessTexture": {
+          "index": 4
+        },
         "roughnessFactor": 0.0
       }
     }
@@ -225,18 +267,20 @@
         {
           "attributes": {
             "NORMAL": 7,
-            "POSITION": 6
+            "POSITION": 6,
+            "TEXCOORD_0": 8
           },
-          "indices": 8,
+          "indices": 9,
           "material": 2,
           "mode": 4
         },
         {
           "attributes": {
-            "NORMAL": 10,
-            "POSITION": 9
+            "NORMAL": 11,
+            "POSITION": 10,
+            "TEXCOORD_0": 12
           },
-          "indices": 11,
+          "indices": 13,
           "material": 3,
           "mode": 4
         }
@@ -290,11 +334,70 @@
       ]
     }
   ],
+  "samplers": [
+    {
+      "magFilter": 9729,
+      "minFilter": 9729,
+      "wrapS": 10497,
+      "wrapT": 10497
+    },
+    {
+      "magFilter": 9729,
+      "minFilter": 9729,
+      "wrapS": 10497,
+      "wrapT": 10497
+    },
+    {
+      "magFilter": 9729,
+      "minFilter": 9729,
+      "wrapS": 10497,
+      "wrapT": 10497
+    },
+    {
+      "magFilter": 9729,
+      "minFilter": 9729,
+      "wrapS": 10497,
+      "wrapT": 10497
+    },
+    {
+      "magFilter": 9729,
+      "minFilter": 9729,
+      "wrapS": 10497,
+      "wrapT": 10497
+    }
+  ],
   "scenes": [
     {
       "nodes": [
         1
       ]
+    }
+  ],
+  "textures": [
+    {
+      "name": "texture_source0_sampler0",
+      "sampler": 0,
+      "source": 0
+    },
+    {
+      "name": "texture_source1_sampler1",
+      "sampler": 1,
+      "source": 1
+    },
+    {
+      "name": "texture_source2_sampler2",
+      "sampler": 2,
+      "source": 2
+    },
+    {
+      "name": "texture_source3_sampler3",
+      "sampler": 3,
+      "source": 3
+    },
+    {
+      "name": "texture_source4_sampler4",
+      "sampler": 4,
+      "source": 4
     }
   ]
 }

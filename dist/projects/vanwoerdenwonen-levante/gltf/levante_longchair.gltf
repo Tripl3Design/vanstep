@@ -1,0 +1,141 @@
+{
+  "accessors": [
+    {
+      "bufferView": 0,
+      "componentType": 5126,
+      "count": 15186,
+      "max": [
+        4.5418620109558105,
+        52.615692138671875,
+        27.22150230407715
+      ],
+      "min": [
+        -41.47803497314453,
+        -10.02924919128418,
+        -0.13744500279426575
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 0,
+      "byteOffset": 12,
+      "componentType": 5126,
+      "count": 15186,
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 1,
+      "componentType": 5125,
+      "count": 88608,
+      "type": "SCALAR"
+    }
+  ],
+  "asset": {
+    "version": "2.0"
+  },
+  "bufferViews": [
+    {
+      "buffer": 0,
+      "byteLength": 485952,
+      "byteStride": 32,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 354432,
+      "byteOffset": 485952,
+      "target": 34963
+    }
+  ],
+  "buffers": [
+    {
+      "byteLength": 840384,
+      "uri": "levante_longchair.bin"
+    }
+  ],
+  "materials": [
+    {
+      "name": "default",
+      "pbrMetallicRoughness": {
+        "baseColorFactor": [
+          0.0,
+          0.1333329975605011,
+          1.0,
+          1.0
+        ],
+        "metallicFactor": 0.0,
+        "roughnessFactor": 0.0
+      }
+    }
+  ],
+  "meshes": [
+    {
+      "name": "longchair",
+      "primitives": [
+        {
+          "attributes": {
+            "NORMAL": 1,
+            "POSITION": 0
+          },
+          "indices": 2,
+          "material": 0,
+          "mode": 4
+        }
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "matrix": [
+        0.0254,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0254,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0254,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "mesh": 0,
+      "name": "longchair"
+    },
+    {
+      "children": [
+        0
+      ],
+      "matrix": [
+        0.9134615659713745,
+        0.0,
+        0.4069249927997589,
+        0.0,
+        0.4069249927997589,
+        0.0,
+        -0.9134615659713745,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        1.161570571899414,
+        0.19500360107421874,
+        0.6340221042633056,
+        1.0
+      ]
+    }
+  ],
+  "scenes": [
+    {
+      "nodes": [
+        1
+      ]
+    }
+  ]
+}

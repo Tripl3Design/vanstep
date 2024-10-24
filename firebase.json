@@ -27,7 +27,7 @@
         ]
       }
     ],
-    "target": "van-woerden-wonen",
+    "target": "vanwoerdenwonen",
     "public": "dist",
     "ignore": [
       "firebase.json",
@@ -35,7 +35,7 @@
       "package-lock.json",
       "package.json",
       "**/TemplateData/**",
-      "**/projects/van-woerden-wonen-levante/"
+      "**/projects/vanwoerdenwonen-levante/"
     ]
   }
 }

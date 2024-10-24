@@ -115,12 +115,6 @@ export function fullscreenToggle() {
     var controlpanelCol = document.getElementById('controlpanelCol');
     var modelviewerCol = document.getElementById('modelviewerCol');
 
-    // Make sure renderer and camera are defined before using them
-    if (!renderer || !camera) {
-        console.error('Renderer or Camera is not initialized');
-        return;
-    }
-
     if (controlpanelCol.classList.contains('d-none')) {
         // Show control panel and shrink model viewer to 50%
         modelviewerCol.classList.add('col-md-6');
@@ -258,12 +252,15 @@ function updateModelViewer(modelUrl) {
         console.error("Model viewer element not found.");
     }
 }
-
+/*
 if (windowHeight > windowWidth) {
     document.getElementById('viewAr').addEventListener('click', () => {
         viewAr();
     });
 }
+*/
+const levante_sofa_25Url = projectmap + 'gltf/levante_sofa_25.gltf';
+const levante_footstoolUrl = projectmap + 'gltf/levante_footstool.gltf';
 
 const levante_leg_corner_rightUrl = projectmap + 'gltf/levante_leg_corner_right.gltf';
 const levante_leg_corner_middleUrl = projectmap + 'gltf/levante_leg_corner_middle.gltf';
@@ -277,8 +274,6 @@ const levante_l_femaleUrl = projectmap + 'gltf/levante_l_female.gltf';
 
 
 function createPBRMaterial(hexColor, materialType) {
-    console.log(hexColor);
-    console.log(materialType);
     const textureLoader = new THREE.TextureLoader();
     let material
     if (materialType == 'boucle') {
@@ -288,18 +283,32 @@ function createPBRMaterial(hexColor, materialType) {
         const normal = projectmap + 'img/textures/boucle/boucle_Normal.png';
         const roughness = projectmap + 'img/textures/boucle/boucle_Roughness.jpg';
 
+        const baseColorTexture = textureLoader.load(baseColor);
+        baseColorTexture.wrapS = THREE.RepeatWrapping; // Zorgt ervoor dat de texture herhaald wordt in de X-richting
+        baseColorTexture.wrapT = THREE.RepeatWrapping; // Zorgt ervoor dat de texture herhaald wordt in de Y-richting
+        baseColorTexture.repeat.set(3, 3); // Texture 3 keer herhalen in zowel de X- als Y-richting
+
+        const displacementTexture = textureLoader.load(displacement);
+        displacementTexture.wrapS = THREE.RepeatWrapping; // Zorgt ervoor dat de texture herhaald wordt in de X-richting
+        displacementTexture.wrapT = THREE.RepeatWrapping; // Zorgt ervoor dat de texture herhaald wordt in de Y-richting
+        displacementTexture.repeat.set(3, 3); // Texture 3 keer herhalen in zowel de X- als Y-richting
+
+        const normalTexture = textureLoader.load(normal);
+        normalTexture.wrapS = THREE.RepeatWrapping; // Zorgt ervoor dat de texture herhaald wordt in de X-richting
+        normalTexture.wrapT = THREE.RepeatWrapping; // Zorgt ervoor dat de texture herhaald wordt in de Y-richting
+        normalTexture.repeat.set(3, 3); // Texture 3 keer herhalen in zowel de X- als Y-richting
+
         material = new THREE.MeshPhysicalMaterial({
-            map: textureLoader.load(baseColor),
+            //map: baseColorTexture,
             color: new THREE.Color('#' + hexColor),
-            //clearCoat: 1.0, // Clear coat sterkte (0 tot 1)
-            //clearCoatRoughness: 0.1, // Hoe ruw de clear coat laag is (0 tot 1)
-            metalness: 0.8,
-            roughness: 0.4,
-            normalMap: textureLoader.load(normal),
+            metalness: 0.1,
+            roughness: 0.9,
+            normalMap: normalTexture,
+            //normalScale: new THREE.Vector2(.1, .1), // Normal map schaling
             roughnessMap: textureLoader.load(roughness),
             metalnessMap: textureLoader.load(metallic),
-            displacementMap: textureLoader.load(displacement),
-            displacementScale: 0.1,
+            displacementMap: displacementTexture,
+            displacementScale: 0.3,
         });
 
         return material;
@@ -377,8 +386,12 @@ export async function loadModelData(model) {
             { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0), scale: new THREE.Vector3(-1, 1, 1) },
         ];
 
-        loadAndTransformModel(levante_sofa_25Url, elementTransforms, group, model.upholstery.hexColor);
-
+        if (model.upholsteryDuotone != null) {
+            loadAndTransformModel(levante_sofa_25Url, elementTransforms, group, model.upholstery.hexColor, 'boucle', model.upholsteryDuotone.hexColor, 'boucle');
+        } else {
+            loadAndTransformModel(levante_sofa_25Url, elementTransforms, group, model.upholstery.hexColor);
+        }
+        
         scene.add(group);
         models.push(group);
     } else if (model.type == "art3002") {
@@ -389,7 +402,7 @@ export async function loadModelData(model) {
             { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0), scale: new THREE.Vector3(-1, 1, 1) },
         ];
 
-        loadAndTransformModel(levante_sofa_3Url, elementTransforms, group, model.upholstery.hexColor);
+        loadAndTransformModel(levante_sofa_3Url, elementTransforms, group, model.upholstery.hexColor, 'boucle', model.upholsteryDuotone.hexColor, 'boucle');
 
         scene.add(group);
         models.push(group);
@@ -407,7 +420,7 @@ export async function loadModelData(model) {
             ];
         }
 
-        loadAndTransformModel(levante_recamiere_3Url, elementTransforms, group, model.upholstery.hexColor);
+        loadAndTransformModel(levante_recamiere_3Url, elementTransforms, group, model.upholstery.hexColor, 'boucle', model.upholsteryDuotone.hexColor, 'boucle');
 
         scene.add(group);
         models.push(group);
@@ -418,7 +431,7 @@ export async function loadModelData(model) {
             { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0), scale: new THREE.Vector3(1, 1, 1) },
         ];
 
-        loadAndTransformModel(levante_footstoolUrl, elementTransforms, group, model.upholstery.hexColor);
+        loadAndTransformModel(levante_footstoolUrl, elementTransforms, group, model.upholstery.hexColor, 'boucle', model.upholsteryDuotone.hexColor, 'boucle');
 
         scene.add(group);
         models.push(group);

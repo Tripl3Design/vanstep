@@ -1,0 +1,343 @@
+{
+  "accessors": [
+    {
+      "bufferView": 0,
+      "componentType": 5126,
+      "count": 14418,
+      "max": [
+        27.497102737426758,
+        17.787843704223633,
+        25.632081985473633
+      ],
+      "min": [
+        -9.063443183898926,
+        -21.883914947509766,
+        -0.11754238605499268
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 0,
+      "byteOffset": 12,
+      "componentType": 5126,
+      "count": 14418,
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 0,
+      "byteOffset": 24,
+      "componentType": 5126,
+      "count": 14418,
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 1,
+      "componentType": 5125,
+      "count": 63744,
+      "type": "SCALAR"
+    },
+    {
+      "bufferView": 0,
+      "byteOffset": 461376,
+      "componentType": 5126,
+      "count": 538,
+      "max": [
+        24.961986541748047,
+        16.48380470275879,
+        25.05194854736328
+      ],
+      "min": [
+        -8.943007469177246,
+        -16.035341262817383,
+        5.717291831970215
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 0,
+      "byteOffset": 461388,
+      "componentType": 5126,
+      "count": 538,
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 0,
+      "byteOffset": 461400,
+      "componentType": 5126,
+      "count": 538,
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 254976,
+      "componentType": 5125,
+      "count": 2346,
+      "type": "SCALAR"
+    }
+  ],
+  "asset": {
+    "version": "2.0"
+  },
+  "bufferViews": [
+    {
+      "buffer": 0,
+      "byteLength": 478592,
+      "byteStride": 32,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 264360,
+      "byteOffset": 478592,
+      "target": 34963
+    }
+  ],
+  "buffers": [
+    {
+      "byteLength": 742952,
+      "uri": "levante_sofa_25.bin"
+    }
+  ],
+  "extensionsUsed": [
+    "KHR_texture_transform"
+  ],
+  "images": [
+    {
+      "uri": "boucle_Normal.png"
+    },
+    {
+      "uri": "defaultbasecolortexture.jpeg"
+    },
+    {
+      "uri": "defaultmetallicroughnesstex.jpeg"
+    },
+    {
+      "uri": "boucle_Normal.png"
+    },
+    {
+      "uri": "duotonebasecolortexture.jpeg"
+    },
+    {
+      "uri": "duotonemetallicroughnesstex.jpeg"
+    }
+  ],
+  "materials": [
+    {
+      "name": "default",
+      "normalTexture": {
+        "index": 0,
+        "scale": -1.0
+      },
+      "pbrMetallicRoughness": {
+        "baseColorTexture": {
+          "extensions": {
+            "KHR_texture_transform": {
+              "scale": [
+                3.0,
+                3.0
+              ]
+            }
+          },
+          "index": 1
+        },
+        "metallicFactor": 0.0,
+        "metallicRoughnessTexture": {
+          "extensions": {
+            "KHR_texture_transform": {
+              "scale": [
+                3.0,
+                3.0
+              ]
+            }
+          },
+          "index": 2
+        },
+        "roughnessFactor": 0.0
+      }
+    },
+    {
+      "name": "duotone",
+      "normalTexture": {
+        "index": 3,
+        "scale": -1.0
+      },
+      "pbrMetallicRoughness": {
+        "baseColorTexture": {
+          "extensions": {
+            "KHR_texture_transform": {
+              "scale": [
+                2.0,
+                2.0
+              ]
+            }
+          },
+          "index": 4
+        },
+        "metallicFactor": 0.0,
+        "metallicRoughnessTexture": {
+          "extensions": {
+            "KHR_texture_transform": {
+              "scale": [
+                2.0,
+                2.0
+              ]
+            }
+          },
+          "index": 5
+        },
+        "roughnessFactor": 0.0
+      }
+    }
+  ],
+  "meshes": [
+    {
+      "name": "sofa_25",
+      "primitives": [
+        {
+          "attributes": {
+            "NORMAL": 1,
+            "POSITION": 0,
+            "TEXCOORD_0": 2
+          },
+          "indices": 3,
+          "material": 0,
+          "mode": 4
+        },
+        {
+          "attributes": {
+            "NORMAL": 5,
+            "POSITION": 4,
+            "TEXCOORD_0": 6
+          },
+          "indices": 7,
+          "material": 1,
+          "mode": 4
+        }
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "matrix": [
+        0.0254,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0254,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0254,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "mesh": 0,
+      "name": "sofa_25"
+    },
+    {
+      "children": [
+        0
+      ],
+      "matrix": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -1.7484555314695172e-07,
+        -1.0,
+        0.0,
+        0.0,
+        1.0,
+        -1.7484555314695172e-07,
+        0.0,
+        0.22527072162628173,
+        0.19500360107421874,
+        0.07024527626037598,
+        1.0
+      ]
+    }
+  ],
+  "samplers": [
+    {
+      "magFilter": 9729,
+      "minFilter": 9729,
+      "wrapS": 10497,
+      "wrapT": 10497
+    },
+    {
+      "magFilter": 9729,
+      "minFilter": 9729,
+      "wrapS": 10497,
+      "wrapT": 10497
+    },
+    {
+      "magFilter": 9729,
+      "minFilter": 9729,
+      "wrapS": 10497,
+      "wrapT": 10497
+    },
+    {
+      "magFilter": 9729,
+      "minFilter": 9729,
+      "wrapS": 10497,
+      "wrapT": 10497
+    },
+    {
+      "magFilter": 9729,
+      "minFilter": 9729,
+      "wrapS": 10497,
+      "wrapT": 10497
+    },
+    {
+      "magFilter": 9729,
+      "minFilter": 9729,
+      "wrapS": 10497,
+      "wrapT": 10497
+    }
+  ],
+  "scenes": [
+    {
+      "nodes": [
+        1
+      ]
+    }
+  ],
+  "textures": [
+    {
+      "name": "texture_source0_sampler0",
+      "sampler": 0,
+      "source": 0
+    },
+    {
+      "name": "texture_source1_sampler1",
+      "sampler": 1,
+      "source": 1
+    },
+    {
+      "name": "texture_source2_sampler2",
+      "sampler": 2,
+      "source": 2
+    },
+    {
+      "name": "texture_source3_sampler3",
+      "sampler": 3,
+      "source": 3
+    },
+    {
+      "name": "texture_source4_sampler4",
+      "sampler": 4,
+      "source": 4
+    },
+    {
+      "name": "texture_source5_sampler5",
+      "sampler": 5,
+      "source": 5
+    }
+  ]
+}

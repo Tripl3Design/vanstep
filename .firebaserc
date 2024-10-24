@@ -1,7 +1,6 @@
 {
   "projects": {
-    "default": "vanwoerdenwonen",
-    "Vanwoerdenwonen": "vanwoerdenwonen-tripletise"
+    "VanWoerden": "vanwoerdenwonen-tripletise"
   },
   "targets": {
     "vanwoerdenwonen-tripletise": {
@@ -10,15 +9,7 @@
           "vanwoerdenwonen-levante"
         ]
       }
-    },
-    "vanwoerdenwonen": {
-      "hosting": {
-        "vanwoerdenwonen-tripletise": [
-          "vanwoerdenwonen-levante"
-        ]
-      }
     }
   },
-  "etags": {},
-  "dataconnectEmulatorConfig": {}
+  "etags": {}
 }
