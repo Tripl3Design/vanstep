@@ -4,48 +4,48 @@
 }
 
 @font-face {
-    font-family: 'HelveticaNeueRoman';
-    src: url('../fonts/HelveticaNeueRoman.otf') format('opentype');
+    font-family: 'RobotoRegular';
+    src: url('../fonts/Roboto-Regular.ttf') format('opentype');
     font-weight: normal;
     font-style: normal;
 }
 
 @font-face {
-    font-family: 'HelveticaNeueBold';
-    src: url('../fonts/HelveticaNeueBold.otf') format('opentype');
+    font-family: 'PoppinsBold';
+    src: url('../fonts/Poppins-Bold.ttf') format('opentype');
     font-weight: normal;
     font-style: normal;
 }
 
 #producttitle {
-    font-family: 'HelveticaNeueRoman', sans-serif; /* Use the font family defined */
+    font-family: 'PoppinsBold', sans-serif; /* Use the font family defined */
     font-size: 32px;
     letter-spacing: 1.5px;
     color: #292929;
 }
 
 #productsubtitle {
-    font-family: 'HelveticaNeueRoman', sans-serif; /* Use the font family defined */
+    font-family: 'PoppinsBold', sans-serif; /* Use the font family defined */
     font-size: 32px;
     letter-spacing: 1.5px;
     color: #dfdeda;
 }
 
 #producttitleMobile{
-    font-family: 'HelveticaNeueRoman', sans-serif; /* Use the font family defined */
+    font-family: 'PoppinsBold', sans-serif; /* Use the font family defined */
     font-size: 24px;
     letter-spacing: 1.5px;
     color: #292929;
 }
 #productsubtitleMobile {
-    font-family: 'HelveticaNeueRoman', sans-serif; /* Use the font family defined */
+    font-family: 'RobotoRegular', sans-serif; /* Use the font family defined */
     font-size: 24px;
     letter-spacing: 1.5px;
     color: #dfdeda;
 }
 
 #productdesigner {
-    font-family: 'HelveticaNeueRoman', sans-serif; /* Use the font family defined */
+    font-family: 'RobotoRegular', sans-serif; /* Use the font family defined */
     font-size: 14px;
     font-weight: bold;
     letter-spacing: 1.2px;

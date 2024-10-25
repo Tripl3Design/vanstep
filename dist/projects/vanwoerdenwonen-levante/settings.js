@@ -9,8 +9,23 @@ const urlParams = new URLSearchParams(window.location.search);
 let mainModule = null;
 
 async function downloadPdf() {
-    let mainImage = mainModule.captureScreenshot();
-    createPdf(FEATUREDMODEL, mainImage);
+    try {
+        let mainImage = mainModule.captureScreenshot();
+
+        const docRef = await addDoc(collection(db, "clientModels"), {
+            brand: brand,
+            product: product,
+            from: document.referrer,
+            model: FEATUREDMODEL,
+            timestamp: serverTimestamp()
+        });
+        console.log("Document saved with ID: ", docRef.id);
+
+        const shortUrl = docRef.id;
+        createPdf(FEATUREDMODEL, mainImage, title, shortUrl);
+    } catch (e) {
+        console.error("Error : ", e);
+    }
 }
 
 function updateFeaturedModel(model) {

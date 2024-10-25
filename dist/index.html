@@ -10,7 +10,7 @@
     console.log('%cThis configurator is made by TripleDesign. Visit tripledesign.nl for more info!', 'background:red;color:#fff;font-weight: bold;')
     const brand = 'vanwoerdenwonen';
     const product = 'levante';
-    const title = 'levante';
+    const title = 'Bank Evan';
     console.log(brand);
     console.log(product);
   </script>
@@ -32,6 +32,29 @@
       }
     }
 </script>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyC0XTl5lSTSN0mxCqGsYxsrIpFtoU-ooEI",
+      authDomain: "vanwoerdenwonen-tripletise.firebaseapp.com",
+      projectId: "vanwoerdenwonen-tripletise",
+      storageBucket: "vanwoerdenwonen-tripletise.appspot.com",
+      messagingSenderId: "663075472335",
+      appId: "1:663075472335:web:bde178dfb46caaf1f808ba"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    window.db = db;
+    window.collection = collection;
+    window.addDoc = addDoc;
+    window.getDoc = getDoc;
+    window.doc = doc;
+    window.serverTimestamp = serverTimestamp;
+  </script>
+
   <!-- MakePDF -->
   <script src='https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.12/pdfmake.min.js'></script>
   <script src='https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.12/vfs_fonts.js'></script>
@@ -87,7 +110,7 @@
 
             <div style="height: 100%; background: #d4d4d4;" class="col-12 vh-100 m-0 p-0" id="modelviewerCol">
                             <div class="position-absolute w-100">
-                              <div style="letter-spacing: 1.5px;" class="h2 text-center text-uppercase m-0 p-0 mt-4" id="producttitleMobile">
+                              <div style="letter-spacing: 1.5px;" class="h2 text-center m-0 p-0 mt-4" id="producttitleMobile">
                                 ${title}
                               </div>
                                 <!-- you can add controls in the canvas here -->
@@ -270,7 +293,7 @@
         document.write( /*html*/ `
                         <div class="row m-0 p-0">
                           <div class="col-12 m-0 p-0    pb-xxl-4 pb-xl-3 pb-lg-2 pb-md-2 pb-sm-2">
-                              <h3 class="productname text-start text-uppercase m-0 p-0" id="producttitle">
+                              <h3 class="productname text-start m-0 p-0" id="producttitle">
                                 ${title}
                               </h3>
                           </div>
@@ -293,8 +316,8 @@
 
               <div class="col-6 p-0 m-0 pt-3">
 
-                <button onclick="downloadPdf()" type="button" class="float-end d-flex btn btn-sm btn-outline-dark rounded-0">
-                  <span class="material-symbols-outlined mt-1">picture_as_pdf</span>&nbsp;&nbsp;<span id="quote" class="mt-1 h6">quote</span>
+                <button onclick="downloadPdf()" type="button" class="float-end d-flex btn btn-sm btn-success rounded-pill">
+                  <span class="material-symbols-outlined mt-1">picture_as_pdf</span>&nbsp;&nbsp;<span id="quote" class="mt-1 h6">offerte</span>
               </button>
 
                 </div> 
