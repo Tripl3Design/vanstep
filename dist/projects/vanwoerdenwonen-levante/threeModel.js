@@ -260,8 +260,8 @@ if (windowHeight > windowWidth) {
 }
 */
 const levante_sofa_25Url = projectmap + 'gltf/levante_sofa_25.gltf';
-const levante_footstoolUrl = projectmap + 'gltf/levante_footstool.gltf';
-
+const levante_sofa_3Url = projectmap + 'gltf/levante_sofa_3.gltf';
+const levante_legs_sofaUrl = projectmap + 'gltf/levante_legs_sofa.gltf';
 const levante_leg_corner_rightUrl = projectmap + 'gltf/levante_leg_corner_right.gltf';
 const levante_leg_corner_middleUrl = projectmap + 'gltf/levante_leg_corner_middle.gltf';
 const levante_leg_corner_leftUrl = projectmap + 'gltf/levante_leg_corner_left.gltf';
@@ -271,6 +271,8 @@ const levante_m_maleUrl = projectmap + 'gltf/levante_m_male.gltf';
 const levante_m_femaleUrl = projectmap + 'gltf/levante_m_female.gltf';
 const levante_l_maleUrl = projectmap + 'gltf/levante_l_male.gltf';
 const levante_l_femaleUrl = projectmap + 'gltf/levante_l_female.gltf';
+const levante_recamiereUrl = projectmap + 'gltf/levante_recamiere.gltf';
+const levante_footstoolUrl = projectmap + 'gltf/levante_footstool.gltf';
 
 
 function createPBRMaterial(hexColor, materialType) {
@@ -381,6 +383,15 @@ export async function loadModelData(model) {
     if (model.type == "art2502") {
         const group = new THREE.Group();
 
+        let legTransforms;
+
+        legTransforms = [
+            { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0), scale: new THREE.Vector3(1, 1, 1) },
+            { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0), scale: new THREE.Vector3(-1, 1, 1) },
+        ];
+
+        loadAndTransformModel(levante_legs_sofaUrl, legTransforms, group, '000000', 'paint');
+
         let elementTransforms = [
             { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0), scale: new THREE.Vector3(1, 1, 1) },
             { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0), scale: new THREE.Vector3(-1, 1, 1) },
@@ -391,11 +402,22 @@ export async function loadModelData(model) {
         } else {
             loadAndTransformModel(levante_sofa_25Url, elementTransforms, group, model.upholstery.hexColor);
         }
-        
+
         scene.add(group);
         models.push(group);
     } else if (model.type == "art3002") {
         const group = new THREE.Group();
+
+        
+        let legTransforms;
+
+        legTransforms = [
+            { position: new THREE.Vector3(0.2, (model.seatHeight == 47 ? 0.03 : 0), 0), scale: new THREE.Vector3(1, 1, 1) },
+            { position: new THREE.Vector3(-0.2, (model.seatHeight == 47 ? 0.03 : 0), 0), scale: new THREE.Vector3(-1, 1, 1) },
+        ];
+
+        loadAndTransformModel(levante_legs_sofaUrl, legTransforms, group, '000000', 'paint');
+
 
         let elementTransforms = [
             { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0), scale: new THREE.Vector3(1, 1, 1) },
@@ -409,6 +431,15 @@ export async function loadModelData(model) {
     } else if (model.type == "art6093" || model.type == "art6091") {
         const group = new THREE.Group();
 
+        let legTransforms;
+
+        legTransforms = [
+            { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0), scale: new THREE.Vector3(1, 1, 1) },
+            { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0), scale: new THREE.Vector3(-1, 1, 1) },
+        ];
+
+        loadAndTransformModel(levante_legs_sofaUrl, legTransforms, group, '000000', 'paint');
+
         let elementTransforms;
         if (model.type == "art6093") {
             elementTransforms = [
@@ -419,8 +450,11 @@ export async function loadModelData(model) {
                 { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0), scale: new THREE.Vector3(-1, 1, 1) },
             ];
         }
-
-        loadAndTransformModel(levante_recamiere_3Url, elementTransforms, group, model.upholstery.hexColor, 'boucle', model.upholsteryDuotone.hexColor, 'boucle');
+        if (model.upholsteryDuotone != null) {
+            loadAndTransformModel(levante_recamiereUrl, elementTransforms, group, model.upholstery.hexColor, 'boucle', model.upholsteryDuotone.hexColor, 'boucle');
+        } else {
+            loadAndTransformModel(levante_recamiereUrl, elementTransforms, group, model.upholstery.hexColor);
+        }
 
         scene.add(group);
         models.push(group);
@@ -539,11 +573,11 @@ export async function loadModelData(model) {
         let legTransformsRight;
         if (model.type == "art5312") {
             legTransformsRight = [
-                { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0.25), scale: new THREE.Vector3(1, 1, 1) },
+                { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0.2), scale: new THREE.Vector3(1, 1, 1) },
             ];
         } else {
             legTransformsRight = [
-                { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0.25), scale: new THREE.Vector3(-1, 1, 1) },
+                { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0.2), scale: new THREE.Vector3(-1, 1, 1) },
             ];
         }
 
@@ -561,14 +595,14 @@ export async function loadModelData(model) {
         let legTransformsLeft;
         if (model.type == "art5312") {
             legTransformsLeft = [
-                { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0.25), scale: new THREE.Vector3(1, 1, 1) },
+                { position: new THREE.Vector3(-0.15, (model.seatHeight == 47 ? 0.03 : 0), 0), scale: new THREE.Vector3(1, 1, 1) },
             ];
         } else {
             legTransformsLeft = [
-                { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0.25), scale: new THREE.Vector3(-1, 1, 1) },
+                { position: new THREE.Vector3(0.15, (model.seatHeight == 47 ? 0.03 : 0), 0), scale: new THREE.Vector3(-1, 1, 1) },
             ];
         }
-        
+
         loadAndTransformModel(levante_leg_corner_rightUrl, legTransformsRight, group, '000000', 'paint');
         loadAndTransformModel(levante_leg_corner_middleUrl, legTransformsMiddle, group, '000000', 'paint');
         loadAndTransformModel(levante_leg_corner_leftUrl, legTransformsLeft, group, '000000', 'paint');
@@ -628,7 +662,7 @@ export async function loadModelData(model) {
                 { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0), scale: new THREE.Vector3(-1, 1, 1) },
             ];
         }
-        
+
         loadAndTransformModel(levante_leg_corner_rightUrl, legTransformsRight, group, '000000', 'paint');
         loadAndTransformModel(levante_leg_corner_middleUrl, legTransformsMiddle, group, '000000', 'paint');
         loadAndTransformModel(levante_leg_corner_leftUrl, legTransformsLeft, group, '000000', 'paint');
@@ -657,6 +691,15 @@ export async function loadModelData(model) {
     } else if (model.type == "art846" || model.type == "art553") {
         const group = new THREE.Group();
 
+        let legTransforms;
+
+        legTransforms = [
+            { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0), scale: new THREE.Vector3(1, 1, 1) },
+            { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0), scale: new THREE.Vector3(-1, 1, 1) },
+        ];
+
+        loadAndTransformModel(levante_legs_sofaUrl, legTransforms, group, '000000', 'paint');
+
         let elementTransforms;
         if (model.type == "art846") {
             elementTransforms = [
@@ -668,11 +711,9 @@ export async function loadModelData(model) {
             ];
         }
         if (model.upholsteryDuotone != null) {
-            loadAndTransformModel(levante_s_maleUrl, elementTransforms, group, model.upholstery.hexColor, 'boucle', model.upholsteryDuotone.hexColor, 'boucle');
-            loadAndTransformModel(levante_longchairUrl, elementTransforms, group, model.upholstery.hexColor, 'boucle', model.upholsteryDuotone.hexColor, 'boucle');
+            loadAndTransformModel(levante_recamiereUrl, elementTransforms, group, model.upholstery.hexColor, 'boucle', model.upholsteryDuotone.hexColor, 'boucle');
         } else {
-            loadAndTransformModel(levante_s_maleUrl, elementTransforms, group, model.upholstery.hexColor);
-            loadAndTransformModel(levante_longchairUrl, elementTransforms, group, model.upholstery.hexColor);
+            loadAndTransformModel(levante_recamiereUrl, elementTransforms, group, model.upholstery.hexColor);
         }
 
         scene.add(group);

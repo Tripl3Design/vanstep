@@ -86,7 +86,7 @@ function updateControlPanel(model, selectedLayer, expandedLayer) {
     }));
     document.getElementById(`seatHeight_${model.seatHeight}`).checked = true;
     document.getElementById('seatHeightText').textContent = `${model.seatHeight} cm`;
-
+/*
     // legs
     let legRadios = document.querySelectorAll(`input[type=radio][name="leg"]`);
     legRadios.forEach(radio => radio.addEventListener('click', () => {
@@ -103,7 +103,7 @@ function updateControlPanel(model, selectedLayer, expandedLayer) {
         document.getElementById('legsText').textContent = 'gebogen poten';
         document.getElementById('legsBent').checked = true;
     }
-
+*/
     // duotone
     let duotoneCheckbox = document.getElementById('duotone');
     if (model.upholsteryDuotone) {
@@ -477,7 +477,7 @@ function initSettings(model) {
 
     accordions.options = {
         title: "opties",
-        options: ['seatHeight', 'legs', 'duotone'],
+        options: ['seatHeight', 'duotone'],
         display: "d-block",
         code: /*html*/`
         <div class="row m-0 p-0 pb-xxl-4 pb-xl-4 pb-3">
@@ -493,6 +493,7 @@ function initSettings(model) {
                         <label class="form-check-label" for="seatHeight_47">47 cm</label>
                     </div>
                 </div>
+                <!--
                 <div class="card border-0 grid gap row-gap-3 me-5">
                     <div class="fst-italic">poten:</div>
                         <div class="h6 fw-normal form-check">
@@ -504,6 +505,7 @@ function initSettings(model) {
                         <label class="form-check-label" for="legsBent">gebogen poten</label>
                     </div>
                 </div>
+                -->
                 <div class="card border-0 grid gap row-gap-3 me-5">
                     <div class="fst-italic">duotone:</div>
                         <div class="h6 fw-normal form-check form-switch">
