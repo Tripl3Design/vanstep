@@ -408,7 +408,6 @@ export async function loadModelData(model) {
     } else if (model.type == "art3002") {
         const group = new THREE.Group();
 
-        
         let legTransforms;
 
         legTransforms = [
@@ -417,7 +416,6 @@ export async function loadModelData(model) {
         ];
 
         loadAndTransformModel(levante_legs_sofaUrl, legTransforms, group, '000000', 'paint');
-
 
         let elementTransforms = [
             { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0), scale: new THREE.Vector3(1, 1, 1) },

@@ -7,15 +7,15 @@
       "original": "d4d4d4"
     },
     "type": "art2502",
-    "seatHeight": 47,
+    "seatHeight": 44,
     "legs": "legsStraight",
     "upholstery": {
-      "hexColor": "566b33",
-      "category": "2"
+      "hexColor": "482e32",
+      "type": "adore"
     },
     "upholsteryDuotone": {
-      "hexColor": "566b33",
-      "category": "2"
+      "hexColor": "482e32",
+      "type": "adore"
     }
   },
   {
@@ -26,15 +26,15 @@
       "original": "d4d4d4"
     },
     "type": "art5310",
-    "seatHeight": 47,
+    "seatHeight": 44,
     "legs": "legsStraight",
     "upholstery": {
-      "hexColor": "b9a89e",
-      "category": "2"
+      "hexColor": "c1bca8",
+      "type": "dream"
     },
     "upholsteryDuotone": {
-      "hexColor": "b9a89e",
-      "category": "4"
+      "hexColor": "c1bca8",
+      "type": "dream"
     }
   },
   {
@@ -48,12 +48,12 @@
     "seatHeight": 47,
     "legs": "legsStraight",
     "upholstery": {
-      "hexColor": "8a8188",
-      "category": "2"
+      "hexColor": "a2706a",
+      "type": "adore"
     },
     "upholsteryDuotone": {
-      "hexColor": "8a8188",
-      "category": "4"
+      "hexColor": "a2706a",
+      "type": "adore"
     }
   }
 ]
