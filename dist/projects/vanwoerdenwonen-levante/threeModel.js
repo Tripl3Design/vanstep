@@ -276,8 +276,19 @@ const levante_footstoolUrl = projectmap + 'gltf/levante_footstool.gltf';
 const levante_legs_footstoolUrl = projectmap + 'gltf/levante_legs_footstool.gltf';
 
 
+const textureCache = {}; // Cache voor opgeslagen textures
+
+function loadTexture(path) {
+    if (textureCache[path]) {
+        return textureCache[path]; // Haal texture uit cache
+    } else {
+        const texture = new THREE.TextureLoader().load(path);
+        textureCache[path] = texture; // Sla texture op in cache
+        return texture;
+    }
+}
+
 function createPBRMaterial(materialType, hexColor = null, texturePath = null) {
-    const textureLoader = new THREE.TextureLoader();
     let material;
 
     if (materialType === 'boucle') {
@@ -287,32 +298,36 @@ function createPBRMaterial(materialType, hexColor = null, texturePath = null) {
         const normal = `${projectmap}img/textures/boucle/boucle_Normal.png`;
         const roughness = `${projectmap}img/textures/boucle/boucle_Roughness.jpg`;
 
-        const scaledTexturePath = textureLoader.load(texturePath);
-        scaledTexturePath.wrapS = scaledTexturePath.wrapT = THREE.RepeatWrapping;
-        scaledTexturePath.repeat.set(5, 5);
+        const scaledTexturePath = texturePath ? loadTexture(texturePath) : null;
+        if (scaledTexturePath) {
+            scaledTexturePath.wrapS = scaledTexturePath.wrapT = THREE.RepeatWrapping;
+            scaledTexturePath.repeat.set(5, 5);
+        }
 
-        const normalTexture = textureLoader.load(normal);
+        const normalTexture = loadTexture(normal);
         normalTexture.wrapS = normalTexture.wrapT = THREE.RepeatWrapping;
         normalTexture.repeat.set(4, 4);
 
         material = new THREE.MeshPhysicalMaterial({
-            map: texturePath ? scaledTexturePath : null,
+            map: scaledTexturePath,
             color: hexColor ? new THREE.Color(`#${hexColor}`) : null,
             metalness: 0.1,
             roughness: 0.9,
             normalMap: normalTexture,
-            roughnessMap: textureLoader.load(roughness),
-            metalnessMap: textureLoader.load(metallic),
-            displacementMap: textureLoader.load(displacement),
+            roughnessMap: loadTexture(roughness),
+            metalnessMap: loadTexture(metallic),
+            displacementMap: loadTexture(displacement),
             displacementScale: 0.3,
         });
     } else if (materialType === 'velvet') {
-        const scaledTexturePath = textureLoader.load(texturePath);
-        scaledTexturePath.wrapS = scaledTexturePath.wrapT = THREE.RepeatWrapping;
-        scaledTexturePath.repeat.set(.9, .9);
+        const scaledTexturePath = texturePath ? loadTexture(texturePath) : null;
+        if (scaledTexturePath) {
+            scaledTexturePath.wrapS = scaledTexturePath.wrapT = THREE.RepeatWrapping;
+            scaledTexturePath.repeat.set(0.9, 0.9);
+        }
 
         material = new THREE.MeshPhysicalMaterial({
-            map: texturePath ? scaledTexturePath : null,
+            map: scaledTexturePath,
             color: hexColor ? new THREE.Color(`#${hexColor}`) : null,
             metalness: 0.0,
             roughness: 0.5,
@@ -329,6 +344,7 @@ function createPBRMaterial(materialType, hexColor = null, texturePath = null) {
 
     return material;
 }
+
 
 function loadAndTransformModel(url, transforms = [{}], group, hexColor = null, texturePath = null, materialType, hexColor_duotone = null, texturePath_duotone = null, materialTypeDuotone = null) {
     const loader = new GLTFLoader();

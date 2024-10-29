@@ -157,7 +157,7 @@ function updateControlPanel(model, selectedLayer, expandedLayer) {
         });
     
         if (footstoolCheckbox.checked) {
-            document.getElementById('footstoolText').textContent = 'footstool';
+            document.getElementById('footstoolText').textContent = 'voetenbank';
         } else {
             delete model.footstool;
             document.getElementById('footstoolText').textContent = '';

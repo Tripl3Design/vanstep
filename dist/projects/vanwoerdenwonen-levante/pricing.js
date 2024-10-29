@@ -9,6 +9,11 @@ function pricing(model) {
         let additionalPrice = ALLCOMPONENTS.elements[model.type].prices.A18.fabric;
         totalPrice += additionalPrice;
     }
+     if (model.footstool == true) {
+        let footstoolPrice = ALLCOMPONENTS.elements.art9085110.prices[pricegroup];
+        totalPrice += footstoolPrice;
+    }
+
     totalPrice += price;
     console.log(totalPrice);
 
