@@ -79,7 +79,6 @@ function updateControlPanel(model, selectedLayer, expandedLayer) {
     seatHeightRadios.forEach(radio => radio.addEventListener('click', () => {
         model.seatHeight = radio.value;
 
-
         updateControlPanel(model, `options`);
         updateFeaturedModel(model);
         showSelected(false);
@@ -114,16 +113,15 @@ function updateControlPanel(model, selectedLayer, expandedLayer) {
 
     duotoneCheckbox.addEventListener('click', () => {
         if (duotoneCheckbox.checked) {
-            model.upholsteryDuotone = { "hexColor": "545857", "category": "2" };
+            model.upholsteryDuotone = { "hexColor": "323232", "type": "adore" };
 
             document.getElementById('duotoneText').textContent = 'duotone';
         } else {
-            model.upholsteryDuotone = null;
-
+            delete model.upholsteryDuotone;
             document.getElementById('duotoneText').textContent = '';
         }
 
-        updateControlPanel(model, 'upholsteryDuotone', 'options');
+        updateControlPanel(model, undefined, 'options');
         updateFeaturedModel(model);
         showSelected(false);
     });
@@ -131,7 +129,7 @@ function updateControlPanel(model, selectedLayer, expandedLayer) {
     if (duotoneCheckbox.checked) {
         document.getElementById('duotoneText').textContent = 'duotone';
     } else {
-        model.upholsteryDuotone = null;
+        delete model.upholsteryDuotone;
         document.getElementById('duotoneText').textContent = '';
     }
 
@@ -150,11 +148,18 @@ function updateControlPanel(model, selectedLayer, expandedLayer) {
     //    showSelected(false);
     //}));
 
-    const upholstery = model.upholstery.hexColor;
-    let upholsteryIndex = ALLCOLORS.upholsteries.findIndex(item => item.colorHex === upholstery);
+    const upholstery = model.upholstery.path;
+    let upholsteryIndex = ALLCOLORS.upholsteries.findIndex(item => item.colorPath === upholstery);
+    console.log(model.upholstery.path)
+    console.log(upholsteryIndex)
     var upholsteryValue = document.querySelectorAll(`.upholsteryColors_colorButton`);
     model.upholstery.name = ALLCOLORS.upholsteries[upholsteryIndex].colorName;
+    model.upholstery.path = ALLCOLORS.upholsteries[upholsteryIndex].colorPath;
+    model.upholstery.pricegroup = ALLCOLORS.upholsteries[upholsteryIndex].colorPricegroup;
+    model.upholstery.structure = ALLCOLORS.upholsteries[upholsteryIndex].colorStructure;
     model.upholstery.pathThumb = ALLCOLORS.upholsteries[upholsteryIndex].colorPathThumb;
+
+    
 
     if (parser.getDevice().type != 'mobile' && parser.getDevice().type != 'tablet') {
         upholsteryValue.forEach(item => item.addEventListener('mouseover', () => {
@@ -169,11 +174,7 @@ function updateControlPanel(model, selectedLayer, expandedLayer) {
 
         upholsteryValue.forEach(item => item.addEventListener('mouseout', () => {
             document.getElementById(`upholsteryText`).style.visibility = 'hidden';
-            if (/^[a-zA-Z]+$/.test(model.upholstery.category)) {
-                document.getElementById(`colorText`).innerHTML = '<img src="' + model.upholstery.pathThumb + '" class="rounded-pill shadow" style="width: calc(1rem + 1vw);">&nbsp;&nbsp;&nbsp;&nbsp;stof ' + model.upholstery.category;
-            } else {
-                document.getElementById(`colorText`).innerHTML = '<img src="' + model.upholstery.pathThumb + '" class="rounded-pill shadow" style="width: calc(1rem + 1vw);">&nbsp;&nbsp;&nbsp;&nbsp;boucle ' + model.upholstery.category;
-            }
+            document.getElementById(`colorText`).innerHTML = '<img src="' + model.upholstery.pathThumb + '" class="rounded-pill shadow" style="width: calc(1rem + 1vw);">&nbsp;&nbsp;&nbsp;&nbsp;' + model.upholstery.type + ' ' + model.upholstery.name;
             document.getElementById(`colorText`).classList.remove('fst-italic');
             showSelected(true);
         }));
@@ -184,18 +185,14 @@ function updateControlPanel(model, selectedLayer, expandedLayer) {
         const upholsteryId = item.id.split('_');
         upholsteryIndex = upholsteryId[1];
 
-        model.upholstery.hexColor = ALLCOLORS.upholsteries[upholsteryIndex].colorHex;
+        model.upholstery.path = ALLCOLORS.upholsteries[upholsteryIndex].colorPath;
         document.getElementById(`upholsteryColorsIndex_${upholsteryIndex}`).classList.add('colorButtonActive');
 
         updateControlPanel(model, `upholstery`);
         updateFeaturedModel(model);
         showSelected(true);
     }));
-    if (/^[a-zA-Z]+$/.test(model.upholstery.category)) {
-        document.getElementById(`colorText`).innerHTML = '<img src="' + model.upholstery.pathThumb + '" class="rounded-pill shadow" style="width: calc(1rem + 1vw);">&nbsp;&nbsp;&nbsp;&nbsp;stof ' + model.upholstery.category;
-    } else {
-        document.getElementById(`colorText`).innerHTML = '<img src="' + model.upholstery.pathThumb + '" class="rounded-pill shadow" style="width: calc(1rem + 1vw);">&nbsp;&nbsp;&nbsp;&nbsp;boucle ' + model.upholstery.category;
-    }
+    document.getElementById(`colorText`).innerHTML = '<img src="' + model.upholstery.pathThumb + '" class="rounded-pill shadow" style="width: calc(1rem + 1vw);">&nbsp;&nbsp;&nbsp;&nbsp;' + model.upholstery.type + ' ' + model.upholstery.name;
     document.getElementById(`upholsteryColorsIndex_${upholsteryIndex}`).classList.remove('colorButton');
     document.getElementById(`upholsteryColorsIndex_${upholsteryIndex}`).classList.add('colorButtonActive');
 
@@ -216,10 +213,14 @@ function updateControlPanel(model, selectedLayer, expandedLayer) {
             showSelected(false);
         }));
 */
-        const upholsteryDuotone = model.upholsteryDuotone.hexColor;
-        let upholsteryDuotoneIndex = ALLCOLORS.upholsteries.findIndex(item => item.colorHex === upholsteryDuotone);
+
+        const upholsteryDuotone = model.upholsteryDuotone.path;
+        let upholsteryDuotoneIndex = ALLCOLORS.upholsteries.findIndex(item => item.colorPath === upholsteryDuotone);
         var upholsteryDuotoneValue = document.querySelectorAll(`.upholsteryDuotoneColors_colorButton`);
         model.upholsteryDuotone.name_nl = ALLCOLORS.upholsteries[upholsteryDuotoneIndex].colorName;
+        model.upholsteryDuotone.path = ALLCOLORS.upholsteries[upholsteryDuotoneIndex].colorPath;
+        model.upholsteryDuotone.pricegroup = ALLCOLORS.upholsteries[upholsteryDuotoneIndex].colorPricegroup;
+        model.upholsteryDuotone.structure = ALLCOLORS.upholsteries[upholsteryDuotoneIndex].colorStructure;
         model.upholsteryDuotone.pathThumb = ALLCOLORS.upholsteries[upholsteryDuotoneIndex].colorPathThumb;
 
         if (parser.getDevice().type != 'mobile' && parser.getDevice().type != 'tablet') {
@@ -235,11 +236,7 @@ function updateControlPanel(model, selectedLayer, expandedLayer) {
 
             upholsteryDuotoneValue.forEach(item => item.addEventListener('mouseout', () => {
                 document.getElementById(`upholsteryDuotoneText`).style.visibility = 'hidden';
-                if (/^[a-zA-Z]+$/.test(model.upholsteryDuotone.category)) {
-                    document.getElementById(`colorDuotoneText`).innerHTML = '<img src="' + model.upholsteryDuotone.pathThumb + '" class="rounded-pill shadow" style="width: calc(1rem + 1vw);">&nbsp;&nbsp;&nbsp;&nbsp;stof ' + model.upholsteryDuotone.category;
-                } else {
-                    document.getElementById(`colorDuotoneText`).innerHTML = '<img src="' + model.upholsteryDuotone.pathThumb + '" class="rounded-pill shadow" style="width: calc(1rem + 1vw);">&nbsp;&nbsp;&nbsp;&nbsp;boucle ' + model.upholsteryDuotone.category;
-                }
+                document.getElementById(`colorDuotoneText`).innerHTML = '<img src="' + model.upholsteryDuotone.pathThumb + '" class="rounded-pill shadow" style="width: calc(1rem + 1vw);">&nbsp;&nbsp;&nbsp;&nbsp;' + model.upholstery.type + ' ' + model.upholstery.name;
                 document.getElementById(`colorDuotoneText`).classList.remove('fst-italic');
                 showSelected(true);
             }));
@@ -250,18 +247,14 @@ function updateControlPanel(model, selectedLayer, expandedLayer) {
             const upholsteryDuotoneId = item.id.split('_');
             upholsteryDuotoneIndex = upholsteryDuotoneId[1];
 
-            model.upholsteryDuotone.hexColor = ALLCOLORS.upholsteries[upholsteryDuotoneIndex].colorHex;
+            model.upholsteryDuotone.path = ALLCOLORS.upholsteries[upholsteryDuotoneIndex].colorPath;
             document.getElementById(`upholsteryDuotoneColorsIndex_${upholsteryDuotoneIndex}`).classList.add('colorButtonActive');
 
             updateControlPanel(model, `upholsteryDuotone`);
             updateFeaturedModel(model);
             showSelected(true);
         }));
-        if (/^[a-zA-Z]+$/.test(model.upholsteryDuotone.category)) {
-            document.getElementById(`colorDuotoneText`).innerHTML = '<img src="' + model.upholsteryDuotone.pathThumb + '" class="rounded-pill shadow" style="width: calc(1rem + 1vw);">&nbsp;&nbsp;&nbsp;&nbsp;stof ' + model.upholsteryDuotone.category;
-        } else {
-            document.getElementById(`colorDuotoneText`).innerHTML = '<img src="' + model.upholsteryDuotone.pathThumb + '" class="rounded-pill shadow" style="width: calc(1rem + 1vw);">&nbsp;&nbsp;&nbsp;&nbsp;boucle ' + model.upholsteryDuotone.category;
-        }
+        document.getElementById(`colorDuotoneText`).innerHTML = '<img src="' + model.upholsteryDuotone.pathThumb + '" class="rounded-pill shadow" style="width: calc(1rem + 1vw);">&nbsp;&nbsp;&nbsp;&nbsp;' + model.upholstery.type + ' ' + model.upholstery.name;
         document.getElementById(`upholsteryDuotoneColorsIndex_${upholsteryDuotoneIndex}`).classList.remove('colorButton');
         document.getElementById(`upholsteryDuotoneColorsIndex_${upholsteryDuotoneIndex}`).classList.add('colorButtonActive');
     }
@@ -563,7 +556,7 @@ function initSettings(model) {
                         </div>
                     </div>
                     -->
-                    <div class="h6 fw-normal">adore (prijsgroep 4)</div>
+                    <div class="h6 fw-normal">stoffen</div>
                     <div class="col-12 m-0 p-0">
                         <div id="upholsteriesPicker" class="m-0 p-0"></div>
                     </div>

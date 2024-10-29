@@ -154,6 +154,9 @@
                                   </div>
                                   <!-- only van doesburg -->
                                   <div class="text-end">
+                                    <button type="button" class="btn btn-sm btn-outline-dark rounded-0 p-1 m-1" onclick="downloadPdf()">
+                                      <span class="material-symbols-outlined m-0 p-1">picture_as_pdf</span>
+                                    </button>
                                     <button id="downloadModel" type="button" class="btn btn-sm btn-outline-dark rounded-0 p-1 m-1">
                                       <span class="material-symbols-outlined m-0 p-1">download</span>
                                     </button>
@@ -316,9 +319,15 @@
 
               <div class="col-6 p-0 m-0 pt-3">
 
-                <button onclick="downloadPdf()" type="button" class="float-end d-flex btn btn-sm btn-success rounded-pill">
-                  <span class="material-symbols-outlined mt-1">picture_as_pdf</span>&nbsp;&nbsp;<span id="quote" class="mt-1 h6">offerte</span>
-              </button>
+                <button onclick="downloadPdf()" type="button" style="background-color: #1a5951; color: white; letter-spacing: 1.5px;" class="float-end d-flex btn btn-success rounded-pill px-4 download-button">
+                    <span class="material-symbols-outlined mt-1">shopping_cart</span>&nbsp;&nbsp;<span id="quote" class="mt-1 h6">bestellen</span>
+                </button>
+
+                <style>
+                    .download-button:hover {
+                        background-color: #81dd3f; /* Adjusted hover color */
+                    }
+                </style>
 
                 </div> 
               <div class="productInfoPriceRegion col-12 m-0 p-0 pb-3">

@@ -10,12 +10,9 @@
     "seatHeight": 44,
     "legs": "legsStraight",
     "upholstery": {
-      "hexColor": "482e32",
-      "type": "adore"
-    },
-    "upholsteryDuotone": {
-      "hexColor": "482e32",
-      "type": "adore"
+      "hexColor": "4f4934",
+      "type": "adore",
+      "path": "projects/vanwoerdenwonen-levante/Textures/vww/adore/moss-59.jpg"
     }
   },
   {
@@ -30,11 +27,8 @@
     "legs": "legsStraight",
     "upholstery": {
       "hexColor": "c1bca8",
-      "type": "dream"
-    },
-    "upholsteryDuotone": {
-      "hexColor": "c1bca8",
-      "type": "dream"
+      "type": "dream",
+      "path": "projects/vanwoerdenwonen-levante/Textures/vww/dream/nature-01.jpg"
     }
   },
   {
@@ -49,11 +43,13 @@
     "legs": "legsStraight",
     "upholstery": {
       "hexColor": "a2706a",
-      "type": "adore"
+      "type": "adore",
+      "path": "projects/vanwoerdenwonen-levante/Textures/vww/essa/slate-87.jpg"
     },
     "upholsteryDuotone": {
-      "hexColor": "a2706a",
-      "type": "adore"
+      "hexColor": "78531a",
+      "type": "adore",
+      "path": "projects/vanwoerdenwonen-levante/Textures/vww/essa/caramel-16.jpg"
     }
   }
 ]

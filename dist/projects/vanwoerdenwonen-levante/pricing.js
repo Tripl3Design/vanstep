@@ -2,9 +2,9 @@
 function pricing(model) {
     let totalPrice = 0;
 
-    const category = model.upholstery.category;
+    const pricegroup = model.upholstery.pricegroup;
 
-    let price = ALLCOMPONENTS.elements[model.type].prices[category];
+    let price = ALLCOMPONENTS.elements[model.type].prices[pricegroup];
     if (model.upholsteryDuotone != null && model.type != 'art9085110') {
         let additionalPrice = ALLCOMPONENTS.elements[model.type].prices.A18.fabric;
         totalPrice += additionalPrice;
