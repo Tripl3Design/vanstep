@@ -3,15 +3,15 @@
     {
       "bufferView": 0,
       "componentType": 5126,
-      "count": 1986,
+      "count": 2184,
       "max": [
         31.881521224975586,
         17.122041702270508,
-        6.995253562927246
+        8.3499755859375
       ],
       "min": [
         -13.933675765991211,
-        -11.298393249511719,
+        -11.298394203186035,
         -0.11386891454458237
       ],
       "type": "VEC3"
@@ -20,14 +20,14 @@
       "bufferView": 0,
       "byteOffset": 12,
       "componentType": 5126,
-      "count": 1986,
+      "count": 2184,
       "type": "VEC3"
     },
     {
       "bufferView": 0,
       "byteOffset": 24,
       "componentType": 5126,
-      "count": 1986,
+      "count": 2184,
       "type": "VEC2"
     },
     {
@@ -43,20 +43,20 @@
   "bufferViews": [
     {
       "buffer": 0,
-      "byteLength": 63552,
+      "byteLength": 69888,
       "byteStride": 32,
       "target": 34962
     },
     {
       "buffer": 0,
       "byteLength": 47616,
-      "byteOffset": 63552,
+      "byteOffset": 69888,
       "target": 34963
     }
   ],
   "buffers": [
     {
-      "byteLength": 111168,
+      "byteLength": 117504,
       "uri": "levante_footstool.bin"
     }
   ],
@@ -65,10 +65,10 @@
       "uri": "boucle_Normal.png"
     },
     {
-      "uri": "adskMatdefaultbasecolortexture.jpeg"
+      "uri": "defaultbasecolortexture.jpeg"
     },
     {
-      "uri": "adskMatdefaultmetallicroughnesstex.jpeg"
+      "uri": "defaultmetallicroughnesstex.jpeg"
     }
   ],
   "materials": [

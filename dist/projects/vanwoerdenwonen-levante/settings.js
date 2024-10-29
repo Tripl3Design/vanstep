@@ -133,6 +133,36 @@ function updateControlPanel(model, selectedLayer, expandedLayer) {
         document.getElementById('duotoneText').textContent = '';
     }
 
+        // footstool
+        let footstoolCheckbox = document.getElementById('footstool');
+        if (model.footstool) {
+            footstoolCheckbox.checked = true;
+        } else {
+            footstoolCheckbox.checked = false;
+        }
+    
+        footstoolCheckbox.addEventListener('click', () => {
+            if (footstoolCheckbox.checked) {
+                model.footstool = true;
+    
+                document.getElementById('footstoolText').textContent = 'voetenbank';
+            } else {
+                delete model.footstool;
+                document.getElementById('footstoolText').textContent = '';
+            }
+    
+            updateControlPanel(model, undefined, 'options');
+            updateFeaturedModel(model);
+            showSelected(false);
+        });
+    
+        if (footstoolCheckbox.checked) {
+            document.getElementById('footstoolText').textContent = 'footstool';
+        } else {
+            delete model.footstool;
+            document.getElementById('footstoolText').textContent = '';
+        }
+
     // upholstery
     //let upholsteryCategory = document.querySelectorAll(`input[type=radio][name="upholsteriesCategory"]`);
     //upholsteryCategory.forEach(radio => { radio.replaceWith(radio.cloneNode(true)) });
@@ -159,7 +189,7 @@ function updateControlPanel(model, selectedLayer, expandedLayer) {
     model.upholstery.structure = ALLCOLORS.upholsteries[upholsteryIndex].colorStructure;
     model.upholstery.pathThumb = ALLCOLORS.upholsteries[upholsteryIndex].colorPathThumb;
 
-    
+
 
     if (parser.getDevice().type != 'mobile' && parser.getDevice().type != 'tablet') {
         upholsteryValue.forEach(item => item.addEventListener('mouseover', () => {
@@ -217,7 +247,10 @@ function updateControlPanel(model, selectedLayer, expandedLayer) {
         const upholsteryDuotone = model.upholsteryDuotone.path;
         let upholsteryDuotoneIndex = ALLCOLORS.upholsteries.findIndex(item => item.colorPath === upholsteryDuotone);
         var upholsteryDuotoneValue = document.querySelectorAll(`.upholsteryDuotoneColors_colorButton`);
-        model.upholsteryDuotone.name_nl = ALLCOLORS.upholsteries[upholsteryDuotoneIndex].colorName;
+        if (upholsteryDuotoneIndex === -1) {
+            upholsteryDuotoneIndex = 0;
+        }
+        model.upholsteryDuotone.name = ALLCOLORS.upholsteries[upholsteryDuotoneIndex].colorName;
         model.upholsteryDuotone.path = ALLCOLORS.upholsteries[upholsteryDuotoneIndex].colorPath;
         model.upholsteryDuotone.pricegroup = ALLCOLORS.upholsteries[upholsteryDuotoneIndex].colorPricegroup;
         model.upholsteryDuotone.structure = ALLCOLORS.upholsteries[upholsteryDuotoneIndex].colorStructure;
@@ -236,7 +269,7 @@ function updateControlPanel(model, selectedLayer, expandedLayer) {
 
             upholsteryDuotoneValue.forEach(item => item.addEventListener('mouseout', () => {
                 document.getElementById(`upholsteryDuotoneText`).style.visibility = 'hidden';
-                document.getElementById(`colorDuotoneText`).innerHTML = '<img src="' + model.upholsteryDuotone.pathThumb + '" class="rounded-pill shadow" style="width: calc(1rem + 1vw);">&nbsp;&nbsp;&nbsp;&nbsp;' + model.upholstery.type + ' ' + model.upholstery.name;
+                document.getElementById(`colorDuotoneText`).innerHTML = '<img src="' + model.upholsteryDuotone.pathThumb + '" class="rounded-pill shadow" style="width: calc(1rem + 1vw);">&nbsp;&nbsp;&nbsp;&nbsp;' + model.upholsteryDuotone.type + ' ' + model.upholsteryDuotone.name;
                 document.getElementById(`colorDuotoneText`).classList.remove('fst-italic');
                 showSelected(true);
             }));
@@ -254,7 +287,7 @@ function updateControlPanel(model, selectedLayer, expandedLayer) {
             updateFeaturedModel(model);
             showSelected(true);
         }));
-        document.getElementById(`colorDuotoneText`).innerHTML = '<img src="' + model.upholsteryDuotone.pathThumb + '" class="rounded-pill shadow" style="width: calc(1rem + 1vw);">&nbsp;&nbsp;&nbsp;&nbsp;' + model.upholstery.type + ' ' + model.upholstery.name;
+        document.getElementById(`colorDuotoneText`).innerHTML = '<img src="' + model.upholsteryDuotone.pathThumb + '" class="rounded-pill shadow" style="width: calc(1rem + 1vw);">&nbsp;&nbsp;&nbsp;&nbsp;' + model.upholsteryDuotone.type + ' ' + model.upholsteryDuotone.name;
         document.getElementById(`upholsteryDuotoneColorsIndex_${upholsteryDuotoneIndex}`).classList.remove('colorButton');
         document.getElementById(`upholsteryDuotoneColorsIndex_${upholsteryDuotoneIndex}`).classList.add('colorButtonActive');
     }
@@ -456,6 +489,7 @@ function initSettings(model) {
                     </div>
                 </div> 
             </div>
+            <!--
             <div class="fst-italic mt-3 mb-2">voetenbank</div>
             <div class="d-flex justify-content-start m-0 p-0">
                 <div class="card border-0 grid gap row-gap-3 me-5">
@@ -465,13 +499,14 @@ function initSettings(model) {
                     </div>
                 </div>
             </div>
+            -->
 
         </div>`
     };
 
     accordions.options = {
         title: "opties",
-        options: ['seatHeight', 'duotone'],
+        options: ['seatHeight', 'duotone', 'footstool'],
         display: "d-block",
         code: /*html*/`
         <div class="row m-0 p-0 pb-xxl-4 pb-xl-4 pb-3">
@@ -487,6 +522,13 @@ function initSettings(model) {
                         <label class="form-check-label" for="seatHeight_47">47 cm</label>
                     </div>
                 </div>
+                <div class="card border-0 grid gap row-gap-3 me-5">
+                <div class="fst-italic">duotone:</div>
+                    <div class="h6 fw-normal form-check form-switch">
+                    <input type="checkbox" class="form-check-input" name="duotone" id="duotone">
+                   <!-- <label class="form-check-label" for="duotone"></label>-->
+                </div>
+            </div>
                 <!--
                 <div class="card border-0 grid gap row-gap-3 me-5">
                     <div class="fst-italic">poten:</div>
@@ -501,10 +543,9 @@ function initSettings(model) {
                 </div>
                 -->
                 <div class="card border-0 grid gap row-gap-3 me-5">
-                    <div class="fst-italic">duotone:</div>
+                    <div class="fst-italic">voetenbank:</div>
                         <div class="h6 fw-normal form-check form-switch">
-                        <input type="checkbox" class="form-check-input" name="duotone" id="duotone">
-                       <!-- <label class="form-check-label" for="duotone"></label>-->
+                        <input type="checkbox" class="form-check-input" name="footstool" id="footstool">
                     </div>
                 </div>
              
@@ -573,6 +614,7 @@ function initSettings(model) {
             display: "d-block",
             code: /*html*/`
                 <div class="row m-0 p-0 pb-xxl-4 pb-xl-4 pb-3">
+                <!--
                     <div>
                         <div class="h6 fw-normal">categorie</div>
                         <div class="h6 fw-normal form-check form-check-inline">
@@ -608,6 +650,7 @@ function initSettings(model) {
                             <label class="form-check-label" for="upholsteriesDuotoneCategory_9">9</label>
                         </div>
                     </div>
+                    -->
                     <div class="h6 fw-normal">kleur</div>
                     <div class="col-12 m-0 p-0">
                         <div id="upholsteriesDuotonePicker" class="m-0 p-0"></div>

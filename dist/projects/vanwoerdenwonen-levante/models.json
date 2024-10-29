@@ -41,6 +41,7 @@
     "type": "art5313",
     "seatHeight": 47,
     "legs": "legsStraight",
+    "footstool": true,
     "upholstery": {
       "hexColor": "a2706a",
       "type": "adore",
