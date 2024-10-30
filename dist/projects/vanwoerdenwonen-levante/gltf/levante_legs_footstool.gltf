@@ -3,7 +3,7 @@
     {
       "bufferView": 0,
       "componentType": 5126,
-      "count": 1116,
+      "count": 798,
       "max": [
         28.337759017944336,
         2.1031036376953125,
@@ -20,7 +20,7 @@
       "bufferView": 0,
       "byteOffset": 12,
       "componentType": 5126,
-      "count": 1116,
+      "count": 798,
       "type": "VEC3"
     },
     {
@@ -31,9 +31,9 @@
     },
     {
       "bufferView": 0,
-      "byteOffset": 35712,
+      "byteOffset": 25536,
       "componentType": 5126,
-      "count": 1452,
+      "count": 1032,
       "max": [
         28.213909149169922,
         2.074960708618164,
@@ -48,9 +48,9 @@
     },
     {
       "bufferView": 0,
-      "byteOffset": 35724,
+      "byteOffset": 25548,
       "componentType": 5126,
-      "count": 1452,
+      "count": 1032,
       "type": "VEC3"
     },
     {
@@ -67,20 +67,20 @@
   "bufferViews": [
     {
       "buffer": 0,
-      "byteLength": 82176,
+      "byteLength": 58560,
       "byteStride": 32,
       "target": 34962
     },
     {
       "buffer": 0,
       "byteLength": 43632,
-      "byteOffset": 82176,
+      "byteOffset": 58560,
       "target": 34963
     }
   ],
   "buffers": [
     {
-      "byteLength": 125808,
+      "byteLength": 102192,
       "uri": "levante_legs_footstool.bin"
     }
   ],

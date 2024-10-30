@@ -103,9 +103,6 @@
       "uri": "boucle_Normal.png"
     },
     {
-      "uri": "defaultbasecolortexture.jpeg"
-    },
-    {
       "uri": "defaultmetallicroughnesstex.jpeg"
     },
     {
@@ -123,12 +120,9 @@
         "scale": -1.0
       },
       "pbrMetallicRoughness": {
-        "baseColorTexture": {
-          "index": 1
-        },
         "metallicFactor": 0.0,
         "metallicRoughnessTexture": {
-          "index": 2
+          "index": 1
         },
         "roughnessFactor": 0.0
       }
@@ -136,7 +130,7 @@
     {
       "name": "duotone",
       "normalTexture": {
-        "index": 3,
+        "index": 2,
         "scale": -1.0
       },
       "pbrMetallicRoughness": {
@@ -148,7 +142,7 @@
         ],
         "metallicFactor": 0.0,
         "metallicRoughnessTexture": {
-          "index": 4
+          "index": 3
         },
         "roughnessFactor": 0.0
       }
@@ -252,12 +246,6 @@
       "minFilter": 9729,
       "wrapS": 10497,
       "wrapT": 10497
-    },
-    {
-      "magFilter": 9729,
-      "minFilter": 9729,
-      "wrapS": 10497,
-      "wrapT": 10497
     }
   ],
   "scenes": [
@@ -287,11 +275,6 @@
       "name": "texture_source3_sampler3",
       "sampler": 3,
       "source": 3
-    },
-    {
-      "name": "texture_source4_sampler4",
-      "sampler": 4,
-      "source": 4
     }
   ]
 }

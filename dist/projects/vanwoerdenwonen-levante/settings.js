@@ -365,7 +365,7 @@ function initSettings(model) {
                 <div class="card border-0 grid gap row-gap-3 me-5">
                     <div class="h6 fw-normal form-check">
                         <input type="radio" class="form-check-input" name="type" value="art2502" id="art2502">
-                        <label class="form-check-label for="art2502">${ALLCOMPONENTS.elements.art2502.width} x ${ALLCOMPONENTS.elements.art2502.depth} cm ${ALLCOMPONENTS.elements.art2502.name}</label>
+                        <label class="form-check-label" for="art2502">${ALLCOMPONENTS.elements.art2502.width} x ${ALLCOMPONENTS.elements.art2502.depth} cm ${ALLCOMPONENTS.elements.art2502.name}</label>
                     </div>
                 </div>
             </div>            

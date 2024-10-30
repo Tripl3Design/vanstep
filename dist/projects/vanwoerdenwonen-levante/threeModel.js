@@ -73,10 +73,12 @@ export function initThree(containerElem) {
     const spotlight = new THREE.SpotLight(0xff0000, 0.5);
     spotlight.position.set(-10, 10, 10);
     spotlight.angle = Math.PI / 6;
-    spotlight.decay = 2; // Vervaging van lichtsterkte
+    spotlight.penumbra = 0.1;
+    spotlight.distance = 100; 
+    spotlight.decay = 2; 
     spotlight.target.position.set(0, 0, 0);
-    scene.add(spotlight);
     scene.add(spotlight.target);
+    scene.add(spotlight);
 
     // OrbitControls setup
     controls = new OrbitControls(camera, renderer.domElement);
@@ -109,6 +111,8 @@ export function initThree(containerElem) {
     if (windowHeight < windowWidth) {
         document.getElementById('fullscreen').addEventListener('click', fullscreenToggle);
     }
+
+
 }
 
 export function fullscreenToggle() {
@@ -178,18 +182,29 @@ export function exportModel() {
                 blob = new Blob([json], { type: 'application/json' });
             }
 
+            const url = URL.createObjectURL(blob);  // Maak de URL voor de blob
             const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
+            link.href = url;
             link.download = 'model.glb';
-            link.click();
+            document.body.appendChild(link);  // Voeg de link toe aan de DOM
 
-            URL.revokeObjectURL(link.href);
+            link.click();  // Klik de link om de download te starten
+            
+            // Verwijder de link en revoke de URL na een korte vertraging
+            setTimeout(() => {
+                document.body.removeChild(link);  // Verwijder de link uit de DOM
+                URL.revokeObjectURL(url);  // Revoke de URL
+                console.log("Download complete and URL revoked.");
+            }, 100);  // Korte vertraging om download te laten starten
         },
-        { binary: true }
+        (error) => {
+            console.error("Error exporting GLTF: ", error);  // Foutafhandeling
+        },
+        { binary: true }  // Exporteer als GLB
     );
 }
 
-// desktop version
+// Desktop versie
 if (windowHeight < windowWidth) {
     document.getElementById('downloadModel').addEventListener('click', () => {
         exportModel();
@@ -200,10 +215,9 @@ export function viewAr() {
     const exporter = new GLTFExporter();
 
     exporter.parse(
-        scene,  // Zorg ervoor dat dit de juiste scene is
+        scene,
         function (result) {
             let blob;
-            let url;
 
             if (result instanceof ArrayBuffer) {
                 blob = new Blob([result], { type: 'model/gltf-binary' });
@@ -212,30 +226,15 @@ export function viewAr() {
                 blob = new Blob([json], { type: 'application/json' });
             }
 
-            // Maak een URL voor de blob
-            url = URL.createObjectURL(blob);
-            updateModelViewer(url);
+            const url = URL.createObjectURL(blob);
+            console.log("GLB model URL generated:", url);
 
-            // Maak het model zichtbaar en activeer AR
-            const modelViewer = document.querySelector('ar-viewer');
-            modelViewer.style.display = 'block';
+            openSceneViewer(url);
 
-            // Activeer AR na het instellen van het model
-            if (modelViewer.canActivateAR) {
-                modelViewer.activateAR().then(() => {
-                    console.log("AR mode activated.");
-                }).catch((error) => {
-                    console.error("Failed to activate AR:", error);
-                });
-            } else {
-                console.error("AR is not supported on this device.");
-            }
-
-            // Voeg een listener toe om de URL te revoken na het laden
-            modelViewer.addEventListener('load', () => {
+            window.addEventListener('unload', () => {
                 URL.revokeObjectURL(url);
+                console.log("GLB URL revoked.");
             }, { once: true });
-
         },
         (error) => {
             console.error("Error exporting GLTF: ", error);
@@ -244,21 +243,21 @@ export function viewAr() {
     );
 }
 
-function updateModelViewer(modelUrl) {
-    const modelViewer = document.querySelector('ar-viewer');
-    if (modelViewer) {  // Check of de model viewer bestaat
-        modelViewer.src = modelUrl;  // Update model-viewer met de dynamische blob URL
-    } else {
-        console.error("Model viewer element not found.");
-    }
+function openSceneViewer(glbUrl) {
+    console.log("Opening Scene Viewer with URL:", glbUrl);
+    const encodedUrl = encodeURIComponent(glbUrl);
+    const sceneViewerLink = document.createElement('a');
+    sceneViewerLink.href = `intent://arvr.google.com/scene-viewer/1.0?file=${encodedUrl}&mode=ar_only#Intent;scheme=https;package=com.google.ar.core;end;`;
+    sceneViewerLink.click();
+    console.log("Scene Viewer AR link clicked.");
 }
-/*
+
 if (windowHeight > windowWidth) {
-    document.getElementById('viewAr').addEventListener('click', () => {
+    document.getElementById('viewArButton').addEventListener('click', () => {
         viewAr();
     });
 }
-*/
+
 const levante_sofa_25Url = projectmap + 'gltf/levante_sofa_25.gltf';
 const levante_sofa_3Url = projectmap + 'gltf/levante_sofa_3.gltf';
 const levante_legs_sofaUrl = projectmap + 'gltf/levante_legs_sofa.gltf';
@@ -275,7 +274,6 @@ const levante_recamiereUrl = projectmap + 'gltf/levante_recamiere.gltf';
 const levante_footstoolUrl = projectmap + 'gltf/levante_footstool.gltf';
 const levante_legs_footstoolUrl = projectmap + 'gltf/levante_legs_footstool.gltf';
 
-
 const textureCache = {}; // Cache voor opgeslagen textures
 
 function loadTexture(path) {
@@ -291,12 +289,15 @@ function loadTexture(path) {
 function createPBRMaterial(materialType, hexColor = null, texturePath = null) {
     let material;
 
+    // Gebruik een standaard kleur als hexColor null is
+    const color = hexColor ? new THREE.Color(`#${hexColor}`) : new THREE.Color(0xffffff);
+
     if (materialType === 'boucle') {
-        const baseColor = `${projectmap}img/textures/boucle/boucle_BaseColor.jpg`;
-        const displacement = `${projectmap}img/textures/boucle/boucle_Displacement.tiff`;
-        const metallic = `${projectmap}img/textures/boucle/boucle_Metallic.jpg`;
-        const normal = `${projectmap}img/textures/boucle/boucle_Normal.png`;
-        const roughness = `${projectmap}img/textures/boucle/boucle_Roughness.jpg`;
+        const baseColor = `${projectmap}gltf/textures/boucle/boucle_BaseColor.jpg`;
+        const displacement = `${projectmap}gltf/textures/boucle/boucle_Displacement.tiff`;
+        const metallic = `${projectmap}gltf/textures/boucle/boucle_Metallic.jpg`;
+        const normal = `${projectmap}gltf/textures/boucle/boucle_Normal.png`;
+        const roughness = `${projectmap}gltf/textures/boucle/boucle_Roughness.jpg`;
 
         const scaledTexturePath = texturePath ? loadTexture(texturePath) : null;
         if (scaledTexturePath) {
@@ -310,7 +311,7 @@ function createPBRMaterial(materialType, hexColor = null, texturePath = null) {
 
         material = new THREE.MeshPhysicalMaterial({
             map: scaledTexturePath,
-            color: hexColor ? new THREE.Color(`#${hexColor}`) : null,
+            color: color,
             metalness: 0.1,
             roughness: 0.9,
             normalMap: normalTexture,
@@ -328,7 +329,7 @@ function createPBRMaterial(materialType, hexColor = null, texturePath = null) {
 
         material = new THREE.MeshPhysicalMaterial({
             map: scaledTexturePath,
-            color: hexColor ? new THREE.Color(`#${hexColor}`) : null,
+            color: color,
             metalness: 0.0,
             roughness: 0.5,
             clearcoat: 0.5,
@@ -336,7 +337,7 @@ function createPBRMaterial(materialType, hexColor = null, texturePath = null) {
         });
     } else if (materialType === 'paint') {
         material = new THREE.MeshStandardMaterial({
-            color: hexColor ? new THREE.Color(`#${hexColor}`) : new THREE.Color(0xffffff),
+            color: color,
             roughness: 0.1,
             metalness: 0.9,
         });
@@ -344,7 +345,6 @@ function createPBRMaterial(materialType, hexColor = null, texturePath = null) {
 
     return material;
 }
-
 
 function loadAndTransformModel(url, transforms = [{}], group, hexColor = null, texturePath = null, materialType, hexColor_duotone = null, texturePath_duotone = null, materialTypeDuotone = null) {
     const loader = new GLTFLoader();
@@ -354,11 +354,16 @@ function loadAndTransformModel(url, transforms = [{}], group, hexColor = null, t
 
         threeModel.traverse((child) => {
             if (child.isMesh) {
+                // Oude materialen disposen om problemen te voorkomen
+                if (child.material) {
+                    child.material.dispose();
+                }
+
                 if (!child.geometry.attributes.uv) {
                     console.warn('Model heeft geen UV-coördinaten voor dit child: ', child);
                 }
 
-                // Toepassing van duotone materiaal als het aanwezig is
+                // Toepassing van duotone materiaal indien aanwezig
                 if (texturePath_duotone && child.material.name === "duotone") {
                     child.material = createPBRMaterial(materialTypeDuotone, hexColor_duotone, texturePath_duotone);
                 } else {
@@ -380,6 +385,7 @@ function loadAndTransformModel(url, transforms = [{}], group, hexColor = null, t
         });
     });
 }
+
 
 const models = [];
 
