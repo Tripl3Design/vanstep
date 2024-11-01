@@ -1,6 +1,7 @@
 {
   "projects": {
-    "VanWoerden": "vanwoerdenwonen-tripletise"
+    "VanWoerden": "vanwoerdenwonen-tripletise",
+    "default": "vanwoerdenwonen-tripletise"
   },
   "targets": {
     "vanwoerdenwonen-tripletise": {

@@ -145,6 +145,47 @@ export function fullscreenToggle() {
     camera.updateProjectionMatrix();
 }
 
+// Hulpfunctie om een data-URL om te zetten naar een Blob
+function dataURLToBlob(dataURL) {
+    const binary = atob(dataURL.split(',')[1]); // Decodeer de base64-string
+    const array = [];
+    for (let i = 0; i < binary.length; i++) {
+        array.push(binary.charCodeAt(i));
+    }
+    return new Blob([new Uint8Array(array)], { type: 'image/png' });
+}
+
+// Capture-screenshot functie die een Blob en dataURL retourneert
+export function captureScreenshot() {
+    renderer.render(scene, camera);
+
+    const originalCanvas = renderer.domElement;
+    const originalWidth = originalCanvas.width;
+    const originalHeight = originalCanvas.height;
+
+    const size = Math.min(originalWidth, originalHeight);
+    const squareCanvas = document.createElement('canvas');
+    squareCanvas.width = size;
+    squareCanvas.height = size;
+    const context = squareCanvas.getContext('2d');
+
+    const offsetX = (originalWidth - size) / 2;
+    const offsetY = (originalHeight - size) / 2;
+
+    context.drawImage(originalCanvas, offsetX, offsetY, size, size, 0, 0, size, size);
+
+    // Zet canvas-inhoud om naar een data-URL
+    const dataURL = squareCanvas.toDataURL('image/png');
+    
+    // Zet de data-URL om naar een Blob
+    const blob = dataURLToBlob(dataURL);
+    
+    // Retourneer zowel de dataURL als de Blob
+    return { dataURL, blob };
+}
+
+
+/* oude functie met alleen dataURL
 export function captureScreenshot() {
     renderer.render(scene, camera);
 
@@ -167,6 +208,7 @@ export function captureScreenshot() {
     const dataURL = squareCanvas.toDataURL('image/png');
     return dataURL;
 }
+    */
 
 export function exportModel() {
     const exporter = new GLTFExporter();

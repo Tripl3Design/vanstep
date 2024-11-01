@@ -10,7 +10,8 @@ let mainModule = null;
 
 async function downloadPdf() {
     try {
-        let mainImage = mainModule.captureScreenshot();
+        // Verkrijg zowel de dataURL als de Blob van de screenshot
+        const { dataURL, blob } = mainModule.captureScreenshot();
 
         const docRef = await addDoc(collection(db, "clientModels"), {
             brand: brand,
@@ -21,10 +22,44 @@ async function downloadPdf() {
         });
         console.log("Document saved with ID: ", docRef.id);
 
-        const shortUrl = docRef.id;
-        createPdf(FEATUREDMODEL, mainImage, title, shortUrl);
+        // Gebruik de dataURL voor het maken van de PDF
+        createPdf(FEATUREDMODEL, dataURL, title, docRef.id);
     } catch (e) {
-        console.error("Error : ", e);
+        console.error("Error: ", e);
+    }
+}
+
+async function shareWithWhatsApp() {
+    console.log('shareWithWhatsApp');
+
+    try {
+        // Maak een screenshot en verkrijg zowel de dataURL als de Blob
+        const { dataURL, blob } = mainModule.captureScreenshot();
+
+        // Upload de Blob naar Firebase Storage
+        const storageRef = ref(storage, `screenshots/${Date.now()}_screenshot.png`);
+        await uploadBytes(storageRef, blob);
+        const imageUrl = await getDownloadURL(storageRef);
+        console.log("Screenshot uploaded and accessible at: ", imageUrl);
+
+        // Sla de configuratie op in Firestore
+        const docRef = await addDoc(collection(db, "clientModels"), {
+            brand: brand,
+            product: product,
+            from: document.referrer,
+            model: FEATUREDMODEL,
+            imageUrl: imageUrl, // voor Open Graph gebruik
+            timestamp: serverTimestamp()
+        });
+        console.log("Document saved with ID: ", docRef.id);
+
+        const configuratorUrl = `${document.referrer}?brand=${brand}&product=${product}&fsid=${docRef.id}`;
+        const message = `Bekijk mijn configurator design!\nKlik hier: ${configuratorUrl}`;
+        const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+        window.open(whatsappUrl, '_blank');
+
+    } catch (e) {
+        console.error("Error: ", e);
     }
 }
 
@@ -133,35 +168,35 @@ function updateControlPanel(model, selectedLayer, expandedLayer) {
         document.getElementById('duotoneText').textContent = '';
     }
 
-        // footstool
-        let footstoolCheckbox = document.getElementById('footstool');
-        if (model.footstool) {
-            footstoolCheckbox.checked = true;
-        } else {
-            footstoolCheckbox.checked = false;
-        }
-    
-        footstoolCheckbox.addEventListener('click', () => {
-            if (footstoolCheckbox.checked) {
-                model.footstool = true;
-    
-                document.getElementById('footstoolText').textContent = 'voetenbank';
-            } else {
-                delete model.footstool;
-                document.getElementById('footstoolText').textContent = '';
-            }
-    
-            updateControlPanel(model, undefined, 'options');
-            updateFeaturedModel(model);
-            showSelected(false);
-        });
-    
+    // footstool
+    let footstoolCheckbox = document.getElementById('footstool');
+    if (model.footstool) {
+        footstoolCheckbox.checked = true;
+    } else {
+        footstoolCheckbox.checked = false;
+    }
+
+    footstoolCheckbox.addEventListener('click', () => {
         if (footstoolCheckbox.checked) {
+            model.footstool = true;
+
             document.getElementById('footstoolText').textContent = 'voetenbank';
         } else {
             delete model.footstool;
             document.getElementById('footstoolText').textContent = '';
         }
+
+        updateControlPanel(model, undefined, 'options');
+        updateFeaturedModel(model);
+        showSelected(false);
+    });
+
+    if (footstoolCheckbox.checked) {
+        document.getElementById('footstoolText').textContent = 'voetenbank';
+    } else {
+        delete model.footstool;
+        document.getElementById('footstoolText').textContent = '';
+    }
 
     // upholstery
     //let upholsteryCategory = document.querySelectorAll(`input[type=radio][name="upholsteriesCategory"]`);
@@ -329,16 +364,27 @@ async function handleModelSelection() {
 
     let modelIndex;
     let modelId;
+    let modelFsid;
     let modelData;
+
     if (urlParams.has('id')) {
         modelId = urlParams.get('id');
         modelIndex = ALLMODELS.findIndex((item) => item.id == modelId);
         showFeaturedModel(ALLMODELS[modelIndex]);
-    }
-    else if (urlParams.has('data')) {
+    } else if (urlParams.has('data')) {
         modelData = urlParams.get('data');
         let model = JSON.parse(decodeURIComponent(modelData));
         showFeaturedModel(model);
+    } else if (urlParams.has('fsid')) {
+        modelFsid = urlParams.get('fsid');
+        const docRef = doc(db, "clientModels", modelFsid);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists) {
+            modelData = docSnap.data().model;
+            showFeaturedModel(modelData);
+        } else {
+            console.error("No document found with FSID:", modelFsid);
+        }
     } else {
         modelIndex = Math.floor(Math.random() * ALLMODELS.length);
         showFeaturedModel(ALLMODELS[modelIndex]);
