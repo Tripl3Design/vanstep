@@ -74,8 +74,8 @@ export function initThree(containerElem) {
     spotlight.position.set(-10, 10, 10);
     spotlight.angle = Math.PI / 6;
     spotlight.penumbra = 0.1;
-    spotlight.distance = 100; 
-    spotlight.decay = 2; 
+    spotlight.distance = 100;
+    spotlight.decay = 2;
     spotlight.target.position.set(0, 0, 0);
     scene.add(spotlight.target);
     scene.add(spotlight);
@@ -176,39 +176,13 @@ export function captureScreenshot() {
 
     // Zet canvas-inhoud om naar een data-URL
     const dataURL = squareCanvas.toDataURL('image/png');
-    
+
     // Zet de data-URL om naar een Blob
     const blob = dataURLToBlob(dataURL);
-    
+
     // Retourneer zowel de dataURL als de Blob
     return { dataURL, blob };
 }
-
-
-/* oude functie met alleen dataURL
-export function captureScreenshot() {
-    renderer.render(scene, camera);
-
-    const originalCanvas = renderer.domElement;
-    const originalWidth = originalCanvas.width;
-    const originalHeight = originalCanvas.height;
-
-    const size = Math.min(originalWidth, originalHeight);
-
-    const squareCanvas = document.createElement('canvas');
-    squareCanvas.width = size;
-    squareCanvas.height = size;
-    const context = squareCanvas.getContext('2d');
-
-    const offsetX = (originalWidth - size) / 2;
-    const offsetY = (originalHeight - size) / 2;
-
-    context.drawImage(originalCanvas, offsetX, offsetY, size, size, 0, 0, size, size);
-
-    const dataURL = squareCanvas.toDataURL('image/png');
-    return dataURL;
-}
-    */
 
 export function exportModel() {
     const exporter = new GLTFExporter();
@@ -227,11 +201,11 @@ export function exportModel() {
             const url = URL.createObjectURL(blob);  // Maak de URL voor de blob
             const link = document.createElement('a');
             link.href = url;
-            link.download = 'model.glb';
+            link.download = 'model.gltf';
             document.body.appendChild(link);  // Voeg de link toe aan de DOM
 
             link.click();  // Klik de link om de download te starten
-            
+
             // Verwijder de link en revoke de URL na een korte vertraging
             setTimeout(() => {
                 document.body.removeChild(link);  // Verwijder de link uit de DOM
@@ -242,7 +216,7 @@ export function exportModel() {
         (error) => {
             console.error("Error exporting GLTF: ", error);  // Foutafhandeling
         },
-        { binary: true }  // Exporteer als GLB
+        { binary: false }  // Exporteer als GLB
     );
 }
 
@@ -260,39 +234,42 @@ export function viewAr() {
         scene,
         function (result) {
             let blob;
-
-            if (result instanceof ArrayBuffer) {
-                blob = new Blob([result], { type: 'model/gltf-binary' });
-            } else {
-                const json = JSON.stringify(result);
-                blob = new Blob([json], { type: 'application/json' });
-            }
+            // Zorg ervoor dat we JSON gebruiken voor GLTF
+            const json = JSON.stringify(result);
+            blob = new Blob([json], { type: 'application/json' });
 
             const url = URL.createObjectURL(blob);
-            console.log("GLB model URL generated:", url);
+            console.log("GLTF model URL generated:", url);
 
-            openSceneViewer(url);
+            // Stuur naar Scene Viewer
+            //openSceneViewer(url);
+            openSceneViewer('https://vanwoerdenwonen-levante.web.app/projects/vanwoerdenwonen-levante/gltf/testingmodel.gltf');
 
-            window.addEventListener('unload', () => {
-                URL.revokeObjectURL(url);
-                console.log("GLB URL revoked.");
-            }, { once: true });
+            window.addEventListener(
+                'unload',
+                () => {
+                    URL.revokeObjectURL(url);
+                    console.log("GLTF URL revoked.");
+                },
+                { once: true }
+            );
         },
         (error) => {
             console.error("Error exporting GLTF: ", error);
         },
-        { binary: true }
+        { binary: false } // Zorg ervoor dat we in GLTF-formaat exporteren
     );
 }
 
-function openSceneViewer(glbUrl) {
-    console.log("Opening Scene Viewer with URL:", glbUrl);
-    const encodedUrl = encodeURIComponent(glbUrl);
+function openSceneViewer(gltfUrl) {
+    console.log("Opening Scene Viewer with URL:", gltfUrl);
+    const encodedUrl = encodeURIComponent(gltfUrl);
     const sceneViewerLink = document.createElement('a');
     sceneViewerLink.href = `intent://arvr.google.com/scene-viewer/1.0?file=${encodedUrl}&mode=ar_only#Intent;scheme=https;package=com.google.ar.core;end;`;
     sceneViewerLink.click();
     console.log("Scene Viewer AR link clicked.");
 }
+
 
 if (windowHeight > windowWidth) {
     document.getElementById('viewArButton').addEventListener('click', () => {
@@ -302,6 +279,8 @@ if (windowHeight > windowWidth) {
 
 const levante_sofa_25Url = projectmap + 'gltf/levante_sofa_25.gltf';
 const levante_sofa_3Url = projectmap + 'gltf/levante_sofa_3.gltf';
+const levante_longchairUrl = projectmap + 'gltf/levante_longchair.gltf';
+const levante_leg_longchairUrl = projectmap + 'gltf/levante_leg_longchair.gltf';
 const levante_legs_sofaUrl = projectmap + 'gltf/levante_legs_sofa.gltf';
 const levante_leg_corner_rightUrl = projectmap + 'gltf/levante_leg_corner_right.gltf';
 const levante_leg_corner_middleUrl = projectmap + 'gltf/levante_leg_corner_middle.gltf';
@@ -335,11 +314,9 @@ function createPBRMaterial(materialType, hexColor = null, texturePath = null) {
     const color = hexColor ? new THREE.Color(`#${hexColor}`) : new THREE.Color(0xffffff);
 
     if (materialType === 'boucle') {
-        const baseColor = `${projectmap}gltf/textures/boucle/boucle_BaseColor.jpg`;
-        const displacement = `${projectmap}gltf/textures/boucle/boucle_Displacement.tiff`;
-        const metallic = `${projectmap}gltf/textures/boucle/boucle_Metallic.jpg`;
-        const normal = `${projectmap}gltf/textures/boucle/boucle_Normal.png`;
-        const roughness = `${projectmap}gltf/textures/boucle/boucle_Roughness.jpg`;
+        const metallic = `${projectmap}gltf/boucle_Metallic.jpg`;
+        const normal = `${projectmap}gltf/boucle_Normal.png`;
+        const roughness = `${projectmap}gltf/boucle_Roughness.jpg`;
 
         const scaledTexturePath = texturePath ? loadTexture(texturePath) : null;
         if (scaledTexturePath) {
@@ -359,23 +336,26 @@ function createPBRMaterial(materialType, hexColor = null, texturePath = null) {
             normalMap: normalTexture,
             roughnessMap: loadTexture(roughness),
             metalnessMap: loadTexture(metallic),
-            displacementMap: loadTexture(displacement),
-            displacementScale: 0.3,
+            //displacementMap: loadTexture(displacement),
+            //displacementScale: 0.3,
         });
     } else if (materialType === 'velvet') {
         const scaledTexturePath = texturePath ? loadTexture(texturePath) : null;
         if (scaledTexturePath) {
             scaledTexturePath.wrapS = scaledTexturePath.wrapT = THREE.RepeatWrapping;
-            scaledTexturePath.repeat.set(0.9, 0.9);
+            scaledTexturePath.repeat.set(.9, .9);
         }
 
         material = new THREE.MeshPhysicalMaterial({
+            //material = new THREE.MeshStandardMaterial({
             map: scaledTexturePath,
             color: color,
             metalness: 0.0,
             roughness: 0.5,
-            clearcoat: 0.5,
-            clearcoatRoughness: 0.5,
+            clearcoat: 1,
+            clearcoatRoughness: .9,
+            //sheen: .5,
+            //sheenColor: 0xffffff
         });
     } else if (materialType === 'paint') {
         material = new THREE.MeshStandardMaterial({
@@ -384,7 +364,6 @@ function createPBRMaterial(materialType, hexColor = null, texturePath = null) {
             metalness: 0.9,
         });
     }
-
     return material;
 }
 
@@ -427,7 +406,6 @@ function loadAndTransformModel(url, transforms = [{}], group, hexColor = null, t
         });
     });
 }
-
 
 const models = [];
 
@@ -755,13 +733,19 @@ export async function loadModelData(model) {
         const group = new THREE.Group();
 
         let legTransforms;
+        if (model.type = "art846") {
+            legTransforms = [
+                { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0), scale: new THREE.Vector3(1, 1, 1) },
+            ]
+        }
+        else {
+            legTransforms = [
+                { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0), scale: new THREE.Vector3(-1, 1, 1) },
 
-        legTransforms = [
-            { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0), scale: new THREE.Vector3(1, 1, 1) },
-            { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0), scale: new THREE.Vector3(-1, 1, 1) },
-        ];
-
-        loadAndTransformModel(levante_legs_sofaUrl, legTransforms, group, '000000', null, 'paint', null, null, null);
+            ];
+        }
+        loadAndTransformModel(levante_leg_corner_leftUrl, legTransforms, group, '000000', null, 'paint', null, null, null);
+        loadAndTransformModel(levante_leg_longchairUrl, legTransforms, group, '000000', null, 'paint', null, null, null);
 
         let elementTransforms;
         if (model.type == "art846") {
@@ -774,15 +758,39 @@ export async function loadModelData(model) {
             ];
         }
         if (model.upholsteryDuotone) {
-            loadAndTransformModel(levante_recamiereUrl, elementTransforms, group, null, model.upholstery.path, model.upholstery.structure, null, model.upholsteryDuotone.path, model.upholsteryDuotone.structure);
+            loadAndTransformModel(levante_s_maleUrl, elementTransforms, group, null, model.upholstery.path, model.upholstery.structure, null, model.upholsteryDuotone.path, model.upholsteryDuotone.structure);
+            loadAndTransformModel(levante_longchairUrl, elementTransforms, group, null, model.upholstery.path, model.upholstery.structure, null, model.upholsteryDuotone.path, model.upholsteryDuotone.structure);
         } else {
-            loadAndTransformModel(levante_recamiereUrl, elementTransforms, group, null, model.upholstery.path, model.upholstery.structure, null, null, null);
+            loadAndTransformModel(levante_s_maleUrl, elementTransforms, group, null, model.upholstery.path, model.upholstery.structure, null, null, null);
+            loadAndTransformModel(levante_longchairUrl, elementTransforms, group, null, model.upholstery.path, model.upholstery.structure, null, null, null);
         }
-
         scene.add(group);
         models.push(group);
     } else if (model.type == "art598" || model.type == "art860") {
         const group = new THREE.Group();
+
+        let legTransforms;
+        if (model.type = "art598") {
+            legTransforms = [
+                { position: new THREE.Vector3(-0.25, (model.seatHeight == 47 ? 0.03 : 0), 0), scale: new THREE.Vector3(1, 1, 1) },
+            ];
+            loadAndTransformModel(levante_leg_corner_leftUrl, legTransforms, group, '000000', null, 'paint', null, null, null);
+            legTransforms = [
+                { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0), scale: new THREE.Vector3(1, 1, 1) },
+            ];
+            loadAndTransformModel(levante_leg_longchairUrl, legTransforms, group, '000000', null, 'paint', null, null, null);
+
+        }
+        else {
+            legTransforms = [
+                { position: new THREE.Vector3(-0.25, (model.seatHeight == 47 ? 0.03 : 0), 0), scale: new THREE.Vector3(-1, 1, 1) },
+            ];
+            loadAndTransformModel(levante_leg_corner_leftUrl, legTransforms, group, '000000', null, 'paint', null, null, null);
+            legTransforms = [
+                { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0), scale: new THREE.Vector3(-1, 1, 1) },
+            ];
+            loadAndTransformModel(levante_leg_longchairUrl, legTransforms, group, '000000', null, 'paint', null, null, null);
+        }
 
         let elementTransforms;
         if (model.type == "art598") {
@@ -810,11 +818,19 @@ export async function loadModelData(model) {
         let legTransforms;
         if (model.type == 'art2502' || model.type == 'art3002' || model.type == 'art846' || model.type == 'art553' || model.type == 'art598' || model.type == 'art860' || model.type == 'art6093' || model.type == 'art9091') {
             legTransforms = [
-                { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 1), rotation: new THREE.Euler(0, THREE.MathUtils.degToRad(-140), 0), scale: new THREE.Vector3(1, 1, 1) },
+                { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 1.2), rotation: new THREE.Euler(0, THREE.MathUtils.degToRad(45), 0), scale: new THREE.Vector3(1, 1, 1) },
+            ];
+        } else if (model.type == 'art5314' || model.type == 'art5316' || model.type == 'art5315' || model.type == 'art5317') {
+            legTransforms = [
+                { position: new THREE.Vector3(.6, (model.seatHeight == 47 ? 0.03 : 0), .6), rotation: new THREE.Euler(0, THREE.MathUtils.degToRad(0), 0), scale: new THREE.Vector3(-1, 1, 1) },
+            ];
+        } else if (model.type == 'art6091') {
+            legTransforms = [
+                { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 1.2), rotation: new THREE.Euler(0, THREE.MathUtils.degToRad(-45), 0), scale: new THREE.Vector3(-1, 1, 1) },
             ];
         } else {
             legTransforms = [
-                { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0), scale: new THREE.Vector3(1, 1, 1) },
+                { position: new THREE.Vector3(-0.5, (model.seatHeight == 47 ? 0.03 : 0), 0.5), scale: new THREE.Vector3(1, 1, 1) },
             ];
         }
         loadAndTransformModel(levante_legs_footstoolUrl, legTransforms, group, '000000', null, 'paint', null, null, null);
@@ -822,11 +838,19 @@ export async function loadModelData(model) {
         let elementTransforms;
         if (model.type == 'art2502' || model.type == 'art3002' || model.type == 'art846' || model.type == 'art553' || model.type == 'art598' || model.type == 'art860' || model.type == 'art6093' || model.type == 'art9091') {
             elementTransforms = [
-                { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 1), rotation: new THREE.Euler(0, THREE.MathUtils.degToRad(-140), 0), scale: new THREE.Vector3(1, 1, 1) },
+                { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 1.2), rotation: new THREE.Euler(0, THREE.MathUtils.degToRad(45), 0), scale: new THREE.Vector3(1, 1, 1) },
+            ];
+        } else if (model.type == 'art5314' || model.type == 'art5316' || model.type == 'art5315' || model.type == 'art5317') {
+            elementTransforms = [
+                { position: new THREE.Vector3(.6, (model.seatHeight == 47 ? 0.03 : 0), .6), rotation: new THREE.Euler(0, THREE.MathUtils.degToRad(0), 0), scale: new THREE.Vector3(-1, 1, 1) },
+            ];
+        } else if (model.type == 'art6091') {
+            elementTransforms = [
+                { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 1.2), rotation: new THREE.Euler(0, THREE.MathUtils.degToRad(-45), 0), scale: new THREE.Vector3(-1, 1, 1) },
             ];
         } else {
             elementTransforms = [
-                { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0), scale: new THREE.Vector3(1, 1, 1) },
+                { position: new THREE.Vector3(-0.5, (model.seatHeight == 47 ? 0.03 : 0), 0.5), scale: new THREE.Vector3(1, 1, 1) },
             ];
         }
         loadAndTransformModel(levante_footstoolUrl, elementTransforms, group, null, model.upholstery.path, model.upholstery.structure, null, null, null);
