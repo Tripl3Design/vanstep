@@ -1,0 +1,194 @@
+{
+  "accessors": [
+    {
+      "bufferView": 0,
+      "componentType": 5126,
+      "count": 968,
+      "max": [
+        98.91456604003906,
+        -35.8057861328125,
+        -17.48116683959961
+      ],
+      "min": [
+        68.57931518554688,
+        -57.644195556640625,
+        -17.608184814453125
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 0,
+      "byteOffset": 12,
+      "componentType": 5126,
+      "count": 968,
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 1,
+      "componentType": 5125,
+      "count": 4104,
+      "type": "SCALAR"
+    },
+    {
+      "bufferView": 0,
+      "byteOffset": 30976,
+      "componentType": 5126,
+      "count": 751,
+      "max": [
+        99.2308578491211,
+        -35.59813690185547,
+        -8.312199592590332
+      ],
+      "min": [
+        68.51634216308594,
+        -57.57122802734375,
+        -17.540019989013672
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 0,
+      "byteOffset": 30988,
+      "componentType": 5126,
+      "count": 751,
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 16416,
+      "componentType": 5125,
+      "count": 3168,
+      "type": "SCALAR"
+    }
+  ],
+  "asset": {
+    "version": "2.0"
+  },
+  "bufferViews": [
+    {
+      "buffer": 0,
+      "byteLength": 55008,
+      "byteStride": 32,
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 29088,
+      "byteOffset": 55008,
+      "target": 34963
+    }
+  ],
+  "buffers": [
+    {
+      "byteLength": 84096,
+      "uri": "levante_leg_longchair.bin"
+    }
+  ],
+  "materials": [
+    {
+      "name": "black",
+      "pbrMetallicRoughness": {
+        "baseColorFactor": [
+          0.09220340102910995,
+          3.030750050925235e-08,
+          0.1016950011253357,
+          1.0
+        ],
+        "metallicFactor": 0.0,
+        "roughnessFactor": 0.0
+      }
+    },
+    {
+      "name": "leg",
+      "pbrMetallicRoughness": {
+        "baseColorFactor": [
+          0.0,
+          0.9599999785423279,
+          1.0,
+          1.0
+        ],
+        "metallicFactor": 0.0,
+        "roughnessFactor": 0.0
+      }
+    }
+  ],
+  "meshes": [
+    {
+      "name": "leg_longchair",
+      "primitives": [
+        {
+          "attributes": {
+            "NORMAL": 1,
+            "POSITION": 0
+          },
+          "indices": 2,
+          "material": 0,
+          "mode": 4
+        },
+        {
+          "attributes": {
+            "NORMAL": 4,
+            "POSITION": 3
+          },
+          "indices": 5,
+          "material": 1,
+          "mode": 4
+        }
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "matrix": [
+        0.0254,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0254,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0254,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "mesh": 0,
+      "name": "leg_longchair"
+    },
+    {
+      "children": [
+        0
+      ],
+      "matrix": [
+        -0.46073997020721436,
+        0.0,
+        0.8875352740287781,
+        0.0,
+        0.8875352740287781,
+        0.0,
+        0.46073997020721436,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        3.265372003173828,
+        0.4172193492889404,
+        -1.093545654296875,
+        1.0
+      ]
+    }
+  ],
+  "scenes": [
+    {
+      "nodes": [
+        1
+      ]
+    }
+  ]
+}

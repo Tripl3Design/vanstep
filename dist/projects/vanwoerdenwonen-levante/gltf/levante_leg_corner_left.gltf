@@ -3,36 +3,6 @@
     {
       "bufferView": 0,
       "componentType": 5126,
-      "count": 759,
-      "max": [
-        8.977641105651855,
-        11.723200798034668,
-        -8.312201499938965
-      ],
-      "min": [
-        -1.7575006484985352,
-        -15.267383575439453,
-        -17.538898468017578
-      ],
-      "type": "VEC3"
-    },
-    {
-      "bufferView": 0,
-      "byteOffset": 12,
-      "componentType": 5126,
-      "count": 759,
-      "type": "VEC3"
-    },
-    {
-      "bufferView": 1,
-      "componentType": 5125,
-      "count": 3168,
-      "type": "SCALAR"
-    },
-    {
-      "bufferView": 0,
-      "byteOffset": 24288,
-      "componentType": 5126,
       "count": 970,
       "max": [
         6.946599960327148,
@@ -48,16 +18,46 @@
     },
     {
       "bufferView": 0,
-      "byteOffset": 24300,
+      "byteOffset": 12,
       "componentType": 5126,
       "count": 970,
       "type": "VEC3"
     },
     {
       "bufferView": 1,
-      "byteOffset": 12672,
       "componentType": 5125,
       "count": 4104,
+      "type": "SCALAR"
+    },
+    {
+      "bufferView": 0,
+      "byteOffset": 31040,
+      "componentType": 5126,
+      "count": 759,
+      "max": [
+        8.977641105651855,
+        11.723200798034668,
+        -8.312201499938965
+      ],
+      "min": [
+        -1.7575006484985352,
+        -15.267383575439453,
+        -17.538898468017578
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 0,
+      "byteOffset": 31052,
+      "componentType": 5126,
+      "count": 759,
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 16416,
+      "componentType": 5125,
+      "count": 3168,
       "type": "SCALAR"
     }
   ],
@@ -86,12 +86,12 @@
   ],
   "materials": [
     {
-      "name": "Material__394",
+      "name": "black",
       "pbrMetallicRoughness": {
         "baseColorFactor": [
-          0.5,
-          0.5,
-          0.5,
+          0.09220340102910995,
+          3.030750050925235e-08,
+          0.1016950011253357,
           1.0
         ],
         "metallicFactor": 0.0,
@@ -99,12 +99,12 @@
       }
     },
     {
-      "name": "Material__396",
+      "name": "leg",
       "pbrMetallicRoughness": {
         "baseColorFactor": [
-          0.5,
-          0.5,
-          0.5,
+          0.0,
+          0.9599999785423279,
+          1.0,
           1.0
         ],
         "metallicFactor": 0.0,

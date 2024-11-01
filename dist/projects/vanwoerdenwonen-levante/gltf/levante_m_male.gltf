@@ -5,14 +5,14 @@
       "componentType": 5126,
       "count": 23312,
       "max": [
-        68.49159240722656,
-        18.365737915039063,
-        18.30949592590332
+        33.82594299316406,
+        54.95936965942383,
+        34.73545455932617
       ],
       "min": [
-        -10.945712089538574,
-        -26.799243927001953,
-        -8.866267204284668
+        -45.61136245727539,
+        9.794387817382813,
+        7.559691429138184
       ],
       "type": "VEC3"
     },
@@ -42,14 +42,14 @@
       "componentType": 5126,
       "count": 846,
       "max": [
-        67.97172546386719,
-        15.92918872833252,
-        18.002981185913086
+        33.30607604980469,
+        52.52281951904297,
+        34.42893981933594
       ],
       "min": [
-        -8.774261474609375,
-        -15.8986177444458,
-        -1.7030900716781616
+        -43.439910888671875,
+        20.69501495361328,
+        14.722868919372559
       ],
       "type": "VEC3"
     },
@@ -98,6 +98,10 @@
       "uri": "levante_m_male.bin"
     }
   ],
+  "extensionsUsed": [
+    "KHR_materials_clearcoat",
+    "KHR_materials_sheen"
+  ],
   "images": [
     {
       "uri": "boucle_Normal.png"
@@ -106,45 +110,109 @@
       "uri": "defaultmetallicroughnesstex.jpeg"
     },
     {
+      "uri": "boucle_Roughness.jpg"
+    },
+    {
+      "uri": "boucle_Normal.png"
+    },
+    {
+      "uri": "defaultsheenroughnesstex.png"
+    },
+    {
       "uri": "boucle_Normal.png"
     },
     {
       "uri": "duotonemetallicroughnesstex.jpeg"
+    },
+    {
+      "uri": "boucle_Roughness.jpg"
+    },
+    {
+      "uri": "boucle_Normal.png"
+    },
+    {
+      "uri": "duotonesheenroughnesstex.png"
     }
   ],
   "materials": [
     {
+      "extensions": {
+        "KHR_materials_clearcoat": {
+          "clearcoatFactor": 1.0,
+          "clearcoatNormalTexture": {
+            "index": 3,
+            "texCoord": 0
+          },
+          "clearcoatRoughnessFactor": 1.0,
+          "clearcoatRoughnessTexture": {
+            "index": 2,
+            "texCoord": 0
+          }
+        },
+        "KHR_materials_sheen": {
+          "sheenColorFactor": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "sheenRoughnessFactor": 1.0,
+          "sheenRoughnessTexture": {
+            "index": 4,
+            "texCoord": 0
+          }
+        }
+      },
       "name": "default",
       "normalTexture": {
-        "index": 0,
-        "scale": -1.0
+        "index": 0
       },
       "pbrMetallicRoughness": {
-        "metallicFactor": 0.0,
         "metallicRoughnessTexture": {
           "index": 1
-        },
-        "roughnessFactor": 0.0
+        }
       }
     },
     {
+      "extensions": {
+        "KHR_materials_clearcoat": {
+          "clearcoatFactor": 1.0,
+          "clearcoatNormalTexture": {
+            "index": 8,
+            "texCoord": 0
+          },
+          "clearcoatRoughnessFactor": 1.0,
+          "clearcoatRoughnessTexture": {
+            "index": 7,
+            "texCoord": 0
+          }
+        },
+        "KHR_materials_sheen": {
+          "sheenColorFactor": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "sheenRoughnessFactor": 1.0,
+          "sheenRoughnessTexture": {
+            "index": 9,
+            "texCoord": 0
+          }
+        }
+      },
       "name": "duotone",
       "normalTexture": {
-        "index": 2,
-        "scale": -1.0
+        "index": 5
       },
       "pbrMetallicRoughness": {
         "baseColorFactor": [
-          0.0759321004152298,
+          1.0,
           0.0,
-          0.9491530060768127,
+          0.0,
           1.0
         ],
-        "metallicFactor": 0.0,
         "metallicRoughnessTexture": {
-          "index": 3
-        },
-        "roughnessFactor": 0.0
+          "index": 6
+        }
       }
     }
   ],
@@ -215,14 +283,50 @@
         1.0,
         0.0,
         0.0,
-        -0.8805074951171875,
-        0.4172193492889404,
-        -0.929478246307373,
+        0.0,
+        0.0,
+        0.0,
         1.0
       ]
     }
   ],
   "samplers": [
+    {
+      "magFilter": 9729,
+      "minFilter": 9729,
+      "wrapS": 10497,
+      "wrapT": 10497
+    },
+    {
+      "magFilter": 9729,
+      "minFilter": 9729,
+      "wrapS": 10497,
+      "wrapT": 10497
+    },
+    {
+      "magFilter": 9729,
+      "minFilter": 9729,
+      "wrapS": 10497,
+      "wrapT": 10497
+    },
+    {
+      "magFilter": 9729,
+      "minFilter": 9729,
+      "wrapS": 10497,
+      "wrapT": 10497
+    },
+    {
+      "magFilter": 9729,
+      "minFilter": 9729,
+      "wrapS": 10497,
+      "wrapT": 10497
+    },
+    {
+      "magFilter": 9729,
+      "minFilter": 9729,
+      "wrapS": 10497,
+      "wrapT": 10497
+    },
     {
       "magFilter": 9729,
       "minFilter": 9729,
@@ -275,6 +379,36 @@
       "name": "texture_source3_sampler3",
       "sampler": 3,
       "source": 3
+    },
+    {
+      "name": "texture_source4_sampler4",
+      "sampler": 4,
+      "source": 4
+    },
+    {
+      "name": "texture_source5_sampler5",
+      "sampler": 5,
+      "source": 5
+    },
+    {
+      "name": "texture_source6_sampler6",
+      "sampler": 6,
+      "source": 6
+    },
+    {
+      "name": "texture_source7_sampler7",
+      "sampler": 7,
+      "source": 7
+    },
+    {
+      "name": "texture_source8_sampler8",
+      "sampler": 8,
+      "source": 8
+    },
+    {
+      "name": "texture_source9_sampler9",
+      "sampler": 9,
+      "source": 9
     }
   ]
 }

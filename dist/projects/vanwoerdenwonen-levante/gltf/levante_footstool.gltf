@@ -60,27 +60,63 @@
       "uri": "levante_footstool.bin"
     }
   ],
+  "extensionsUsed": [
+    "KHR_materials_clearcoat",
+    "KHR_materials_sheen"
+  ],
   "images": [
     {
       "uri": "boucle_Normal.png"
     },
     {
       "uri": "defaultmetallicroughnesstex.jpeg"
+    },
+    {
+      "uri": "boucle_Roughness.jpg"
+    },
+    {
+      "uri": "boucle_Normal.png"
+    },
+    {
+      "uri": "defaultsheenroughnesstex.png"
     }
   ],
   "materials": [
     {
+      "extensions": {
+        "KHR_materials_clearcoat": {
+          "clearcoatFactor": 1.0,
+          "clearcoatNormalTexture": {
+            "index": 3,
+            "texCoord": 0
+          },
+          "clearcoatRoughnessFactor": 1.0,
+          "clearcoatRoughnessTexture": {
+            "index": 2,
+            "texCoord": 0
+          }
+        },
+        "KHR_materials_sheen": {
+          "sheenColorFactor": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "sheenRoughnessFactor": 1.0,
+          "sheenRoughnessTexture": {
+            "index": 4,
+            "texCoord": 0
+          }
+        }
+      },
       "name": "default",
       "normalTexture": {
-        "index": 0,
-        "scale": -1.0
+        "index": 0
       },
       "pbrMetallicRoughness": {
-        "metallicFactor": 0.0,
         "metallicRoughnessTexture": {
           "index": 1
-        },
-        "roughnessFactor": 0.0
+        }
       }
     }
   ],
@@ -129,26 +165,44 @@
         0
       ],
       "matrix": [
+        0.6653909683227539,
+        2.613463720990694e-07,
+        0.7464950680732727,
+        0.0,
+        0.7464950680732727,
+        -2.329521464616846e-07,
+        -0.6653909683227539,
+        0.0,
+        1.2242615775315274e-13,
         1.0,
+        -3.5009801990781863e-07,
         0.0,
-        3.4969110629390343e-07,
-        0.0,
-        3.4969110629390343e-07,
-        0.0,
-        -1.0,
-        0.0,
-        0.0,
-        1.0,
-        0.0,
-        0.0,
-        0.0,
+        -0.14872759819030762,
         0.1950000039100647,
-        8.543025381868574e-09,
+        -6.826911271673453e-08,
         1.0
       ]
     }
   ],
   "samplers": [
+    {
+      "magFilter": 9729,
+      "minFilter": 9729,
+      "wrapS": 10497,
+      "wrapT": 10497
+    },
+    {
+      "magFilter": 9729,
+      "minFilter": 9729,
+      "wrapS": 10497,
+      "wrapT": 10497
+    },
+    {
+      "magFilter": 9729,
+      "minFilter": 9729,
+      "wrapS": 10497,
+      "wrapT": 10497
+    },
     {
       "magFilter": 9729,
       "minFilter": 9729,
@@ -179,6 +233,21 @@
       "name": "texture_source1_sampler1",
       "sampler": 1,
       "source": 1
+    },
+    {
+      "name": "texture_source2_sampler2",
+      "sampler": 2,
+      "source": 2
+    },
+    {
+      "name": "texture_source3_sampler3",
+      "sampler": 3,
+      "source": 3
+    },
+    {
+      "name": "texture_source4_sampler4",
+      "sampler": 4,
+      "source": 4
     }
   ]
 }
