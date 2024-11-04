@@ -4,8 +4,14 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 
-let scene, camera, renderer, rgbeLoader, ambientLight, controls;
-let groundGeometry, groundMaterial, ground
+
+let scene, camera, renderer, controls, rgbeLoader;
+let groundGeometry, groundMaterial, ground;
+
+let hitTestSource = null;
+let referenceSpace = null;
+let reticle, arGroup;
+let loadedModel = null;
 
 let projectmap = 'projects/vanwoerdenwonen-levante/';
 
@@ -17,7 +23,7 @@ export function initThree(containerElem) {
     // Camera setup
     camera = new THREE.PerspectiveCamera(60, containerElem.offsetWidth / containerElem.offsetHeight, 1, 100);
     camera.position.set(-4, 1.7, 4);
-    camera.fov = 40;
+    //camera.fov = 40;
     camera.updateProjectionMatrix();
 
     // Renderer setup
@@ -27,8 +33,8 @@ export function initThree(containerElem) {
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1;
+    renderer.xr.enabled = true; // Enable XR
 
-    // Append renderer to the container element
     containerElem.appendChild(renderer.domElement);
 
     const resizeObserver = new ResizeObserver(() => {
@@ -36,16 +42,7 @@ export function initThree(containerElem) {
     });
 
     resizeObserver.observe(modelviewer);
-    /*
-        // Add window resize event listener
-        window.addEventListener('resize', () => {
-            onWindowResize(containerElem, camera, renderer);
-        });
-    
-        if(modelviewer.style.height changed){
-            onWindowResize(containerElem, camera, renderer);
-        }
-    */
+
     // Environment setup, lights, etc...
     rgbeLoader = new RGBELoader();
     rgbeLoader.load(projectmap + 'img/hdri/yoga_room_2k.hdr', function (texture) {
@@ -104,58 +101,109 @@ export function initThree(containerElem) {
     ground.receiveShadow = true;
     scene.add(ground);
 
-    // Start the render loop
-    render();
-
     // desktop version
     if (windowHeight < windowWidth) {
         document.getElementById('fullscreen').addEventListener('click', fullscreenToggle);
     }
+    // mobile version
+    if (windowHeight > windowWidth) {
+        document.getElementById('viewArButton').addEventListener('click', startAR);
+    }
 
-
+    // Start the render loop
+    render();
 }
 
-export function fullscreenToggle() {
-    var controlpanelCol = document.getElementById('controlpanelCol');
-    var modelviewerCol = document.getElementById('modelviewerCol');
+async function startAR() {
+    try {
+        const session = await navigator.xr.requestSession('immersive-ar', {
+            requiredFeatures: ['local-floor', 'hit-test'],
+        });
+        renderer.xr.setSession(session);
 
-    if (controlpanelCol.classList.contains('d-none')) {
-        // Show control panel and shrink model viewer to 50%
-        modelviewerCol.classList.add('col-md-6');
-        modelviewerCol.style.width = '50%';
-        controlpanelCol.classList.remove('d-none');
-        document.getElementById('fullscreen').innerHTML = '<span class="material-symbols-outlined m-0 p-1">open_in_full</span>';
+        // Referentie voor hit-tests
+        referenceSpace = await session.requestReferenceSpace('local');
+        hitTestSource = await session.requestHitTestSource({ space: referenceSpace });
+
+        // Voeg reticle toe
+        setupReticle();
+
+        // Maak een groep voor het AR-model
+        arGroup = new THREE.Group();
+        scene.add(arGroup);
+
+        // Voeg het model toe aan de AR-groep
+        if (loadedModel) {
+            arGroup.add(loadedModel.clone());
+        }
+
+        // Verplaats AR-groep naar positie van de reticle bij select event
+        session.addEventListener('select', () => {
+            if (reticle.visible) {
+                arGroup.position.copy(reticle.position);
+                console.log("Model geplaatst op positie:", arGroup.position);
+            }
+        });
+
+        // Opruimen als de AR-sessie eindigt
+        session.addEventListener('end', () => {
+            scene.remove(arGroup);
+            scene.remove(reticle);
+            arGroup = null;
+            reticle = null;
+            hitTestSource = null;
+        });
+    } catch (error) {
+        console.error('Failed to start AR session:', error);
+    }
+}
+
+function setupReticle() {
+    reticle = new THREE.Mesh(
+        new THREE.RingGeometry(0.15, 0.2, 32).rotateX(-Math.PI / 2),
+        new THREE.MeshBasicMaterial({ color: 0xffffff })
+    );
+    reticle.visible = false;
+    scene.add(reticle);
+}
+
+export function performHitTesting(frame) {
+    if (!referenceSpace || !hitTestSource || !reticle) return;
+
+    const hitTestResults = frame.getHitTestResults(hitTestSource);
+
+    if (hitTestResults.length > 0) {
+        const hit = hitTestResults[0];
+        const pose = hit.getPose(referenceSpace);
+
+        if (pose) {
+            reticle.visible = true;
+            reticle.position.set(
+                pose.transform.position.x,
+                pose.transform.position.y,
+                pose.transform.position.z
+            );
+        }
     } else {
-        // Hide control panel and make model viewer full width
-        modelviewerCol.classList.remove('col-md-6');
-        modelviewerCol.style.width = '100%';
-        controlpanelCol.classList.add('d-none');
-        document.getElementById('fullscreen').innerHTML = '<span class="material-symbols-outlined m-0 p-1">close_fullscreen</span>';
+        reticle.visible = false;
     }
-
-    // Get new dimensions of the modelviewerCol
-    const newWidth = modelviewerCol.offsetWidth;
-    const newHeight = modelviewerCol.offsetHeight;
-
-    // Resize the Three.js renderer
-    renderer.setSize(newWidth, newHeight);
-
-    // Update the camera aspect ratio and projection matrix
-    camera.aspect = newWidth / newHeight;
-    camera.updateProjectionMatrix();
 }
 
-// Hulpfunctie om een data-URL om te zetten naar een Blob
 function dataURLToBlob(dataURL) {
-    const binary = atob(dataURL.split(',')[1]); // Decodeer de base64-string
-    const array = [];
-    for (let i = 0; i < binary.length; i++) {
-        array.push(binary.charCodeAt(i));
+    // Split the data URL into its parts
+    const byteString = atob(dataURL.split(',')[1]);
+    const mimeString = dataURL.split(',')[0].split(':')[1].split(';')[0];
+
+    // Create a Uint8Array to hold the binary data
+    const arrayBuffer = new Uint8Array(byteString.length);
+    for (let i = 0; i < byteString.length; i++) {
+        arrayBuffer[i] = byteString.charCodeAt(i);
     }
-    return new Blob([new Uint8Array(array)], { type: 'image/png' });
+
+    // Create a Blob from the binary data
+    return new Blob([arrayBuffer], { type: mimeString });
 }
 
-// Capture-screenshot functie die een Blob en dataURL retourneert
 export function captureScreenshot() {
     renderer.render(scene, camera);
 
@@ -174,13 +222,13 @@ export function captureScreenshot() {
 
     context.drawImage(originalCanvas, offsetX, offsetY, size, size, 0, 0, size, size);
 
-    // Zet canvas-inhoud om naar een data-URL
+    // Convert the canvas content to a data URL
     const dataURL = squareCanvas.toDataURL('image/png');
 
-    // Zet de data-URL om naar een Blob
+    // Convert the data URL to a Blob
     const blob = dataURLToBlob(dataURL);
 
-    // Retourneer zowel de dataURL als de Blob
+    // Return both the dataURL and the Blob
     return { dataURL, blob };
 }
 
@@ -198,82 +246,22 @@ export function exportModel() {
                 blob = new Blob([json], { type: 'application/json' });
             }
 
-            const url = URL.createObjectURL(blob);  // Maak de URL voor de blob
             const link = document.createElement('a');
-            link.href = url;
-            link.download = 'model.gltf';
-            document.body.appendChild(link);  // Voeg de link toe aan de DOM
+            link.href = URL.createObjectURL(blob);
+            link.download = 'model.glb';
+            link.click();
 
-            link.click();  // Klik de link om de download te starten
-
-            // Verwijder de link en revoke de URL na een korte vertraging
-            setTimeout(() => {
-                document.body.removeChild(link);  // Verwijder de link uit de DOM
-                URL.revokeObjectURL(url);  // Revoke de URL
-                console.log("Download complete and URL revoked.");
-            }, 100);  // Korte vertraging om download te laten starten
+            URL.revokeObjectURL(link.href);
         },
-        (error) => {
-            console.error("Error exporting GLTF: ", error);  // Foutafhandeling
-        },
-        { binary: false }  // Exporteer als GLB
+        { binary: true }
     );
 }
+
 
 // Desktop versie
 if (windowHeight < windowWidth) {
     document.getElementById('downloadModel').addEventListener('click', () => {
         exportModel();
-    });
-}
-
-export function viewAr() {
-    const exporter = new GLTFExporter();
-
-    exporter.parse(
-        scene,
-        function (result) {
-            let blob;
-            // Zorg ervoor dat we JSON gebruiken voor GLTF
-            const json = JSON.stringify(result);
-            blob = new Blob([json], { type: 'application/json' });
-
-            const url = URL.createObjectURL(blob);
-            console.log("GLTF model URL generated:", url);
-
-            // Stuur naar Scene Viewer
-            //openSceneViewer(url);
-            openSceneViewer('https://vanwoerdenwonen-levante.web.app/projects/vanwoerdenwonen-levante/gltf/testingmodel.gltf');
-
-            window.addEventListener(
-                'unload',
-                () => {
-                    URL.revokeObjectURL(url);
-                    console.log("GLTF URL revoked.");
-                },
-                { once: true }
-            );
-        },
-        (error) => {
-            console.error("Error exporting GLTF: ", error);
-        },
-        { binary: false } // Zorg ervoor dat we in GLTF-formaat exporteren
-    );
-}
-
-function openSceneViewer(gltfUrl) {
-    console.log("Opening Scene Viewer with URL:", gltfUrl);
-    const encodedUrl = encodeURIComponent(gltfUrl);
-    const sceneViewerLink = document.createElement('a');
-    sceneViewerLink.href = `intent://arvr.google.com/scene-viewer/1.0?file=${encodedUrl}&mode=ar_only#Intent;scheme=https;package=com.google.ar.core;end;`;
-    sceneViewerLink.click();
-    console.log("Scene Viewer AR link clicked.");
-}
-
-
-if (windowHeight > windowWidth) {
-    document.getElementById('viewArButton').addEventListener('click', () => {
-        viewAr();
     });
 }
 
@@ -373,9 +361,13 @@ function loadAndTransformModel(url, transforms = [{}], group, hexColor = null, t
     loader.load(url, function (gltf) {
         const threeModel = gltf.scene;
 
+        // Center the model
+        const box = new THREE.Box3().setFromObject(threeModel);
+        const center = box.getCenter(new THREE.Vector3());
+        threeModel.position.sub(center); // Center the model at (0, 0, 0)
+
         threeModel.traverse((child) => {
             if (child.isMesh) {
-                // Oude materialen disposen om problemen te voorkomen
                 if (child.material) {
                     child.material.dispose();
                 }
@@ -384,11 +376,9 @@ function loadAndTransformModel(url, transforms = [{}], group, hexColor = null, t
                     console.warn('Model heeft geen UV-coördinaten voor dit child: ', child);
                 }
 
-                // Toepassing van duotone materiaal indien aanwezig
                 if (texturePath_duotone && child.material.name === "duotone") {
                     child.material = createPBRMaterial(materialTypeDuotone, hexColor_duotone, texturePath_duotone);
                 } else {
-                    // Basis materiaal toepassen
                     child.material = createPBRMaterial(materialType, hexColor, texturePath);
                 }
 
@@ -404,6 +394,8 @@ function loadAndTransformModel(url, transforms = [{}], group, hexColor = null, t
             mesh.rotation.copy(transform.rotation || new THREE.Euler(0, 0, 0));
             group.add(mesh);
         });
+
+        loadedModel = threeModel; 
     });
 }
 
@@ -862,9 +854,14 @@ export async function loadModelData(model) {
 }
 
 function render() {
-    requestAnimationFrame(render);
-    controls.update();
-    renderer.render(scene, camera);
+    renderer.setAnimationLoop((timestamp, frame) => {
+        if (frame) {
+            performHitTesting(frame);
+        }
+
+        controls.update();
+        renderer.render(scene, camera);
+    });
 }
 
 function onWindowResize(container, camera, renderer) {
@@ -878,3 +875,40 @@ function onWindowResize(container, camera, renderer) {
     // Optioneel: Schaal de rendering voor high-DPI schermen
     renderer.setPixelRatio(window.devicePixelRatio || 1);
 }
+
+export function fullscreenToggle() {
+    var controlpanelCol = document.getElementById('controlpanelCol');
+    var modelviewerCol = document.getElementById('modelviewerCol');
+
+    if (controlpanelCol.classList.contains('d-none')) {
+        // Show control panel and shrink model viewer to 50%
+        modelviewerCol.classList.add('col-md-6');
+        modelviewerCol.style.width = '50%';
+        controlpanelCol.classList.remove('d-none');
+        document.getElementById('fullscreen').innerHTML = '<span class="material-symbols-outlined m-0 p-1">open_in_full</span>';
+    } else {
+        // Hide control panel and make model viewer full width
+        modelviewerCol.classList.remove('col-md-6');
+        modelviewerCol.style.width = '100%';
+        controlpanelCol.classList.add('d-none');
+        document.getElementById('fullscreen').innerHTML = '<span class="material-symbols-outlined m-0 p-1">close_fullscreen</span>';
+    }
+
+    // Get new dimensions of the modelviewerCol
+    const newWidth = modelviewerCol.offsetWidth;
+    const newHeight = modelviewerCol.offsetHeight;
+
+    // Resize the Three.js renderer
+    renderer.setSize(newWidth, newHeight);
+
+    // Update the camera aspect ratio and projection matrix
+    camera.aspect = newWidth / newHeight;
+    camera.updateProjectionMatrix();
+}
+
+
+
+
+
+
+

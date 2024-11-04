@@ -26,7 +26,7 @@ function pricing(model) {
         if (parser.getDevice().type != 'mobile') {
             priceElement.innerHTML = '<div id="totalPrice" class="h5 fw-bold">€ ' + totalPrice.toFixed(0) + ',-</div>';
         } else {
-            priceElement.innerHTML = '<div id="totalPrice" class="mt-3"><span class="h4 fw-bold text-decoration-none">€ ' + totalPrice.toFixed(0) + ',-</div>';
+            priceElement.innerHTML = '<div id="totalPrice"><span class="material-symbols-outlined align-middle">shopping_cart </span>&nbsp;&nbsp;&nbsp;€ ' + totalPrice.toFixed(0) + ',-</div>';
         }
     }
 }

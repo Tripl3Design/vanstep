@@ -262,10 +262,23 @@
         document.write( /*html*/`
           <div id="mobileOffcanvas" style="height: 80px;" class="offcanvas show offcanvas-bottom shadow-l rounded-top-5 rounded-bottom-0  m-0 p-0" data-bs-backdrop="false" tabindex="-1" aria-labelledby="mobileOffcanvasLabel">
               <div id="collapseOffcanvas" style="color: #000; height: 80px; width: 100%; position: relative; z-index: 10;" class="bg-white rounded-top-5 rounded-bottom-0 border-0 text-center border-bottom border-1 border-dark m-0 p-0">
-                <svg width="200" height="8" viewBox="0 0 202 10" xmlns="http://www.w3.org/2000/svg" style="cursor: pointer; margin-top: 15px;">
+           <svg width="200" height="8" viewBox="0 0 202 10" xmlns="http://www.w3.org/2000/svg" style="cursor: pointer; margin-top: 15px;">
                     <line x1="2" y1="5" x2="200" y2="5" stroke="black" stroke-width="8" stroke-linecap="round"/>
                 </svg>
-                <div class="productInfoPrice text-center text-black ps-3"></div>
+               
+                       <div  class="position-absolute start-50 translate-middle mt-3 pt-3">
+                                    <button type="button" style="width: 140px; background-color: #1a5951; color: white;" class="btn btn-success rounded-pill p-1 m-1">
+                                      <span class="productInfoPrice fw-bold">#</span></span>
+                                    </button>
+                                  </div>
+                           
+         
+         
+         
+         
+              
+                <!--<div class="productInfoPrice text-center text-black ps-3"></div>-->
+           
               </div>
               <div id="offcanvasContent" style="height: calc(100% - 80px); width: 100%; overflow: auto;" class="overflow-x-hidden">
           `);
