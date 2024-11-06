@@ -11,7 +11,7 @@ let groundGeometry, groundMaterial, ground;
 let hitTestSource = null;
 let referenceSpace = null;
 let reticle, arGroup;
-let loadedModel = null;
+let loadedModel;
 
 let projectmap = 'projects/vanwoerdenwonen-levante/';
 
@@ -113,6 +113,57 @@ export function initThree(containerElem) {
     render();
 }
 
+function setupReticle() {
+    reticle = new THREE.Mesh(
+        new THREE.RingGeometry(0.15, 0.2, 32).rotateX(-Math.PI / 2),
+        new THREE.MeshBasicMaterial({ color: 0xffffff, opacity: 0.8, transparent: true })
+    );
+    reticle.visible = false;  // Start with the reticle hidden
+    scene.add(reticle);
+    remoteLog("Reticle setup completed");
+}
+
+export function performHitTesting(frame) {
+    if (!referenceSpace || !hitTestSource || !reticle) {
+        remoteLog("Hit testing skipped: Missing referenceSpace, hitTestSource, or reticle.");
+        return;
+    }
+
+    const hitTestResults = frame.getHitTestResults(hitTestSource);
+
+    // Log the number of hit test results
+    remoteLog("Hit test results count: " + hitTestResults.length);
+
+    if (hitTestResults.length > 0) {
+        const hit = hitTestResults[0];
+        const pose = hit.getPose(referenceSpace);
+
+        if (pose) {
+            reticle.visible = true;  // Only show the reticle once we have a valid pose
+            reticle.position.set(
+                pose.transform.position.x,
+                pose.transform.position.y,
+                pose.transform.position.z
+            );
+            remoteLog("Reticle position updated to: " + JSON.stringify(reticle.position));
+
+            // If the user selects the reticle, place the model there
+            session.addEventListener('select', () => {
+                if (reticle.visible) {
+                    arGroup.position.copy(reticle.position);
+                    remoteLog("Model placed at: " + JSON.stringify(arGroup.position));
+                }
+            });
+        }
+    } else {
+        reticle.visible = false;  // Hide the reticle if no valid hit test results
+        remoteLog("No hit test results: Reticle hidden");
+    }
+
+    // Log the raw hit test results for debugging
+    remoteLog("Raw hit test results: " + JSON.stringify(hitTestResults));
+}
+
 async function startAR() {
     try {
         const session = await navigator.xr.requestSession('immersive-ar', {
@@ -125,130 +176,42 @@ async function startAR() {
 
         setupReticle();
 
-        arGroup = new THREE.Group();
-        scene.add(arGroup);
-
         if (loadedModel) {
-            arGroup.add(loadedModel.clone());
+            loadedModel.visible = false;
         }
+
         session.addEventListener('select', () => {
             if (reticle.visible) {
                 arGroup.position.copy(reticle.position);
-                console.log("Model geplaatst op positie:", arGroup.position);
+                arGroup.add(loadedModel);
+                loadedModel.visible = true;
+                remoteLog("Model placed at position:", arGroup.position);
             }
         });
 
         session.addEventListener('end', () => {
-            scene.remove(arGroup);
             scene.remove(reticle);
-            arGroup = null;
-            reticle = null;
             hitTestSource = null;
+            reticle = null;
+            if (loadedModel) {
+                loadedModel.visible = true;
+            }
         });
+
+        session.requestAnimationFrame(onXRFrame);
     } catch (error) {
         console.error('Failed to start AR session:', error);
     }
 }
 
-function setupReticle() {
-    reticle = new THREE.Mesh(
-        new THREE.RingGeometry(0.15, 0.2, 32).rotateX(-Math.PI / 2),
-        new THREE.MeshBasicMaterial({ color: 0xffffff })
-    );
-    reticle.visible = false;
-    scene.add(reticle);
-}
-
-export function performHitTesting(frame) {
-    if (!referenceSpace || !hitTestSource || !reticle) return;
-
-    const hitTestResults = frame.getHitTestResults(hitTestSource);
-
-    if (hitTestResults.length > 0) {
-        const hit = hitTestResults[0];
-        const pose = hit.getPose(referenceSpace);
-
-        if (pose) {
-            reticle.visible = true;
-            reticle.position.set(
-                pose.transform.position.x,
-                pose.transform.position.y,
-                pose.transform.position.z
-            );
-        }
-    } else {
-        reticle.visible = false;
+function onXRFrame(time, frame) {
+    const session = renderer.xr.getSession();
+    if (session) {
+        performHitTesting(frame);
+        renderer.render(scene, camera);
+        session.requestAnimationFrame(onXRFrame);
     }
 }
-
-function dataURLToBlob(dataURL) {
-    // Split the data URL into its parts
-    const byteString = atob(dataURL.split(',')[1]);
-    const mimeString = dataURL.split(',')[0].split(':')[1].split(';')[0];
-
-    // Create a Uint8Array to hold the binary data
-    const arrayBuffer = new Uint8Array(byteString.length);
-    for (let i = 0; i < byteString.length; i++) {
-        arrayBuffer[i] = byteString.charCodeAt(i);
-    }
-
-    // Create a Blob from the binary data
-    return new Blob([arrayBuffer], { type: mimeString });
-}
-
-export function captureScreenshot() {
-    renderer.render(scene, camera);
-
-    const originalCanvas = renderer.domElement;
-    const originalWidth = originalCanvas.width;
-    const originalHeight = originalCanvas.height;
-
-    const size = Math.min(originalWidth, originalHeight);
-    const squareCanvas = document.createElement('canvas');
-    squareCanvas.width = size;
-    squareCanvas.height = size;
-    const context = squareCanvas.getContext('2d');
-
-    const offsetX = (originalWidth - size) / 2;
-    const offsetY = (originalHeight - size) / 2;
-
-    context.drawImage(originalCanvas, offsetX, offsetY, size, size, 0, 0, size, size);
-
-    // Convert the canvas content to a data URL
-    const dataURL = squareCanvas.toDataURL('image/png');
-
-    // Convert the data URL to a Blob
-    const blob = dataURLToBlob(dataURL);
-
-    // Return both the dataURL and the Blob
-    return { dataURL, blob };
-}
-
-export function exportModel() {
-    const exporter = new GLTFExporter();
-
-    exporter.parse(
-        scene,
-        function (result) {
-            let blob;
-            if (result instanceof ArrayBuffer) {
-                blob = new Blob([result], { type: 'model/gltf-binary' });
-            } else {
-                const json = JSON.stringify(result);
-                blob = new Blob([json], { type: 'application/json' });
-            }
-
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = 'model.glb';
-            link.click();
-
-            URL.revokeObjectURL(link.href);
-        },
-        { binary: true }
-    );
-}
-
 
 // Desktop versie
 if (windowHeight < windowWidth) {
@@ -349,25 +312,27 @@ function createPBRMaterial(materialType, hexColor = null, texturePath = null) {
 
 function loadAndTransformModel(url, transforms = [{}], group, hexColor = null, texturePath = null, materialType, hexColor_duotone = null, texturePath_duotone = null, materialTypeDuotone = null) {
     const loader = new GLTFLoader();
-
+    
     loader.load(url, function (gltf) {
-        const threeModel = gltf.scene;
+        let loadedModel = gltf.scene;
 
         // Center the model
-        const box = new THREE.Box3().setFromObject(threeModel);
+        const box = new THREE.Box3().setFromObject(loadedModel);
         const center = box.getCenter(new THREE.Vector3());
-        threeModel.position.sub(center); // Center the model at (0, 0, 0)
+        loadedModel.position.sub(center); // Center the model at (0, 0, 0)
 
-        threeModel.traverse((child) => {
+        // Apply materials and transformations
+        loadedModel.traverse((child) => {
             if (child.isMesh) {
                 if (child.material) {
                     child.material.dispose();
                 }
 
                 if (!child.geometry.attributes.uv) {
-                    console.warn('Model heeft geen UV-coördinaten voor dit child: ', child);
+                    console.warn('Model has no UV coordinates for this child: ', child);
                 }
 
+                // When the texture is ready, apply the actual material
                 if (texturePath_duotone && child.material.name === "duotone") {
                     child.material = createPBRMaterial(materialTypeDuotone, hexColor_duotone, texturePath_duotone);
                 } else {
@@ -379,15 +344,17 @@ function loadAndTransformModel(url, transforms = [{}], group, hexColor = null, t
             }
         });
 
+        // Apply transformations and add to group
         transforms.forEach(transform => {
-            const mesh = threeModel.clone();
+            const mesh = loadedModel.clone();
             mesh.position.copy(transform.position || new THREE.Vector3());
             mesh.scale.copy(transform.scale || new THREE.Vector3(1, 1, 1));
             mesh.rotation.copy(transform.rotation || new THREE.Euler(0, 0, 0));
             group.add(mesh);
         });
 
-        loadedModel = threeModel; 
+        // Ensure the model is visible after loading the geometry and applying placeholder material
+        loadedModel.visible = true;  // Make sure the model is visible before texture loading completes
     });
 }
 
@@ -847,14 +814,11 @@ export async function loadModelData(model) {
 
 function render() {
     renderer.setAnimationLoop((timestamp, frame) => {
-        if (frame) {
-            performHitTesting(frame);
-        }
-
         controls.update();
         renderer.render(scene, camera);
     });
 }
+
 
 function onWindowResize(container, camera, renderer) {
     const width = container.clientWidth;
@@ -898,9 +862,89 @@ export function fullscreenToggle() {
     camera.updateProjectionMatrix();
 }
 
+function dataURLToBlob(dataURL) {
+    // Split the data URL into its parts
+    const byteString = atob(dataURL.split(',')[1]);
+    const mimeString = dataURL.split(',')[0].split(':')[1].split(';')[0];
 
+    // Create a Uint8Array to hold the binary data
+    const arrayBuffer = new Uint8Array(byteString.length);
+    for (let i = 0; i < byteString.length; i++) {
+        arrayBuffer[i] = byteString.charCodeAt(i);
+    }
 
+    // Create a Blob from the binary data
+    return new Blob([arrayBuffer], { type: mimeString });
+}
 
+export function captureScreenshot() {
+    renderer.render(scene, camera);
 
+    const originalCanvas = renderer.domElement;
+    const originalWidth = originalCanvas.width;
+    const originalHeight = originalCanvas.height;
+
+    const size = Math.min(originalWidth, originalHeight);
+    const squareCanvas = document.createElement('canvas');
+    squareCanvas.width = size;
+    squareCanvas.height = size;
+    const context = squareCanvas.getContext('2d');
+
+    const offsetX = (originalWidth - size) / 2;
+    const offsetY = (originalHeight - size) / 2;
+
+    context.drawImage(originalCanvas, offsetX, offsetY, size, size, 0, 0, size, size);
+
+    // Convert the canvas content to a data URL
+    const dataURL = squareCanvas.toDataURL('image/png');
+
+    // Convert the data URL to a Blob
+    const blob = dataURLToBlob(dataURL);
+
+    // Return both the dataURL and the Blob
+    return { dataURL, blob };
+}
+
+export function exportModel() {
+    const exporter = new GLTFExporter();
+
+    exporter.parse(
+        scene,
+        function (result) {
+            let blob;
+            if (result instanceof ArrayBuffer) {
+                blob = new Blob([result], { type: 'model/gltf-binary' });
+            } else {
+                const json = JSON.stringify(result);
+                blob = new Blob([json], { type: 'application/json' });
+            }
+
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'model.glb';
+            link.click();
+
+            URL.revokeObjectURL(link.href);
+        },
+        { binary: true }
+    );
+}
+
+// log to Firestore if console.log does not work
+async function remoteLog(message) {
+    /*
+    try {
+        // Reference to "logs" collection in Firestore
+        const docRef = await addDoc(collection(db, "logs"), {
+            message: message,
+            timestamp: new Date().toISOString()
+        });
+        console.log("Log sent with ID:", docRef.id);
+    } catch (e) {
+     */
+        console.error("Error adding log:", e);
+
+    //}
+}
 
 

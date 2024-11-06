@@ -60,55 +60,16 @@
       "uri": "levante_footstool.bin"
     }
   ],
-  "extensionsUsed": [
-    "KHR_materials_clearcoat",
-    "KHR_materials_sheen"
-  ],
   "images": [
     {
       "uri": "boucle_Normal.png"
     },
     {
       "uri": "defaultmetallicroughnesstex.jpeg"
-    },
-    {
-      "uri": "boucle_Roughness.jpg"
-    },
-    {
-      "uri": "boucle_Normal.png"
-    },
-    {
-      "uri": "defaultsheenroughnesstex.png"
     }
   ],
   "materials": [
     {
-      "extensions": {
-        "KHR_materials_clearcoat": {
-          "clearcoatFactor": 1.0,
-          "clearcoatNormalTexture": {
-            "index": 3,
-            "texCoord": 0
-          },
-          "clearcoatRoughnessFactor": 1.0,
-          "clearcoatRoughnessTexture": {
-            "index": 2,
-            "texCoord": 0
-          }
-        },
-        "KHR_materials_sheen": {
-          "sheenColorFactor": [
-            1.0,
-            1.0,
-            1.0
-          ],
-          "sheenRoughnessFactor": 1.0,
-          "sheenRoughnessTexture": {
-            "index": 4,
-            "texCoord": 0
-          }
-        }
-      },
       "name": "default",
       "normalTexture": {
         "index": 0
@@ -196,24 +157,6 @@
       "minFilter": 9729,
       "wrapS": 10497,
       "wrapT": 10497
-    },
-    {
-      "magFilter": 9729,
-      "minFilter": 9729,
-      "wrapS": 10497,
-      "wrapT": 10497
-    },
-    {
-      "magFilter": 9729,
-      "minFilter": 9729,
-      "wrapS": 10497,
-      "wrapT": 10497
-    },
-    {
-      "magFilter": 9729,
-      "minFilter": 9729,
-      "wrapS": 10497,
-      "wrapT": 10497
     }
   ],
   "scenes": [
@@ -233,21 +176,6 @@
       "name": "texture_source1_sampler1",
       "sampler": 1,
       "source": 1
-    },
-    {
-      "name": "texture_source2_sampler2",
-      "sampler": 2,
-      "source": 2
-    },
-    {
-      "name": "texture_source3_sampler3",
-      "sampler": 3,
-      "source": 3
-    },
-    {
-      "name": "texture_source4_sampler4",
-      "sampler": 4,
-      "source": 4
     }
   ]
 }

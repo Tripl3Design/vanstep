@@ -98,10 +98,6 @@
       "uri": "levante_s_female.bin"
     }
   ],
-  "extensionsUsed": [
-    "KHR_materials_clearcoat",
-    "KHR_materials_sheen"
-  ],
   "images": [
     {
       "uri": "boucle_Normal.png"
@@ -110,58 +106,14 @@
       "uri": "defaultmetallicroughnesstex.jpeg"
     },
     {
-      "uri": "boucle_Roughness.jpg"
-    },
-    {
-      "uri": "boucle_Normal.png"
-    },
-    {
-      "uri": "defaultsheenroughnesstex.png"
-    },
-    {
       "uri": "boucle_Normal.png"
     },
     {
       "uri": "duotonemetallicroughnesstex.jpeg"
-    },
-    {
-      "uri": "boucle_Roughness.jpg"
-    },
-    {
-      "uri": "boucle_Normal.png"
-    },
-    {
-      "uri": "duotonesheenroughnesstex.png"
     }
   ],
   "materials": [
     {
-      "extensions": {
-        "KHR_materials_clearcoat": {
-          "clearcoatFactor": 1.0,
-          "clearcoatNormalTexture": {
-            "index": 3,
-            "texCoord": 0
-          },
-          "clearcoatRoughnessFactor": 1.0,
-          "clearcoatRoughnessTexture": {
-            "index": 2,
-            "texCoord": 0
-          }
-        },
-        "KHR_materials_sheen": {
-          "sheenColorFactor": [
-            1.0,
-            1.0,
-            1.0
-          ],
-          "sheenRoughnessFactor": 1.0,
-          "sheenRoughnessTexture": {
-            "index": 4,
-            "texCoord": 0
-          }
-        }
-      },
       "name": "default",
       "normalTexture": {
         "index": 0
@@ -173,35 +125,9 @@
       }
     },
     {
-      "extensions": {
-        "KHR_materials_clearcoat": {
-          "clearcoatFactor": 1.0,
-          "clearcoatNormalTexture": {
-            "index": 8,
-            "texCoord": 0
-          },
-          "clearcoatRoughnessFactor": 1.0,
-          "clearcoatRoughnessTexture": {
-            "index": 7,
-            "texCoord": 0
-          }
-        },
-        "KHR_materials_sheen": {
-          "sheenColorFactor": [
-            1.0,
-            1.0,
-            1.0
-          ],
-          "sheenRoughnessFactor": 1.0,
-          "sheenRoughnessTexture": {
-            "index": 9,
-            "texCoord": 0
-          }
-        }
-      },
       "name": "duotone",
       "normalTexture": {
-        "index": 5
+        "index": 2
       },
       "pbrMetallicRoughness": {
         "baseColorFactor": [
@@ -211,7 +137,7 @@
           1.0
         ],
         "metallicRoughnessTexture": {
-          "index": 6
+          "index": 3
         }
       }
     }
@@ -314,42 +240,6 @@
       "minFilter": 9729,
       "wrapS": 10497,
       "wrapT": 10497
-    },
-    {
-      "magFilter": 9729,
-      "minFilter": 9729,
-      "wrapS": 10497,
-      "wrapT": 10497
-    },
-    {
-      "magFilter": 9729,
-      "minFilter": 9729,
-      "wrapS": 10497,
-      "wrapT": 10497
-    },
-    {
-      "magFilter": 9729,
-      "minFilter": 9729,
-      "wrapS": 10497,
-      "wrapT": 10497
-    },
-    {
-      "magFilter": 9729,
-      "minFilter": 9729,
-      "wrapS": 10497,
-      "wrapT": 10497
-    },
-    {
-      "magFilter": 9729,
-      "minFilter": 9729,
-      "wrapS": 10497,
-      "wrapT": 10497
-    },
-    {
-      "magFilter": 9729,
-      "minFilter": 9729,
-      "wrapS": 10497,
-      "wrapT": 10497
     }
   ],
   "scenes": [
@@ -379,36 +269,6 @@
       "name": "texture_source3_sampler3",
       "sampler": 3,
       "source": 3
-    },
-    {
-      "name": "texture_source4_sampler4",
-      "sampler": 4,
-      "source": 4
-    },
-    {
-      "name": "texture_source5_sampler5",
-      "sampler": 5,
-      "source": 5
-    },
-    {
-      "name": "texture_source6_sampler6",
-      "sampler": 6,
-      "source": 6
-    },
-    {
-      "name": "texture_source7_sampler7",
-      "sampler": 7,
-      "source": 7
-    },
-    {
-      "name": "texture_source8_sampler8",
-      "sampler": 8,
-      "source": 8
-    },
-    {
-      "name": "texture_source9_sampler9",
-      "sampler": 9,
-      "source": 9
     }
   ]
 }

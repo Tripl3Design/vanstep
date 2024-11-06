@@ -4,6 +4,8 @@ const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
 
+const mollie = require('@mollie/api-client');
+
 admin.initializeApp();
 const db = admin.firestore();
 
@@ -62,7 +64,7 @@ console.log(configuratorUrl);
 // Mollie API-gegevens
 const MOLLIE_CLIENT_ID = 'app_R9oCYGHTeYkhaSKS5MmerBxZ';
 const MOLLIE_CLIENT_SECRET = 'aqRTUJGpNgkdPHhvpMJAw9FktH43DzSurQS2Tnjy';
-const REDIRECT_URI = 'https://vanwoerdenwonen.nl'; // URL naar waar je wilt redirecten na autorisatie
+const REDIRECT_URI = 'https://vanwoerdenwonen-tripletise.firebaseapp.com/__/auth/handler'; // URL naar waar je wilt redirecten na autorisatie
 
 // Route om Mollie autorisatie te starten
 app.get("/auth/mollie", (req, res) => {

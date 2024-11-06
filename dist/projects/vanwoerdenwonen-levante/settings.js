@@ -16,7 +16,7 @@ async function startPayment() {
     const accessToken = 'DUMMY_ACCESS_TOKEN';
 
     try {
-        const response = await fetch('https://vanwoerdenwonen-tripletise/payments', {
+        const response = await fetch('https://vanwoerdenwonen-levante.web.app/payments', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -39,8 +39,6 @@ async function startPayment() {
         alert('Er is een fout opgetreden bij het verwerken van uw betaling. Probeer het later opnieuw.');
     }
 }
-
-
 
 async function downloadPdf() {
     try {
