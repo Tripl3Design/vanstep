@@ -21,7 +21,7 @@ export function initThree(containerElem) {
     scene.background = new THREE.Color(0xd3d3d3);
 
     // Camera setup
-    camera = new THREE.PerspectiveCamera(60, containerElem.offsetWidth / containerElem.offsetHeight, 1, 100);
+    camera = new THREE.PerspectiveCamera(60, containerElem.offsetWidth / containerElem.offsetHeight, 0.1, 100);
     camera.position.set(-4, 1.7, 4);
     //camera.fov = 40;
     camera.updateProjectionMatrix();
@@ -33,7 +33,7 @@ export function initThree(containerElem) {
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1;
-    renderer.xr.enabled = true; // Enable XR
+    renderer.xr.enabled = true;
 
     containerElem.appendChild(renderer.domElement);
 
@@ -43,7 +43,6 @@ export function initThree(containerElem) {
 
     resizeObserver.observe(modelviewer);
 
-    // Environment setup, lights, etc...
     rgbeLoader = new RGBELoader();
     rgbeLoader.load(projectmap + 'img/hdri/yoga_room_2k.hdr', function (texture) {
         texture.mapping = THREE.EquirectangularReflectionMapping;
@@ -121,23 +120,17 @@ async function startAR() {
         });
         renderer.xr.setSession(session);
 
-        // Referentie voor hit-tests
         referenceSpace = await session.requestReferenceSpace('local');
         hitTestSource = await session.requestHitTestSource({ space: referenceSpace });
 
-        // Voeg reticle toe
         setupReticle();
 
-        // Maak een groep voor het AR-model
         arGroup = new THREE.Group();
         scene.add(arGroup);
 
-        // Voeg het model toe aan de AR-groep
         if (loadedModel) {
             arGroup.add(loadedModel.clone());
         }
-
-        // Verplaats AR-groep naar positie van de reticle bij select event
         session.addEventListener('select', () => {
             if (reticle.visible) {
                 arGroup.position.copy(reticle.position);
@@ -145,7 +138,6 @@ async function startAR() {
             }
         });
 
-        // Opruimen als de AR-sessie eindigt
         session.addEventListener('end', () => {
             scene.remove(arGroup);
             scene.remove(reticle);

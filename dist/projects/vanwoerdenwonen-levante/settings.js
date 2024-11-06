@@ -8,6 +8,40 @@ const urlParams = new URLSearchParams(window.location.search);
 
 let mainModule = null;
 
+async function startPayment() {
+    const amount = '10.00'; // Vervang dit door het bedrag dat je wilt vragen
+    const description = 'Productomschrijving hier'; // Vervang dit door een productomschrijving
+
+    // Tijdelijk dummy token gebruiken voor testdoeleinden
+    const accessToken = 'DUMMY_ACCESS_TOKEN';
+
+    try {
+        const response = await fetch('https://vanwoerdenwonen-tripletise/payments', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                amount: amount,
+                description: description,
+                accessToken: accessToken, // Gebruik het dummy token hier
+            }),
+        });
+
+        if (!response.ok) {
+            throw new Error('Betaling kon niet worden aangemaakt');
+        }
+
+        const paymentData = await response.json();
+        window.location.href = paymentData.links.checkout; // Redirect naar de Mollie checkout pagina
+    } catch (error) {
+        console.error('Fout bij het maken van de betaling:', error);
+        alert('Er is een fout opgetreden bij het verwerken van uw betaling. Probeer het later opnieuw.');
+    }
+}
+
+
+
 async function downloadPdf() {
     try {
         // Verkrijg zowel de dataURL als de Blob van de screenshot
