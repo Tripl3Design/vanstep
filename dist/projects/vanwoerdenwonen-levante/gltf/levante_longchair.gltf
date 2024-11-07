@@ -116,41 +116,35 @@
     {
       "name": "default",
       "normalTexture": {
-        "index": 0,
-        "scale": -1.0
+        "index": 0
       },
       "pbrMetallicRoughness": {
-        "metallicFactor": 0.0,
         "metallicRoughnessTexture": {
           "index": 1
-        },
-        "roughnessFactor": 0.0
+        }
       }
     },
     {
       "name": "duotone",
       "normalTexture": {
-        "index": 2,
-        "scale": -1.0
+        "index": 2
       },
       "pbrMetallicRoughness": {
         "baseColorFactor": [
-          0.0759321004152298,
+          1.0,
           0.0,
-          0.9491530060768127,
+          0.0,
           1.0
         ],
-        "metallicFactor": 0.0,
         "metallicRoughnessTexture": {
           "index": 3
-        },
-        "roughnessFactor": 0.0
+        }
       }
     }
   ],
   "meshes": [
     {
-      "name": "Object039",
+      "name": "longchair",
       "primitives": [
         {
           "attributes": {
@@ -196,7 +190,7 @@
         1.0
       ],
       "mesh": 0,
-      "name": "Object039"
+      "name": "longchair"
     },
     {
       "children": [
