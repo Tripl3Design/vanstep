@@ -17,8 +17,27 @@ function pricing(model) {
     totalPrice += price;
     console.log(totalPrice);
 
-    document.getElementById('buyButton').addEventListener('click', () => {
-        connectMollie(totalPrice, model.name);
+    //document.getElementById('buyButton').addEventListener('click', () => {
+     //   connectMollie(totalPrice, model.name);
+    //});
+
+    document.getElementById('add-to-cart-button').addEventListener('click', () => {
+        const product = {
+            name: model.name,
+            price: totalPrice
+        };
+
+        // Stuur bericht naar de parent page om de sidebar te tonen
+        parent.postMessage({ action: 'showSidebar' }, '*');
+
+        // Stuur bericht om het product toe te voegen aan de winkelwagen
+        parent.postMessage({
+            action: 'addToCart',
+            product: product
+        }, '*');
+
+        // Stuur bericht naar de parent page om de checkout-knop zichtbaar te maken
+        parent.postMessage({ action: 'showCheckoutButton' }, '*');
     });
 
     const priceElement = document.querySelector('.productInfoPrice');

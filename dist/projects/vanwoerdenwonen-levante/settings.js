@@ -8,6 +8,8 @@ const urlParams = new URLSearchParams(window.location.search);
 
 let mainModule = null;
 
+
+
 function connectMollie(amount, description) {
         // Stuur een POST request naar de Cloud Function
     fetch("https://us-central1-vanwoerdenwonen-tripletise.cloudfunctions.net/mollieAuthRedirect", {
