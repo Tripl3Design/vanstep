@@ -17,6 +17,10 @@ function pricing(model) {
     totalPrice += price;
     console.log(totalPrice);
 
+    document.getElementById('buyButton').addEventListener('click', () => {
+        connectMollie(totalPrice, model.name);
+    });
+
     const priceElement = document.querySelector('.productInfoPrice');
 
     if (priceElement) {

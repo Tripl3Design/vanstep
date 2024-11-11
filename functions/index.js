@@ -1,135 +1,125 @@
 const functions = require('firebase-functions');
-const admin = require('firebase-admin');
-const express = require('express');
-const cors = require('cors');
-const axios = require('axios');
-
-const mollie = require('@mollie/api-client');
-
-admin.initializeApp();
-const db = admin.firestore();
-
-const app = express();
-app.use(cors({ origin: true }));
-app.use(express.json()); 
+const { createMollieClient } = require('@mollie/api-client');
+const cors = require('cors');  // Importeer de CORS module
+const corsHandler = cors({ origin: true });  // Hiermee staan we verzoeken van alle domeinen toe
 
 
-// Route voor Open Graph pagina
-app.get('/:id', async (req, res) => {
-    const docRef = db.collection('clientModels').doc(req.params.id);
-    const docSnap = await docRef.get();
+// Access the Mollie API key
+const mollieApiKey = "test_QrMUtevQVUnnxFUyWkmxWEpJNrxDNn";
 
-    if (docSnap.exists) {
-        const data = docSnap.data();
+// Initialize Mollie client
+const mollieClient = createMollieClient({ apiKey: mollieApiKey });
 
-        // Controleer of de gebruiker vanuit WhatsApp komt
-        const currentUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
-        const isFromWhatsApp = currentUrl.includes('cloudfunctions');
-
-        if (isFromWhatsApp) {
-            // Als de gebruiker van WhatsApp komt, bouw de configurator-URL op
-            const fsid = req.params.id; // Gebruik de id van de parameter als fsid
-            const configuratorUrl = `${data.from}?brand=${data.brand}&product=${data.product}&fsid=${fsid}`;
-console.log(configuratorUrl);
- 
-            return res.redirect(configuratorUrl);
-        }
-        res.send(`
-            <html>
-                <head prefix="og: https://ogp.me/ns#">
-                    <meta property="og:title" content="${data.product} Configurator">
-                    <meta property="og:description" content="Bekijk mijn configurator design!">
-                    <meta property="og:image" content="${data.imageUrl}">
-                    <meta property="og:url" content="${req.protocol}://${req.get('host')}/${req.params.id}">
-                    <meta property="og:type" content="website">
-                </head>
-                <body>
-                    <h1>${data.product} Configurator</h1>
-                    <img src="${data.imageUrl}" alt="Configurator Screenshot">
-                </body>
-            </html>
-        `);
-    } else {
-        res.status(404).send('Document niet gevonden');
-    }
+/*
+exports.mollieAuthRedirect = functions.https.onRequest((req, res) => {
+  console.log("mollieAuthRedirect function triggered.");
+  
+  // Stel de vereiste parameters in
+  const clientId = 'app_R9oCYGHTeYkhaSKS5MmerBxZ';
+  const redirectUri = 'https://vanwoerdenwonen-levante.web.app';
+  const responseType = 'code';
+  const scope = 'payments.read customers.read';
+  const state = 'your-state-param';
+  
+  // Bouw de Mollie OAuth URL handmatig
+  const redirectUrl = `https://www.mollie.com/oauth2/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=${responseType}&scope=${encodeURIComponent(scope)}&state=${state}`;
+  
+  console.log("Redirect URL: ", redirectUrl);
+  
+  try {
+    res.redirect(redirectUrl);
+  } catch (error) {
+    console.error("Error creating redirect URL:", error);
+    res.status(500).send("Failed to create redirect URL");
+  }
 });
+*/
 
 
 
+exports.mollieAuthRedirect = functions.https.onRequest((req, res) => {
+  corsHandler(req, res, async () => {
+    console.log("mollieAuthRedirect function triggered.");
 
+    // Haal het bedrag uit de request body
+    const { amount, description } = req.body;
 
-
-
-
-// Mollie API-gegevens
-const MOLLIE_CLIENT_ID = 'app_R9oCYGHTeYkhaSKS5MmerBxZ';
-const MOLLIE_CLIENT_SECRET = 'aqRTUJGpNgkdPHhvpMJAw9FktH43DzSurQS2Tnjy';
-const REDIRECT_URI = 'https://vanwoerdenwonen-tripletise.firebaseapp.com/__/auth/handler'; // URL naar waar je wilt redirecten na autorisatie
-
-// Route om Mollie autorisatie te starten
-app.get("/auth/mollie", (req, res) => {
-    const scope = "payments"; // Voeg de juiste scopes toe
-    const url = `https://www.mollie.com/oauth/authorize?client_id=${MOLLIE_CLIENT_ID}&redirect_uri=${REDIRECT_URI}&scope=${scope}`;
-    res.redirect(url);
-});
-
-// Route om het access token op te halen
-app.get("/auth/mollie/callback", async (req, res) => {
-    const authCode = req.query.code;
-
-    if (authCode) {
-        try {
-            const tokenResponse = await axios.post('https://api.mollie.com/oauth/token', null, {
-                params: {
-                    grant_type: 'authorization_code',
-                    code: authCode,
-                    client_id: MOLLIE_CLIENT_ID,
-                    client_secret: MOLLIE_CLIENT_SECRET,
-                    redirect_uri: REDIRECT_URI,
-                },
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-            });
-
-            const accessToken = tokenResponse.data.access_token;
-            // Bewaar het access token in de database, of gebruik het verder
-            res.send(`Access token: ${accessToken}`);
-        } catch (error) {
-            console.error('Error fetching access token:', error.response.data);
-            res.status(500).send('Error fetching access token');
-        }
-    } else {
-        res.status(400).send('Authorization code is missing');
-    }
-});
-
-// Betaling maken
-app.post("/payments", async (req, res) => {
-    const { amount, description, accessToken } = req.body;
+    // Zorg ervoor dat het bedrag een geldige string is met twee decimalen
+    const formattedAmount = parseFloat(amount).toFixed(2); // Bijv. 10.00 of 15.99
 
     try {
-        const paymentResponse = await axios.post('https://api.mollie.com/v2/payments', {
-            amount: {
-                currency: 'EUR',
-                value: amount,
-            },
-            description: description,
-            redirectUrl: 'https://vanwoerdenwonen.nl',
-            webhookUrl: 'JOUW_WEBHOOK_URL',
-        }, {
-            headers: {
-                Authorization: `Bearer ${accessToken}`,
-                'Content-Type': 'application/json',
-            },
-        });
+      const payment = await mollieClient.payments.create({
+        amount: {
+          currency: 'EUR',
+          value: formattedAmount, // Het bedrag als string met twee decimalen
+        },
+        description: description,
+        redirectUrl: 'https://vanwoerdenwonen-levante.web.app/betaling-geslaagd', // Waar de klant naartoe wordt gestuurd na de betaling
+        webhookUrl: 'https://vanwoerdenwonen-levante.web.app/betaling-webhook', // Waar Mollie je site informeert over de betaling
+      });
 
-        res.json(paymentResponse.data);
+      // Haal de URL van de betaling op
+      const paymentUrl = payment.links.checkout.href;
+      console.log("Payment URL:", paymentUrl); // Voeg een log toe om de URL te inspecteren
+
+      // Stuur de paymentUrl terug naar de frontend
+      res.status(200).json({ paymentUrl: paymentUrl });
     } catch (error) {
-        console.error('Error creating payment:', error.response.data);
-        res.status(500).send('Error creating payment');
+      console.error("Error creating payment:", error);
+      res.status(500).json({
+        error: true,
+        message: "Failed to create payment",
+        details: error.message,
+      });
     }
+  });
 });
 
-// Expose the API as a Cloud Function
-exports.api = functions.https.onRequest(app);
+
+
+
+
+
+
+
+exports.mollieOAuthCallback = functions.https.onRequest(async (req, res) => {
+  console.log("mollieOAuthCallback function triggered.");
+  
+  const { code, state } = req.query;
+  
+  if (!code) {
+    return res.status(400).send("Authorization code is missing");
+  }
+
+  try {
+    // Gebruik de authorization code om toegangstokens te verkrijgen (zorg ervoor dat je deze stap implementeert)
+    const tokens = await mollieClient.exchangeAuthorizationCode({
+      code,
+      redirectUri: 'https://vanwoerdenwonen-levante.web.app',
+      clientId: 'app_R9oCYGHTeYkhaSKS5MmerBxZ',
+      clientSecret: 'your-client-secret'  // Je client secret
+    });
+
+    console.log("Tokens received: ", tokens);
+    
+    // Maak de betaling aan met behulp van de Mollie API (gebruik de tokens indien nodig)
+    const payment = await mollieClient.payments.create({
+      amount: {
+        currency: 'EUR',
+        value: '10.00' // Bedrag van de betaling
+      },
+      description: 'Betaling voor Product X',
+      redirectUrl: 'https://vanwoerdenwonen-levante.web.app/betaling-geslaagd',
+      webhookUrl: 'https://vanwoerdenwonen-levante.web.app/betaling-webhook'
+    });
+
+    const paymentUrl = payment.links.checkout.href;
+
+    // Redirect de gebruiker naar het Mollie betaalscherm
+    res.redirect(paymentUrl);
+  } catch (error) {
+    console.error("Error exchanging authorization code or creating payment:", error);
+    res.status(500).send("Failed to exchange authorization code or create payment");
+  }
+});
+

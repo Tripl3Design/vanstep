@@ -8,36 +8,30 @@ const urlParams = new URLSearchParams(window.location.search);
 
 let mainModule = null;
 
-async function startPayment() {
-    const amount = '10.00'; // Vervang dit door het bedrag dat je wilt vragen
-    const description = 'Productomschrijving hier'; // Vervang dit door een productomschrijving
-
-    // Tijdelijk dummy token gebruiken voor testdoeleinden
-    const accessToken = 'DUMMY_ACCESS_TOKEN';
-
-    try {
-        const response = await fetch('https://vanwoerdenwonen-levante.web.app/payments', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                amount: amount,
-                description: description,
-                accessToken: accessToken, // Gebruik het dummy token hier
-            }),
-        });
-
-        if (!response.ok) {
-            throw new Error('Betaling kon niet worden aangemaakt');
+function connectMollie(amount, description) {
+        // Stuur een POST request naar de Cloud Function
+    fetch("https://us-central1-vanwoerdenwonen-tripletise.cloudfunctions.net/mollieAuthRedirect", {
+        method: "POST", // We gebruiken een POST request omdat we data versturen
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ amount: amount, description: description }) // Verstuur het bedrag naar de server
+    })
+    .then(response => response.json())  // Zet de response om in een JSON object
+    .then(data => {
+        console.log("Received data:", data);  // Voeg een log toe om de response te inspecteren
+        const paymentUrl = data.paymentUrl;
+        
+        if (paymentUrl) {
+            // Redirect de gebruiker naar het Mollie betaalscherm
+            window.location.href = paymentUrl;
+        } else {
+            console.error("No payment URL returned.");
         }
-
-        const paymentData = await response.json();
-        window.location.href = paymentData.links.checkout; // Redirect naar de Mollie checkout pagina
-    } catch (error) {
-        console.error('Fout bij het maken van de betaling:', error);
-        alert('Er is een fout opgetreden bij het verwerken van uw betaling. Probeer het later opnieuw.');
-    }
+    })
+    .catch(error => {
+        console.error("Er ging iets mis:", error);
+    });
 }
 
 async function downloadPdf() {

@@ -18,6 +18,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
     import { getFirestore, collection, addDoc, getDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
     import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-storage.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyC0XTl5lSTSN0mxCqGsYxsrIpFtoU-ooEI",
@@ -31,6 +32,7 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     const storage = getStorage(app);
+    const auth = getAuth(app);
 
     // Export necessary functions to the window object for easy access
     window.db = db;
@@ -43,6 +45,19 @@
     window.ref = ref;
     window.uploadBytes = uploadBytes;
     window.getDownloadURL = getDownloadURL;
+    
+    // On redirect back to your app, handle Mollie response
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        const params = new URLSearchParams(window.location.search);
+        const authCode = params.get('code');
+        if (authCode) {
+          // Handle code in your UI or call a Firebase function to finalize setup
+          console.log("Mollie Auth Code: ", authCode);
+          // You can store the authCode or pass it to a Firebase Function
+        }
+      }
+    });
 
     // Function to retrieve URL parameters
     function getUrlParameter(name) {
@@ -120,7 +135,6 @@
   <script src='https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.12/vfs_fonts.js'></script>
 
   <script src="https://cdn.jsdelivr.net/npm/swiped-events@1.2.0/dist/swiped-events.min.js"></script>
-  <!--<script src="https://furnitisemain.web.app/js/swiped-events.min.js"></script>-->
 
   <script src="js/ua-parser.min.js"></script>
   <script src='js/controlpanel.js'></script>
@@ -267,17 +281,10 @@
                 </svg>
                
                        <div  class="position-absolute start-50 translate-middle mt-3 pt-3">
-                                    <button type="button" style="width: 140px; background-color: #1a5951; color: white;" class="btn btn-success rounded-pill p-1 m-1">
+                                    <button id="buyButton" type="button" style="width: 140px; background-color: #1a5951; color: white;" class="btn btn-success rounded-pill p-1 m-1">
                                       <span class="productInfoPrice fw-bold">#</span></span>
                                     </button>
                                   </div>
-                           
-         
-         
-         
-         
-              
-                <!--<div class="productInfoPrice text-center text-black ps-3"></div>-->
            
               </div>
               <div id="offcanvasContent" style="height: calc(100% - 80px); width: 100%; overflow: auto;" class="overflow-x-hidden">
@@ -403,7 +410,7 @@
 
               <div class="col-6 p-0 m-0 pt-3">
 
-                <button onclick="startPayment()" type="button" style="background-color: #1a5951; color: white; letter-spacing: 1.5px;" class="float-end d-flex btn btn-success rounded-pill px-4 download-button">
+                <button id="buyButton" type="button" style="background-color: #1a5951; color: white; letter-spacing: 1.5px;" class="float-end d-flex btn btn-success rounded-pill px-4 download-button">
     <span class="material-symbols-outlined mt-1">shopping_cart</span>&nbsp;&nbsp;<span class="mt-1 h6">bestellen</span>
 </button>
 
@@ -414,9 +421,6 @@
                 </style>
 
                 </div> 
-              <div class="productInfoPriceRegion col-12 m-0 p-0 pb-3">
-              
-              </div>
             </div>
           </div>
 
