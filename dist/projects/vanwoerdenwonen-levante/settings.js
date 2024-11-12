@@ -8,34 +8,6 @@ const urlParams = new URLSearchParams(window.location.search);
 
 let mainModule = null;
 
-
-
-function connectMollie(amount, description) {
-        // Stuur een POST request naar de Cloud Function
-    fetch("https://us-central1-vanwoerdenwonen-tripletise.cloudfunctions.net/mollieAuthRedirect", {
-        method: "POST", // We gebruiken een POST request omdat we data versturen
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ amount: amount, description: description }) // Verstuur het bedrag naar de server
-    })
-    .then(response => response.json())  // Zet de response om in een JSON object
-    .then(data => {
-        console.log("Received data:", data);  // Voeg een log toe om de response te inspecteren
-        const paymentUrl = data.paymentUrl;
-        
-        if (paymentUrl) {
-            // Redirect de gebruiker naar het Mollie betaalscherm
-            window.location.href = paymentUrl;
-        } else {
-            console.error("No payment URL returned.");
-        }
-    })
-    .catch(error => {
-        console.error("Er ging iets mis:", error);
-    });
-}
-
 async function downloadPdf() {
     try {
         // Verkrijg zowel de dataURL als de Blob van de screenshot

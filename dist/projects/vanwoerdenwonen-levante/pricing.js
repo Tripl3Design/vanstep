@@ -17,14 +17,13 @@ function pricing(model) {
     totalPrice += price;
     console.log(totalPrice);
 
-    //document.getElementById('buyButton').addEventListener('click', () => {
-     //   connectMollie(totalPrice, model.name);
-    //});
-
     document.getElementById('add-to-cart-button').addEventListener('click', () => {
+        const { dataURL, blob } = mainModule.captureScreenshot();
         const product = {
             name: model.name,
-            price: totalPrice
+            price: totalPrice,
+            //imageUrl: 'https://vanwoerdenwonen-levante.web.app/projects/vanwoerdenwonen-levante/img/opstelling/art553.png'
+            imageUrl: dataURL
         };
 
         // Stuur bericht naar de parent page om de sidebar te tonen
