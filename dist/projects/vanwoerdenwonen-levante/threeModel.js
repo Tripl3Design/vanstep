@@ -4,7 +4,6 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 
-
 let scene, camera, renderer, controls, rgbeLoader;
 let groundGeometry, groundMaterial, ground;
 
@@ -139,7 +138,7 @@ export function performHitTesting(frame) {
         const pose = hit.getPose(referenceSpace);
 
         if (pose) {
-            reticle.visible = true;  // Only show the reticle once we have a valid pose
+            reticle.visible = true;
             reticle.position.set(
                 pose.transform.position.x,
                 pose.transform.position.y,
@@ -171,8 +170,10 @@ async function startAR() {
         });
         renderer.xr.setSession(session);
 
-        referenceSpace = await session.requestReferenceSpace('local');
+        referenceSpace = await session.requestReferenceSpace('local-floor');
+        console.log('ReferenceSpace:', referenceSpace);
         hitTestSource = await session.requestHitTestSource({ space: referenceSpace });
+        console.log('HitTestSource:', hitTestSource);
 
         setupReticle();
 
@@ -205,14 +206,13 @@ async function startAR() {
 }
 
 function onXRFrame(time, frame) {
-    const session = renderer.xr.getSession();
+    const session = renderer.xr.getSession(); // Verkrijg de huidige XR-session
     if (session) {
-        performHitTesting(frame);
+        performHitTesting(session, frame); // Geef session door
         renderer.render(scene, camera);
         session.requestAnimationFrame(onXRFrame);
     }
 }
-
 // Desktop versie
 if (windowHeight < windowWidth) {
     document.getElementById('downloadModel').addEventListener('click', () => {
@@ -312,7 +312,7 @@ function createPBRMaterial(materialType, hexColor = null, texturePath = null) {
 
 function loadAndTransformModel(url, transforms = [{}], group, hexColor = null, texturePath = null, materialType, hexColor_duotone = null, texturePath_duotone = null, materialTypeDuotone = null) {
     const loader = new GLTFLoader();
-    
+
     loader.load(url, function (gltf) {
         let loadedModel = gltf.scene;
 
@@ -942,7 +942,7 @@ async function remoteLog(message) {
         console.log("Log sent with ID:", docRef.id);
     } catch (e) {
      */
-        console.error("Error adding log:", e);
+    //console.error("Error adding log:", e);
 
     //}
 }
