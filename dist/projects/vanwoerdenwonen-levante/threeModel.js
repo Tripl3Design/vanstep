@@ -77,8 +77,6 @@ export function initThree(containerElem) {
         document.getElementById('fullscreen').addEventListener('click', fullscreenToggle);
     }
 
-
-
     // Start the render loop
     render();
 }
@@ -794,6 +792,46 @@ export function exportModel() {
             link.click();
 
             URL.revokeObjectURL(link.href);
+        },
+        { binary: true }
+    );
+}
+
+export function exportModelToFirebase() {
+    const exporter = new GLTFExporter();
+
+    exporter.parse(
+        scene,
+        async (result) => {
+            let blob;
+            if (result instanceof ArrayBuffer) {
+                blob = new Blob([result], { type: 'model/gltf-binary' });
+            } else {
+                const json = JSON.stringify(result);
+                blob = new Blob([json], { type: 'application/json' });
+            }
+
+            try {
+                // 1. Upload het bestand naar Firebase Storage
+                const storageRef = ref(storage, `models/${Date.now()}_model.glb`);
+                const snapshot = await uploadBytes(storageRef, blob);
+                console.log('Bestand geüpload naar Firebase Storage:', snapshot.metadata.fullPath);
+
+                // 2. Haal de download-URL op
+                const downloadURL = await getDownloadURL(storageRef);
+                console.log('Download-URL:', downloadURL);
+
+                // 3. Sla de URL op in Firestore
+                await addDoc(collection(db, "models"), {
+                    name: `Model_${Date.now()}`,
+                    url: downloadURL,
+                    timestamp: new Date(),
+                });
+
+                alert('Model succesvol opgeslagen in Firebase!');
+            } catch (error) {
+                console.error('Fout bij uploaden naar Firebase:', error);
+            }
         },
         { binary: true }
     );
