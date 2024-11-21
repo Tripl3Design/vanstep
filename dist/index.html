@@ -45,7 +45,7 @@
     window.ref = ref;
     window.uploadBytes = uploadBytes;
     window.getDownloadURL = getDownloadURL;
-    
+
     // On redirect back to your app, handle Mollie response
     onAuthStateChanged(auth, (user) => {
       if (user) {
@@ -144,6 +144,8 @@
 
   <script src='projects/vanwoerdenwonen-levante/settings.js'></script>
 
+  <script type="module" src="projects/vanwoerdenwonen-levante/threeAr.js"></script>
+
   <script>
     /*
     "use strict"
@@ -196,11 +198,13 @@
                                 <button type="button" class="d-flex btn rounded-pill btn-sm btn-dark me-2" onclick="shareWithWhatsApp()">
                                   <span class="material-symbols-outlined m-0 p-1">share</span>
                                     </button>
-                      
+                    
+                                                <button id="viewInAr" type="button" class="d-flex btn rounded-pill btn-sm btn-dark me-2">
+                <span class="material-symbols-outlined m-0 p-1">view_in_ar</span>
+                <span style="font-size: .75rem; margin-top: 6px;">&nbsp;&nbsp;bekijk in ar&nbsp;&nbsp;</span>
+            </button>
 
-                                <button id="viewArButton" type="button" class="d-flex btn rounded-pill btn-sm btn-dark me-2">
-                                      <span class="material-symbols-outlined m-0 p-1">view_in_ar</span><span style="font-size: .75rem; margin-top: 6px;">&nbsp;&nbsp;bekijk in ar&nbsp;&nbsp;</span>
-                                    </button>
+                            
 
                                   <button type="button" class="d-flex btn rounded-pill btn-sm btn-dark me-2" onclick="downloadPdf()">
                                       <span class="material-symbols-outlined m-0 p-1">picture_as_pdf</span><span style="font-size: .75rem; margin-top: 6px;">&nbsp;&nbsp;offerte&nbsp;&nbsp;</span>

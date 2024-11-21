@@ -7,11 +7,6 @@ import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 let scene, camera, renderer, controls, rgbeLoader;
 let groundGeometry, groundMaterial, ground;
 
-let hitTestSource = null;
-let referenceSpace = null;
-let reticle, arGroup;
-let loadedModel;
-
 let projectmap = 'projects/vanwoerdenwonen-levante/';
 
 export function initThree(containerElem) {
@@ -22,7 +17,6 @@ export function initThree(containerElem) {
     // Camera setup
     camera = new THREE.PerspectiveCamera(60, containerElem.offsetWidth / containerElem.offsetHeight, 0.1, 100);
     camera.position.set(-4, 1.7, 4);
-    //camera.fov = 40;
     camera.updateProjectionMatrix();
 
     // Renderer setup
@@ -32,7 +26,6 @@ export function initThree(containerElem) {
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1;
-    renderer.xr.enabled = true;
 
     containerElem.appendChild(renderer.domElement);
 
@@ -58,32 +51,12 @@ export function initThree(containerElem) {
     directionalLight.position.set(5, 20, 5);
     directionalLight.target.position.set(0, 0, 0);
     directionalLight.castShadow = true;
-    directionalLight.shadow.mapSize.width = 2048;
-    directionalLight.shadow.mapSize.height = 2048;
-    directionalLight.shadow.camera.near = 1.5;
-    directionalLight.shadow.camera.far = 100;
     scene.add(directionalLight);
-
-    // Additional Spotlight
-    const spotlight = new THREE.SpotLight(0xff0000, 0.5);
-    spotlight.position.set(-10, 10, 10);
-    spotlight.angle = Math.PI / 6;
-    spotlight.penumbra = 0.1;
-    spotlight.distance = 100;
-    spotlight.decay = 2;
-    spotlight.target.position.set(0, 0, 0);
-    scene.add(spotlight.target);
-    scene.add(spotlight);
 
     // OrbitControls setup
     controls = new OrbitControls(camera, renderer.domElement);
     controls.enablePan = false;
     controls.enableDamping = true;
-    // mobile version
-    if (windowHeight > windowWidth) {
-        controls.dampingFactor = 0.1; // Iets hogere demping voor mobiel
-        controls.minDistance = 1; // Minder restrictief op mobiel
-    }
     controls.dampingFactor = 0.05;
     controls.minDistance = 2;
     controls.maxDistance = 10;
@@ -103,116 +76,13 @@ export function initThree(containerElem) {
     if (windowHeight < windowWidth) {
         document.getElementById('fullscreen').addEventListener('click', fullscreenToggle);
     }
-    // mobile version
-    if (windowHeight > windowWidth) {
-        document.getElementById('viewArButton').addEventListener('click', startAR);
-    }
+
+
 
     // Start the render loop
     render();
 }
 
-function setupReticle() {
-    reticle = new THREE.Mesh(
-        new THREE.RingGeometry(0.15, 0.2, 32).rotateX(-Math.PI / 2),
-        new THREE.MeshBasicMaterial({ color: 0xffffff, opacity: 0.8, transparent: true })
-    );
-    reticle.visible = false;  // Start with the reticle hidden
-    scene.add(reticle);
-    remoteLog("Reticle setup completed");
-}
-
-export function performHitTesting(frame) {
-    if (!referenceSpace || !hitTestSource || !reticle) {
-        remoteLog("Hit testing skipped: Missing referenceSpace, hitTestSource, or reticle.");
-        return;
-    }
-
-    const hitTestResults = frame.getHitTestResults(hitTestSource);
-
-    // Log the number of hit test results
-    remoteLog("Hit test results count: " + hitTestResults.length);
-
-    if (hitTestResults.length > 0) {
-        const hit = hitTestResults[0];
-        const pose = hit.getPose(referenceSpace);
-
-        if (pose) {
-            reticle.visible = true;
-            reticle.position.set(
-                pose.transform.position.x,
-                pose.transform.position.y,
-                pose.transform.position.z
-            );
-            remoteLog("Reticle position updated to: " + JSON.stringify(reticle.position));
-
-            // If the user selects the reticle, place the model there
-            session.addEventListener('select', () => {
-                if (reticle.visible) {
-                    arGroup.position.copy(reticle.position);
-                    remoteLog("Model placed at: " + JSON.stringify(arGroup.position));
-                }
-            });
-        }
-    } else {
-        reticle.visible = false;  // Hide the reticle if no valid hit test results
-        remoteLog("No hit test results: Reticle hidden");
-    }
-
-    // Log the raw hit test results for debugging
-    remoteLog("Raw hit test results: " + JSON.stringify(hitTestResults));
-}
-
-async function startAR() {
-    try {
-        const session = await navigator.xr.requestSession('immersive-ar', {
-            requiredFeatures: ['local-floor', 'hit-test'],
-        });
-        renderer.xr.setSession(session);
-
-        referenceSpace = await session.requestReferenceSpace('local-floor');
-        console.log('ReferenceSpace:', referenceSpace);
-        hitTestSource = await session.requestHitTestSource({ space: referenceSpace });
-        console.log('HitTestSource:', hitTestSource);
-
-        setupReticle();
-
-        if (loadedModel) {
-            loadedModel.visible = false;
-        }
-
-        session.addEventListener('select', () => {
-            if (reticle.visible) {
-                arGroup.position.copy(reticle.position);
-                arGroup.add(loadedModel);
-                loadedModel.visible = true;
-                remoteLog("Model placed at position:", arGroup.position);
-            }
-        });
-
-        session.addEventListener('end', () => {
-            scene.remove(reticle);
-            hitTestSource = null;
-            reticle = null;
-            if (loadedModel) {
-                loadedModel.visible = true;
-            }
-        });
-
-        session.requestAnimationFrame(onXRFrame);
-    } catch (error) {
-        console.error('Failed to start AR session:', error);
-    }
-}
-
-function onXRFrame(time, frame) {
-    const session = renderer.xr.getSession(); // Verkrijg de huidige XR-session
-    if (session) {
-        performHitTesting(session, frame); // Geef session door
-        renderer.render(scene, camera);
-        session.requestAnimationFrame(onXRFrame);
-    }
-}
 // Desktop versie
 if (windowHeight < windowWidth) {
     document.getElementById('downloadModel').addEventListener('click', () => {
@@ -819,7 +689,6 @@ function render() {
     });
 }
 
-
 function onWindowResize(container, camera, renderer) {
     const width = container.clientWidth;
     const height = container.clientHeight;
@@ -929,22 +798,3 @@ export function exportModel() {
         { binary: true }
     );
 }
-
-// log to Firestore if console.log does not work
-async function remoteLog(message) {
-    /*
-    try {
-        // Reference to "logs" collection in Firestore
-        const docRef = await addDoc(collection(db, "logs"), {
-            message: message,
-            timestamp: new Date().toISOString()
-        });
-        console.log("Log sent with ID:", docRef.id);
-    } catch (e) {
-     */
-    //console.error("Error adding log:", e);
-
-    //}
-}
-
-
