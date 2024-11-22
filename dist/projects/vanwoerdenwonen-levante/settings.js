@@ -215,8 +215,6 @@ function updateControlPanel(model, selectedLayer, expandedLayer) {
 
     const upholstery = model.upholstery.path;
     let upholsteryIndex = ALLCOLORS.upholsteries.findIndex(item => item.colorPath === upholstery);
-    console.log(model.upholstery.path)
-    console.log(upholsteryIndex)
     var upholsteryValue = document.querySelectorAll(`.upholsteryColors_colorButton`);
     model.upholstery.name = ALLCOLORS.upholsteries[upholsteryIndex].colorName;
     model.upholstery.path = ALLCOLORS.upholsteries[upholsteryIndex].colorPath;

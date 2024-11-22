@@ -15,7 +15,6 @@ function pricing(model) {
     }
 
     totalPrice += price;
-    console.log(totalPrice);
 
     document.getElementById('add-to-cart-button').addEventListener('click', () => {
         const { dataURL, blob } = mainModule.captureScreenshot();

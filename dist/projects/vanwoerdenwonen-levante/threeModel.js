@@ -146,9 +146,7 @@ function createPBRMaterial(materialType, hexColor = null, texturePath = null) {
             roughness: 0.9,
             normalMap: normalTexture,
             roughnessMap: loadTexture(roughness),
-            metalnessMap: loadTexture(metallic),
-            //displacementMap: loadTexture(displacement),
-            //displacementScale: 0.3,
+            metalnessMap: loadTexture(metallic)
         });
     } else if (materialType === 'velvet') {
         const scaledTexturePath = texturePath ? loadTexture(texturePath) : null;
@@ -156,17 +154,13 @@ function createPBRMaterial(materialType, hexColor = null, texturePath = null) {
             scaledTexturePath.wrapS = scaledTexturePath.wrapT = THREE.RepeatWrapping;
             scaledTexturePath.repeat.set(.9, .9);
         }
-
-        material = new THREE.MeshPhysicalMaterial({
-            //material = new THREE.MeshStandardMaterial({
+        material = new THREE.MeshStandardMaterial({
             map: scaledTexturePath,
             color: color,
             metalness: 0.0,
             roughness: 0.5,
             clearcoat: 1,
-            clearcoatRoughness: .9,
-            //sheen: .5,
-            //sheenColor: 0xffffff
+            clearcoatRoughness: .9
         });
     } else if (materialType === 'paint') {
         material = new THREE.MeshStandardMaterial({
@@ -196,11 +190,7 @@ function loadAndTransformModel(url, transforms = [{}], group, hexColor = null, t
                     child.material.dispose();
                 }
 
-                if (!child.geometry.attributes.uv) {
-                    console.warn('Model has no UV coordinates for this child: ', child);
-                }
-
-                // When the texture is ready, apply the actual material
+                // Apply the duotone material or standard material
                 if (texturePath_duotone && child.material.name === "duotone") {
                     child.material = createPBRMaterial(materialTypeDuotone, hexColor_duotone, texturePath_duotone);
                 } else {
@@ -221,8 +211,22 @@ function loadAndTransformModel(url, transforms = [{}], group, hexColor = null, t
             group.add(mesh);
         });
 
-        // Ensure the model is visible after loading the geometry and applying placeholder material
-        loadedModel.visible = true;  // Make sure the model is visible before texture loading completes
+   // Stel een korte vertraging in voor de export
+   setTimeout(() => {
+    // Nu kan de export plaatsvinden na de vertraging
+    exportModel();  // Exporteer het model naar GLB
+
+    // Maak een nieuw grondvlak en voeg deze toe aan de scene
+    groundGeometry = new THREE.PlaneGeometry(20, 20);
+    groundMaterial = new THREE.ShadowMaterial({ opacity: 0.3 });
+    ground = new THREE.Mesh(groundGeometry, groundMaterial);
+    ground.rotation.x = -Math.PI / 2;
+    ground.position.y = 0;
+    ground.receiveShadow = true;
+    scene.add(ground);
+}, 300); // 100 milliseconden vertraging, pas aan indien nodig
+
+        loadedModel.visible = true;
     });
 }
 
@@ -249,7 +253,6 @@ export async function loadModelData(model) {
     models.length = 0;
 
     if (model.type == "art2502") {
-        console.log(model)
         const group = new THREE.Group();
 
         let legTransforms;
@@ -674,7 +677,6 @@ export async function loadModelData(model) {
         }
         loadAndTransformModel(levante_footstoolUrl, elementTransforms, group, null, model.upholstery.path, model.upholstery.structure, null, null, null);
 
-
         scene.add(group);
         models.push(group);
     }
@@ -772,67 +774,96 @@ export function captureScreenshot() {
     return { dataURL, blob };
 }
 
-export function exportModel() {
+if (windowHeight > windowWidth) {
+    document.getElementById("arButton").addEventListener("click", () => {
+        if (modelDownloadURL) {
+            const intentUrl = `intent://arvr.google.com/scene-viewer/1.0?file=${encodeURIComponent(modelDownloadURL)}&mode=ar_only&resizable=false&disable_occlusion=true#Intent;scheme=https;package=com.google.ar.core;action=android.intent.action.VIEW;S.browser_fallback_url=https://developers.google.com/ar;end;`;
+            window.location.href = intentUrl;
+        } else {
+            console.error('Model URL niet beschikbaar. Zorg ervoor dat het model eerst is geëxporteerd.');
+        }
+    });
+}
+
+let modelDownloadURL = null; // Hier slaan we de download-URL op
+
+function exportModel() {
     const exporter = new GLTFExporter();
+    const options = {
+        binary: true,                // Exporteer als een binair GLB-bestand
+        embedImages: true,          // Zorg ervoor dat afbeeldingen worden ingesloten
+        includeCustomExtensions: true // Zorgt ervoor dat extensies zoals clearcoat worden meegenomen
+    };
+
+    // Verwijder tijdelijke objecten uit de scène (zoals de grond)
+    scene.remove(ground);
 
     exporter.parse(
         scene,
         function (result) {
-            let blob;
-            if (result instanceof ArrayBuffer) {
-                blob = new Blob([result], { type: 'model/gltf-binary' });
-            } else {
-                const json = JSON.stringify(result);
-                blob = new Blob([json], { type: 'application/json' });
-            }
+            const blob = new Blob([result], { type: 'model/gltf-binary' });
 
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = 'model.glb';
-            link.click();
+            // Upload het bestand naar Firebase Storage
+            const storageRef = ref(storage, 'glbModels/model.glb');
+            uploadBytes(storageRef, blob).then(() => {
+                console.log('Model succesvol geüpload!');
 
-            URL.revokeObjectURL(link.href);
+                // Verkrijg de downloadbare URL
+                getDownloadURL(storageRef).then((url) => {
+                    console.log('Model URL:', url);
+                    modelDownloadURL = url; // Sla de URL op voor later gebruik
+                });
+            }).catch((error) => {
+                console.error('Fout bij uploaden naar Firebase:', error);
+            });
         },
-        { binary: true }
+        (error) => {
+            console.error('Fout bij exporteren:', error);
+        },
+        options
     );
 }
 
-export function exportModelToFirebase() {
-    const exporter = new GLTFExporter();
+// Helperfunctie om GLB-data te combineren
+function combineGLBData(jsonBuffer, binaryData) {
+    const headerBuffer = new ArrayBuffer(12);
+    const headerView = new DataView(headerBuffer);
+    headerView.setUint32(0, 0x46546C67, true);
+    headerView.setUint32(4, 2, true);
 
-    exporter.parse(
-        scene,
-        async (result) => {
-            let blob;
-            if (result instanceof ArrayBuffer) {
-                blob = new Blob([result], { type: 'model/gltf-binary' });
-            } else {
-                const json = JSON.stringify(result);
-                blob = new Blob([json], { type: 'application/json' });
-            }
+    const jsonChunkLength = jsonBuffer.byteLength;
+    const binaryChunkLength = binaryData ? binaryData.byteLength : 0;
+    const totalLength = 12 + 8 + jsonChunkLength + (binaryChunkLength ? 8 + binaryChunkLength : 0);
 
-            try {
-                // 1. Upload het bestand naar Firebase Storage
-                const storageRef = ref(storage, `models/${Date.now()}_model.glb`);
-                const snapshot = await uploadBytes(storageRef, blob);
-                console.log('Bestand geüpload naar Firebase Storage:', snapshot.metadata.fullPath);
+    headerView.setUint32(8, totalLength, true);
 
-                // 2. Haal de download-URL op
-                const downloadURL = await getDownloadURL(storageRef);
-                console.log('Download-URL:', downloadURL);
+    const jsonChunkHeader = new ArrayBuffer(8);
+    const jsonChunkView = new DataView(jsonChunkHeader);
+    jsonChunkView.setUint32(0, jsonChunkLength, true);
+    jsonChunkView.setUint32(4, 0x4E4F534A, true);
 
-                // 3. Sla de URL op in Firestore
-                await addDoc(collection(db, "models"), {
-                    name: `Model_${Date.now()}`,
-                    url: downloadURL,
-                    timestamp: new Date(),
-                });
+    let binaryChunkHeader = null;
+    if (binaryData) {
+        binaryChunkHeader = new ArrayBuffer(8);
+        const binaryChunkView = new DataView(binaryChunkHeader);
+        binaryChunkView.setUint32(0, binaryChunkLength, true);
+        binaryChunkView.setUint32(4, 0x004E4942, true);
+    }
 
-                alert('Model succesvol opgeslagen in Firebase!');
-            } catch (error) {
-                console.error('Fout bij uploaden naar Firebase:', error);
-            }
-        },
-        { binary: true }
-    );
+    const glbData = new Uint8Array(totalLength);
+    let offset = 0;
+    glbData.set(new Uint8Array(headerBuffer), offset);
+    offset += headerBuffer.byteLength;
+    glbData.set(new Uint8Array(jsonChunkHeader), offset);
+    offset += jsonChunkHeader.byteLength;
+    glbData.set(new Uint8Array(jsonBuffer), offset);
+    offset += jsonChunkLength;
+
+    if (binaryData) {
+        glbData.set(new Uint8Array(binaryChunkHeader), offset);
+        offset += binaryChunkHeader.byteLength;
+        glbData.set(new Uint8Array(binaryData), offset);
+    }
+
+    return glbData;
 }
