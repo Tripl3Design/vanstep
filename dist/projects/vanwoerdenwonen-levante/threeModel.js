@@ -154,7 +154,7 @@ function createPBRMaterial(materialType, hexColor = null, texturePath = null) {
             scaledTexturePath.wrapS = scaledTexturePath.wrapT = THREE.RepeatWrapping;
             scaledTexturePath.repeat.set(.9, .9);
         }
-        material = new THREE.MeshStandardMaterial({
+        material = new THREE.MeshPhysicalMaterial({
             map: scaledTexturePath,
             color: color,
             metalness: 0.0,
@@ -170,6 +170,20 @@ function createPBRMaterial(materialType, hexColor = null, texturePath = null) {
         });
     }
     return material;
+}
+
+function exportArModel() {
+    setTimeout(() => {
+        exportModel();
+
+        groundGeometry = new THREE.PlaneGeometry(20, 20);
+        groundMaterial = new THREE.ShadowMaterial({ opacity: 0.3 });
+        ground = new THREE.Mesh(groundGeometry, groundMaterial);
+        ground.rotation.x = -Math.PI / 2;
+        ground.position.y = 0;
+        ground.receiveShadow = true;
+        scene.add(ground);
+    }, 300);
 }
 
 function loadAndTransformModel(url, transforms = [{}], group, hexColor = null, texturePath = null, materialType, hexColor_duotone = null, texturePath_duotone = null, materialTypeDuotone = null) {
@@ -211,20 +225,8 @@ function loadAndTransformModel(url, transforms = [{}], group, hexColor = null, t
             group.add(mesh);
         });
 
-   // Stel een korte vertraging in voor de export
-   setTimeout(() => {
-    // Nu kan de export plaatsvinden na de vertraging
-    exportModel();  // Exporteer het model naar GLB
-
-    // Maak een nieuw grondvlak en voeg deze toe aan de scene
-    groundGeometry = new THREE.PlaneGeometry(20, 20);
-    groundMaterial = new THREE.ShadowMaterial({ opacity: 0.3 });
-    ground = new THREE.Mesh(groundGeometry, groundMaterial);
-    ground.rotation.x = -Math.PI / 2;
-    ground.position.y = 0;
-    ground.receiveShadow = true;
-    scene.add(ground);
-}, 300); // 100 milliseconden vertraging, pas aan indien nodig
+        // dit moet alleen als je AR bekijkt
+        exportArModel();
 
         loadedModel.visible = true;
     });
