@@ -172,39 +172,62 @@ function createPBRMaterial(materialType, hexColor = null, texturePath = null) {
     return material;
 }
 
+// Functie om AR-model te exporteren
 function exportArModel() {
+    // Hier wachten we 300ms (of afhankelijk van je applicatie kan dit korter/langer zijn) voordat we de grond toevoegen
     setTimeout(() => {
+        // Zorg ervoor dat exportModel() wordt uitgevoerd
         exportModel();
 
-        groundGeometry = new THREE.PlaneGeometry(20, 20);
-        groundMaterial = new THREE.ShadowMaterial({ opacity: 0.3 });
-        ground = new THREE.Mesh(groundGeometry, groundMaterial);
-        ground.rotation.x = -Math.PI / 2;
-        ground.position.y = 0;
-        ground.receiveShadow = true;
-        scene.add(ground);
+        // Voeg de grond toe voor AR
+        addGroundForAR();
+
     }, 300);
 }
 
-function loadAndTransformModel(url, transforms = [{}], group, hexColor = null, texturePath = null, materialType, hexColor_duotone = null, texturePath_duotone = null, materialTypeDuotone = null) {
+// Functie om de grond toe te voegen voor AR-weergave
+function addGroundForAR() {
+    const groundGeometry = new THREE.PlaneGeometry(20, 20);
+    const groundMaterial = new THREE.ShadowMaterial({ opacity: 0.3 });
+    const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+    
+    ground.rotation.x = -Math.PI / 2;
+    ground.position.y = 0;
+    ground.receiveShadow = true;
+    
+    scene.add(ground);
+}
+
+// Functie om model te laden en te transformeren
+function loadAndTransformModel(
+    url,
+    transforms = [{}],
+    group,
+    hexColor = null,
+    texturePath = null,
+    materialType,
+    hexColor_duotone = null,
+    texturePath_duotone = null,
+    materialTypeDuotone = null
+) {
     const loader = new GLTFLoader();
 
     loader.load(url, function (gltf) {
         let loadedModel = gltf.scene;
 
-        // Center the model
+        // Center the model in the scene
         const box = new THREE.Box3().setFromObject(loadedModel);
         const center = box.getCenter(new THREE.Vector3());
         loadedModel.position.sub(center); // Center the model at (0, 0, 0)
 
-        // Apply materials and transformations
+        // Apply materials to the model
         loadedModel.traverse((child) => {
             if (child.isMesh) {
                 if (child.material) {
                     child.material.dispose();
                 }
 
-                // Apply the duotone material or standard material
+                // Apply the duotone or regular material
                 if (texturePath_duotone && child.material.name === "duotone") {
                     child.material = createPBRMaterial(materialTypeDuotone, hexColor_duotone, texturePath_duotone);
                 } else {
@@ -216,18 +239,27 @@ function loadAndTransformModel(url, transforms = [{}], group, hexColor = null, t
             }
         });
 
-        // Apply transformations and add to group
+        // Apply transformations (position, scale, rotation) and handle mirroring if needed
         transforms.forEach(transform => {
             const mesh = loadedModel.clone();
+            
+            // Apply position, rotation, and scale
             mesh.position.copy(transform.position || new THREE.Vector3());
-            mesh.scale.copy(transform.scale || new THREE.Vector3(1, 1, 1));
             mesh.rotation.copy(transform.rotation || new THREE.Euler(0, 0, 0));
+            mesh.scale.copy(transform.scale || new THREE.Vector3(1, 1, 1));
+
+            // If mirror is true, flip the X axis (or apply other axis flips as necessary)
+            if (transform.mirror) {
+                mesh.scale.x = -Math.abs(mesh.scale.x); // Flip the X axis for mirroring
+            }
+
+            // Add the transformed mesh to the group
             group.add(mesh);
         });
 
-        // dit moet alleen als je AR bekijkt
         exportArModel();
 
+        // Make the model visible
         loadedModel.visible = true;
     });
 }
