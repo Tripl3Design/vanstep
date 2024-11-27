@@ -172,32 +172,6 @@ function createPBRMaterial(materialType, hexColor = null, texturePath = null) {
     return material;
 }
 
-// Functie om AR-model te exporteren
-function exportArModel() {
-    // Hier wachten we 300ms (of afhankelijk van je applicatie kan dit korter/langer zijn) voordat we de grond toevoegen
-    setTimeout(() => {
-        // Zorg ervoor dat exportModel() wordt uitgevoerd
-        exportModel();
-
-        // Voeg de grond toe voor AR
-        addGroundForAR();
-
-    }, 300);
-}
-
-// Functie om de grond toe te voegen voor AR-weergave
-function addGroundForAR() {
-    const groundGeometry = new THREE.PlaneGeometry(20, 20);
-    const groundMaterial = new THREE.ShadowMaterial({ opacity: 0.3 });
-    const ground = new THREE.Mesh(groundGeometry, groundMaterial);
-
-    ground.rotation.x = -Math.PI / 2;
-    ground.position.y = 0;
-    ground.receiveShadow = true;
-
-    scene.add(ground);
-}
-
 // Functie om model te laden en te transformeren
 function loadAndTransformModel(
     url,
@@ -239,27 +213,16 @@ function loadAndTransformModel(
             }
         });
 
-        // Apply transformations (position, scale, rotation) and handle mirroring if needed
         transforms.forEach(transform => {
             const mesh = loadedModel.clone();
 
-            // Apply position, rotation, and scale
             mesh.position.copy(transform.position || new THREE.Vector3());
             mesh.rotation.copy(transform.rotation || new THREE.Euler(0, 0, 0));
             mesh.scale.copy(transform.scale || new THREE.Vector3(1, 1, 1));
 
-            // If mirror is true, flip the X axis (or apply other axis flips as necessary)
-            if (transform.mirror) {
-                mesh.scale.x = -Math.abs(mesh.scale.x); // Flip the X axis for mirroring
-            }
-
-            // Add the transformed mesh to the group
             group.add(mesh);
         });
 
-        exportArModel();
-
-        // Make the model visible
         loadedModel.visible = true;
     });
 }
@@ -809,108 +772,99 @@ export function captureScreenshot() {
 }
 
 if (windowHeight > windowWidth) {
-    document.getElementById("arButton").addEventListener("click", () => {
-
-        /*
-        if (modelDownloadURL) {
-            const intentUrl = `intent://arvr.google.com/scene-viewer/1.0?file=${encodeURIComponent(modelDownloadURL)}&mode=ar_only&resizable=false&disable_occlusion=true#Intent;scheme=https;package=com.google.ar.core;action=android.intent.action.VIEW;S.browser_fallback_url=https://developers.google.com/ar;end;`;
-            window.location.href = intentUrl;
-        } else {
-            console.error('Model URL niet beschikbaar. Zorg ervoor dat het model eerst is geëxporteerd.');
-        }
-    });
-    */
-
+    document.getElementById("arButton").addEventListener("click", async () => {
+        try {
+            await exportModel(); // Wacht tot het model succesvol is geëxporteerd
             if (modelDownloadURL) {
                 const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 
                 if (isIOS) {
-                    // Use AR Quick Look for iOS
-                    const usdzUrl = modelDownloadURL.replace(/\.[^/.]+$/, ".usdz"); // Replace extension with .usdz
+                    const usdzUrl = modelDownloadURL.replace(/\.[^/.]+$/, ".usdz");
                     const arQuickLookUrl = `${usdzUrl}#allowsContentScaling=0&disableOcclusion=true`;
                     window.location.href = arQuickLookUrl;
                 } else {
-                    // Use Google Scene Viewer for Android
                     const intentUrl = `intent://arvr.google.com/scene-viewer/1.0?file=${encodeURIComponent(modelDownloadURL)}&mode=ar_only&resizable=false&disable_occlusion=true#Intent;scheme=https;package=com.google.ar.core;action=android.intent.action.VIEW;S.browser_fallback_url=https://developers.google.com/ar;end;`;
                     window.location.href = intentUrl;
                 }
             } else {
                 console.error('Model URL not available. Ensure the model is exported first.');
             }
-        });
+        } catch (error) {
+            console.error('Error during AR setup:', error);
+        }
+    });
 }
 
-let modelDownloadURL = null; // Hier slaan we de download-URL op
 
-function exportModel() {
+async function exportModel() {
     const exporter = new GLTFExporter();
     const options = {
-        binary: true,                // Export as a binary GLB file
-        embedImages: true,           // Ensure images are embedded
-        includeCustomExtensions: true // Include extensions like clearcoat
+        binary: true,
+        embedImages: true,
+        includeCustomExtensions: true,
     };
 
-    // Remove temporary objects from the scene (e.g., ground)
+    // Verwijder tijdelijke objecten
     scene.remove(ground);
 
-    exporter.parse(
-        scene,
-        function (result) {
-            // Convert the GLTF to a binary Blob
-            const blob = new Blob([result], { type: 'model/gltf-binary' });
+    return new Promise((resolve, reject) => {
+        exporter.parse(
+            scene,
+            async (result) => {
+                try {
+                    const blob = new Blob([result], { type: 'model/gltf-binary' });
 
-            // Upload the GLB file to Firebase Storage
-            const storageRefGLB = ref(storage, 'glbModels/model.glb');
-            uploadBytes(storageRefGLB, blob).then(() => {
-                console.log('GLB model successfully uploaded!');
+                    // Upload GLB naar Firebase Storage
+                    const storageRefGLB = ref(storage, 'glbModels/model.glb');
+                    await uploadBytes(storageRefGLB, blob);
+                    console.log('GLB model successfully uploaded!');
 
-                // Get the download URL for the GLB model
-                getDownloadURL(storageRefGLB).then((url) => {
-                    console.log('GLB model URL:', url);
-                    modelDownloadURL = url; // Save the URL for later use
-                });
-            }).catch((error) => {
-                console.error('Error uploading GLB model to Firebase:', error);
-            });
+                    // Ophalen GLB-download-URL
+                    modelDownloadURL = await getDownloadURL(storageRefGLB);
+                    console.log('GLB model URL:', modelDownloadURL);
 
-            // Now let's upload the .usdz file to Firebase Storage
-            const usdzFilePath = 'https://vanwoerdenwonen-levante.web.app/projects/vanwoerdenwonen-levante/gltf/model.usdz'; // Local path to the .usdz file
+                    // Upload USDZ-bestand
+                    await uploadUSDZ();
 
-            // Check if the .usdz file exists and is accessible
-            fetch(usdzFilePath)
-                .then((response) => {
-                    if (response.ok) {
-                        return response.blob(); // Convert the response to a Blob (binary data)
-                    } else {
-                        throw new Error('Failed to fetch the .usdz file');
-                    }
-                })
-                .then((usdzBlob) => {
-                    // Upload the .usdz file to Firebase Storage
-                    const storageRefUSDZ = ref(storage, 'glbModels/model.usdz');
-                    uploadBytes(storageRefUSDZ, usdzBlob).then(() => {
-                        console.log('USDZ model successfully uploaded!');
-
-                        // Get the download URL for the .usdz model
-                        getDownloadURL(storageRefUSDZ).then((url) => {
-                            console.log('USDZ model URL:', url);
-                            usdzDownloadURL = url; // Save the URL for later use
-                        });
-                    }).catch((error) => {
-                        console.error('Error uploading USDZ model to Firebase:', error);
-                    });
-                })
-                .catch((error) => {
-                    console.error('Error fetching or uploading USDZ file:', error);
-                });
-
-        },
-        (error) => {
-            console.error('Error during export:', error);
-        },
-        options
-    );
+                    resolve(); // Resolving de hele exportfunctie
+                } catch (error) {
+                    console.error('Error during GLB upload or URL retrieval:', error);
+                    reject(error);
+                }
+            },
+            (error) => {
+                console.error('Error during export:', error);
+                reject(error);
+            },
+            options
+        );
+    });
 }
+
+async function uploadUSDZ() {
+    const usdzFilePath = 'https://vanwoerdenwonen-levante.web.app/projects/vanwoerdenwonen-levante/gltf/model.usdz';
+
+    try {
+        // Controleer of het USDZ-bestand toegankelijk is
+        const response = await fetch(usdzFilePath);
+        if (!response.ok) throw new Error('Failed to fetch the .usdz file');
+
+        const usdzBlob = await response.blob();
+
+        // Upload naar Firebase Storage
+        const storageRefUSDZ = ref(storage, 'glbModels/model.usdz');
+        await uploadBytes(storageRefUSDZ, usdzBlob);
+        console.log('USDZ model successfully uploaded!');
+
+        const usdzDownloadURL = await getDownloadURL(storageRefUSDZ);
+        console.log('USDZ model URL:', usdzDownloadURL);
+    } catch (error) {
+        console.error('Error fetching or uploading USDZ file:', error);
+        throw error; // Zorg dat fouten correct worden doorgegeven
+    }
+}
+
+
 
 // Helperfunctie om GLB-data te combineren
 function combineGLBData(jsonBuffer, binaryData) {
