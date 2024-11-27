@@ -190,11 +190,11 @@ function addGroundForAR() {
     const groundGeometry = new THREE.PlaneGeometry(20, 20);
     const groundMaterial = new THREE.ShadowMaterial({ opacity: 0.3 });
     const ground = new THREE.Mesh(groundGeometry, groundMaterial);
-    
+
     ground.rotation.x = -Math.PI / 2;
     ground.position.y = 0;
     ground.receiveShadow = true;
-    
+
     scene.add(ground);
 }
 
@@ -242,7 +242,7 @@ function loadAndTransformModel(
         // Apply transformations (position, scale, rotation) and handle mirroring if needed
         transforms.forEach(transform => {
             const mesh = loadedModel.clone();
-            
+
             // Apply position, rotation, and scale
             mesh.position.copy(transform.position || new THREE.Vector3());
             mesh.rotation.copy(transform.rotation || new THREE.Euler(0, 0, 0));
@@ -810,6 +810,8 @@ export function captureScreenshot() {
 
 if (windowHeight > windowWidth) {
     document.getElementById("arButton").addEventListener("click", () => {
+
+        /*
         if (modelDownloadURL) {
             const intentUrl = `intent://arvr.google.com/scene-viewer/1.0?file=${encodeURIComponent(modelDownloadURL)}&mode=ar_only&resizable=false&disable_occlusion=true#Intent;scheme=https;package=com.google.ar.core;action=android.intent.action.VIEW;S.browser_fallback_url=https://developers.google.com/ar;end;`;
             window.location.href = intentUrl;
@@ -817,6 +819,25 @@ if (windowHeight > windowWidth) {
             console.error('Model URL niet beschikbaar. Zorg ervoor dat het model eerst is geëxporteerd.');
         }
     });
+    */
+
+            if (modelDownloadURL) {
+                const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
+                if (isIOS) {
+                    // Use AR Quick Look for iOS
+                    const usdzUrl = modelDownloadURL.replace(/\.[^/.]+$/, ".usdz"); // Replace extension with .usdz
+                    const arQuickLookUrl = `${usdzUrl}#allowsContentScaling=0&disableOcclusion=true`;
+                    window.location.href = arQuickLookUrl;
+                } else {
+                    // Use Google Scene Viewer for Android
+                    const intentUrl = `intent://arvr.google.com/scene-viewer/1.0?file=${encodeURIComponent(modelDownloadURL)}&mode=ar_only&resizable=false&disable_occlusion=true#Intent;scheme=https;package=com.google.ar.core;action=android.intent.action.VIEW;S.browser_fallback_url=https://developers.google.com/ar;end;`;
+                    window.location.href = intentUrl;
+                }
+            } else {
+                console.error('Model URL not available. Ensure the model is exported first.');
+            }
+        });
 }
 
 let modelDownloadURL = null; // Hier slaan we de download-URL op
@@ -824,35 +845,68 @@ let modelDownloadURL = null; // Hier slaan we de download-URL op
 function exportModel() {
     const exporter = new GLTFExporter();
     const options = {
-        binary: true,                // Exporteer als een binair GLB-bestand
-        embedImages: true,          // Zorg ervoor dat afbeeldingen worden ingesloten
-        includeCustomExtensions: true // Zorgt ervoor dat extensies zoals clearcoat worden meegenomen
+        binary: true,                // Export as a binary GLB file
+        embedImages: true,           // Ensure images are embedded
+        includeCustomExtensions: true // Include extensions like clearcoat
     };
 
-    // Verwijder tijdelijke objecten uit de scène (zoals de grond)
+    // Remove temporary objects from the scene (e.g., ground)
     scene.remove(ground);
 
     exporter.parse(
         scene,
         function (result) {
+            // Convert the GLTF to a binary Blob
             const blob = new Blob([result], { type: 'model/gltf-binary' });
 
-            // Upload het bestand naar Firebase Storage
-            const storageRef = ref(storage, 'glbModels/model.glb');
-            uploadBytes(storageRef, blob).then(() => {
-                console.log('Model succesvol geüpload!');
+            // Upload the GLB file to Firebase Storage
+            const storageRefGLB = ref(storage, 'glbModels/model.glb');
+            uploadBytes(storageRefGLB, blob).then(() => {
+                console.log('GLB model successfully uploaded!');
 
-                // Verkrijg de downloadbare URL
-                getDownloadURL(storageRef).then((url) => {
-                    console.log('Model URL:', url);
-                    modelDownloadURL = url; // Sla de URL op voor later gebruik
+                // Get the download URL for the GLB model
+                getDownloadURL(storageRefGLB).then((url) => {
+                    console.log('GLB model URL:', url);
+                    modelDownloadURL = url; // Save the URL for later use
                 });
             }).catch((error) => {
-                console.error('Fout bij uploaden naar Firebase:', error);
+                console.error('Error uploading GLB model to Firebase:', error);
             });
+
+            // Now let's upload the .usdz file to Firebase Storage
+            const usdzFilePath = 'https://vanwoerdenwonen-levante.web.app/projects/vanwoerdenwonen-levante/gltf/model.usdz'; // Local path to the .usdz file
+
+            // Check if the .usdz file exists and is accessible
+            fetch(usdzFilePath)
+                .then((response) => {
+                    if (response.ok) {
+                        return response.blob(); // Convert the response to a Blob (binary data)
+                    } else {
+                        throw new Error('Failed to fetch the .usdz file');
+                    }
+                })
+                .then((usdzBlob) => {
+                    // Upload the .usdz file to Firebase Storage
+                    const storageRefUSDZ = ref(storage, 'glbModels/model.usdz');
+                    uploadBytes(storageRefUSDZ, usdzBlob).then(() => {
+                        console.log('USDZ model successfully uploaded!');
+
+                        // Get the download URL for the .usdz model
+                        getDownloadURL(storageRefUSDZ).then((url) => {
+                            console.log('USDZ model URL:', url);
+                            usdzDownloadURL = url; // Save the URL for later use
+                        });
+                    }).catch((error) => {
+                        console.error('Error uploading USDZ model to Firebase:', error);
+                    });
+                })
+                .catch((error) => {
+                    console.error('Error fetching or uploading USDZ file:', error);
+                });
+
         },
         (error) => {
-            console.error('Fout bij exporteren:', error);
+            console.error('Error during export:', error);
         },
         options
     );
