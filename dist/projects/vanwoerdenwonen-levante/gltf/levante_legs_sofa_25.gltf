@@ -81,7 +81,7 @@
   "buffers": [
     {
       "byteLength": 168256,
-      "uri": "levante_legs_sofa.bin"
+      "uri": "levante_legs_sofa_25.bin"
     }
   ],
   "materials": [
@@ -114,7 +114,7 @@
   ],
   "meshes": [
     {
-      "name": "legs_sofa001",
+      "name": "legs_sofa_25",
       "primitives": [
         {
           "attributes": {
@@ -158,7 +158,7 @@
         1.0
       ],
       "mesh": 0,
-      "name": "legs_sofa001"
+      "name": "legs_sofa_25"
     },
     {
       "children": [

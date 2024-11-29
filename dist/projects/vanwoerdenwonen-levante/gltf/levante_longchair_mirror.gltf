@@ -3,16 +3,16 @@
     {
       "bufferView": 0,
       "componentType": 5126,
-      "count": 29256,
+      "count": 17656,
       "max": [
-        43.5682487487793,
-        15.049793243408203,
-        32.07621383666992
+        39.25727081298828,
+        25.056669235229492,
+        22.211196899414063
       ],
       "min": [
-        -43.5682487487793,
-        -24.651281356811523,
-        7.557687759399414
+        -15.645493507385254,
+        -37.52333068847656,
+        -5.8849053382873535
       ],
       "type": "VEC3"
     },
@@ -20,58 +20,58 @@
       "bufferView": 0,
       "byteOffset": 12,
       "componentType": 5126,
-      "count": 29256,
+      "count": 17656,
       "type": "VEC3"
     },
     {
       "bufferView": 0,
       "byteOffset": 24,
       "componentType": 5126,
-      "count": 29256,
+      "count": 17656,
       "type": "VEC2"
     },
     {
       "bufferView": 1,
       "componentType": 5125,
-      "count": 129156,
+      "count": 78294,
       "type": "SCALAR"
     },
     {
       "bufferView": 0,
-      "byteOffset": 936192,
+      "byteOffset": 564992,
       "componentType": 5126,
-      "count": 1020,
+      "count": 602,
       "max": [
-        40.79500198364258,
-        14.320413589477539,
-        31.701507568359375
+        34.635894775390625,
+        22.917131423950195,
+        21.903457641601563
       ],
       "min": [
-        -40.79500198364258,
-        -18.09650230407715,
-        12.303524017333984
+        -4.379726409912109,
+        -30.3730525970459,
+        1.5346812009811401
       ],
       "type": "VEC3"
     },
     {
       "bufferView": 0,
-      "byteOffset": 936204,
+      "byteOffset": 565004,
       "componentType": 5126,
-      "count": 1020,
+      "count": 602,
       "type": "VEC3"
     },
     {
       "bufferView": 0,
-      "byteOffset": 936216,
+      "byteOffset": 565016,
       "componentType": 5126,
-      "count": 1020,
+      "count": 602,
       "type": "VEC2"
     },
     {
       "bufferView": 1,
-      "byteOffset": 516624,
+      "byteOffset": 313176,
       "componentType": 5125,
-      "count": 4476,
+      "count": 2550,
       "type": "SCALAR"
     }
   ],
@@ -81,21 +81,21 @@
   "bufferViews": [
     {
       "buffer": 0,
-      "byteLength": 968832,
+      "byteLength": 584256,
       "byteStride": 32,
       "target": 34962
     },
     {
       "buffer": 0,
-      "byteLength": 534528,
-      "byteOffset": 968832,
+      "byteLength": 323376,
+      "byteOffset": 584256,
       "target": 34963
     }
   ],
   "buffers": [
     {
-      "byteLength": 1503360,
-      "uri": "levante_sofa_3.bin"
+      "byteLength": 907632,
+      "uri": "levante_longchair_mirror.bin"
     }
   ],
   "images": [
@@ -144,7 +144,7 @@
   ],
   "meshes": [
     {
-      "name": "sofa_3",
+      "name": "longchair_mirror",
       "primitives": [
         {
           "attributes": {
@@ -190,28 +190,28 @@
         1.0
       ],
       "mesh": 0,
-      "name": "sofa_3"
+      "name": "longchair_mirror"
     },
     {
       "children": [
         0
       ],
       "matrix": [
+        -0.9773557782173157,
+        0.0,
+        0.21160279214382166,
+        0.0,
+        -0.21160279214382166,
+        0.0,
+        -0.9773557782173157,
+        0.0,
+        0.0,
         1.0,
         0.0,
         0.0,
-        0.0,
-        0.0,
-        0.0,
-        -1.0,
-        0.0,
-        0.0,
-        1.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
+        -0.8207033935546875,
+        0.3220579339981079,
+        -0.34537455825805663,
         1.0
       ]
     }

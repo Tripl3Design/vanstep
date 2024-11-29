@@ -96,7 +96,8 @@ const levante_sofa_25Url = projectmap + 'gltf/levante_sofa_25.gltf';
 const levante_sofa_3Url = projectmap + 'gltf/levante_sofa_3.gltf';
 const levante_longchairUrl = projectmap + 'gltf/levante_longchair.gltf';
 const levante_leg_longchairUrl = projectmap + 'gltf/levante_leg_longchair.gltf';
-const levante_legs_sofaUrl = projectmap + 'gltf/levante_legs_sofa.gltf';
+const levante_legs_sofa_25Url = projectmap + 'gltf/levante_legs_sofa_25.gltf';
+const levante_legs_sofa_3Url = projectmap + 'gltf/levante_legs_sofa_3.gltf';
 const levante_leg_corner_rightUrl = projectmap + 'gltf/levante_leg_corner_right.gltf';
 const levante_leg_corner_middleUrl = projectmap + 'gltf/levante_leg_corner_middle.gltf';
 const levante_leg_corner_leftUrl = projectmap + 'gltf/levante_leg_corner_left.gltf';
@@ -107,6 +108,7 @@ const levante_m_femaleUrl = projectmap + 'gltf/levante_m_female.gltf';
 const levante_l_maleUrl = projectmap + 'gltf/levante_l_male.gltf';
 const levante_l_femaleUrl = projectmap + 'gltf/levante_l_female.gltf';
 const levante_recamiereUrl = projectmap + 'gltf/levante_recamiere.gltf';
+const levante_recamiere_mirrorUrl = projectmap + 'gltf/levante_recamiere_mirror.gltf';
 const levante_footstoolUrl = projectmap + 'gltf/levante_footstool.gltf';
 const levante_legs_footstoolUrl = projectmap + 'gltf/levante_legs_footstool.gltf';
 
@@ -225,12 +227,6 @@ function loadAndTransformModel(
             mesh.rotation.copy(transform.rotation || new THREE.Euler(0, 0, 0));
             mesh.scale.copy(transform.scale || new THREE.Vector3(1, 1, 1));
 
-            // Mirror along the X axis by rotating 180 degrees (if needed)
-            if (transform.mirrorX) {
-                mesh.applyMatrix4(new THREE.Matrix4().makeScale(-1, 1, 1)); // This mirrors the geometry along the X-axis
-                mesh.position.x = -mesh.position.x; // Adjust position to reflect the mirrored model
-            }
-
             // Add the transformed mesh to the group
             group.add(mesh);
         });
@@ -267,15 +263,13 @@ export async function loadModelData(model) {
         let legTransforms;
 
         legTransforms = [
-            { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0) },
-            { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0), scale: new THREE.Vector3(-1, 1, 1) }
+            { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0) }
         ];
 
-        loadAndTransformModel(levante_legs_sofaUrl, legTransforms, group, '000000', null, 'paint', null, null, null);
+        loadAndTransformModel(levante_legs_sofa_25Url, legTransforms, group, '000000', null, 'paint', null, null, null);
 
         let elementTransforms = [
             { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0)) },
-            { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0)), scale: new THREE.Vector3(-1, 1, 1) }
         ];
 
         if (model.upholsteryDuotone) {
@@ -292,15 +286,13 @@ export async function loadModelData(model) {
         let legTransforms;
 
         legTransforms = [
-            { position: new THREE.Vector3(0.2, (model.seatHeight == 47 ? 0.03 : 0), 0) },
-            { position: new THREE.Vector3(-0.2, (model.seatHeight == 47 ? 0.03 : 0), 0), scale: new THREE.Vector3(-1, 1, 1) },
+            { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0) }
         ];
 
-        loadAndTransformModel(levante_legs_sofaUrl, legTransforms, group, '000000', null, 'paint', null, null, null);
+        loadAndTransformModel(levante_legs_sofa_3Url, legTransforms, group, '000000', null, 'paint', null, null, null);
 
         let elementTransforms = [
-            { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0) },
-            { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0), scale: new THREE.Vector3(-1, 1, 1) },
+            { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0) }
         ];
 
         if (model.upholsteryDuotone) {
@@ -318,26 +310,31 @@ export async function loadModelData(model) {
 
         legTransforms = [
             { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0) },
-            { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0), scale: new THREE.Vector3(-1, 1, 1) },
         ];
 
-        loadAndTransformModel(levante_legs_sofaUrl, legTransforms, group, '000000', null, 'paint', null, null, null);
+        loadAndTransformModel(levante_legs_sofa_25Url, legTransforms, group, '000000', null, 'paint', null, null, null);
 
         let elementTransforms;
         if (model.type == "art6093") {
             elementTransforms = [
                 { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0) },
             ];
+            if (model.upholsteryDuotone) {
+                loadAndTransformModel(levante_recamiereUrl, elementTransforms, group, null, model.upholstery.path, model.upholstery.structure, null, model.upholsteryDuotone.path, model.upholsteryDuotone.structure);
+            } else {
+                loadAndTransformModel(levante_recamiereUrl, elementTransforms, group, null, model.upholstery.path, model.upholstery.structure, null, null, null);
+            }
         } else {
             elementTransforms = [
-                { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0), scale: new THREE.Vector3(-1, 1, 1) },
+                { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0) },
             ];
+            if (model.upholsteryDuotone) {
+                loadAndTransformModel(levante_recamiere_mirrorUrl, elementTransforms, group, null, model.upholstery.path, model.upholstery.structure, null, model.upholsteryDuotone.path, model.upholsteryDuotone.structure);
+            } else {
+                loadAndTransformModel(levante_recamiere_mirrorUrl, elementTransforms, group, null, model.upholstery.path, model.upholstery.structure, null, null, null);
+            }
         }
-        if (model.upholsteryDuotone) {
-            loadAndTransformModel(levante_recamiereUrl, elementTransforms, group, null, model.upholstery.path, model.upholstery.structure, null, model.upholsteryDuotone.path, model.upholsteryDuotone.structure);
-        } else {
-            loadAndTransformModel(levante_recamiereUrl, elementTransforms, group, null, model.upholstery.path, model.upholstery.structure, null, null, null);
-        }
+
 
         scene.add(group);
         models.push(group);
