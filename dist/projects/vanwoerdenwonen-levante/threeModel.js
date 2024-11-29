@@ -64,13 +64,7 @@ export function initThree(containerElem) {
     controls.update();
 
     // Ground plane setup
-    groundGeometry = new THREE.PlaneGeometry(20, 20);
-    groundMaterial = new THREE.ShadowMaterial({ opacity: 0.3 });
-    ground = new THREE.Mesh(groundGeometry, groundMaterial);
-    ground.rotation.x = -Math.PI / 2;
-    ground.position.y = 0;
-    ground.receiveShadow = true;
-    scene.add(ground);
+    addGround();
 
     // desktop version
     if (windowHeight < windowWidth) {
@@ -79,6 +73,16 @@ export function initThree(containerElem) {
 
     // Start the render loop
     render();
+}
+
+function addGround() {
+    groundGeometry = new THREE.PlaneGeometry(20, 20);
+    groundMaterial = new THREE.ShadowMaterial({ opacity: 0.3 });
+    ground = new THREE.Mesh(groundGeometry, groundMaterial);
+    ground.rotation.x = -Math.PI / 2;
+    ground.position.y = 0;
+    ground.receiveShadow = true;
+    scene.add(ground);
 }
 
 // Desktop versie
@@ -172,7 +176,6 @@ function createPBRMaterial(materialType, hexColor = null, texturePath = null) {
     return material;
 }
 
-// Functie om model te laden en te transformeren
 function loadAndTransformModel(
     url,
     transforms = [{}],
@@ -213,13 +216,22 @@ function loadAndTransformModel(
             }
         });
 
+        // Apply transformations and mirror the model (without using negative scale)
         transforms.forEach(transform => {
             const mesh = loadedModel.clone();
 
+            // Apply position, rotation, and scale
             mesh.position.copy(transform.position || new THREE.Vector3());
             mesh.rotation.copy(transform.rotation || new THREE.Euler(0, 0, 0));
             mesh.scale.copy(transform.scale || new THREE.Vector3(1, 1, 1));
 
+            // Mirror along the X axis by rotating 180 degrees (if needed)
+            if (transform.mirrorX) {
+                mesh.applyMatrix4(new THREE.Matrix4().makeScale(-1, 1, 1)); // This mirrors the geometry along the X-axis
+                mesh.position.x = -mesh.position.x; // Adjust position to reflect the mirrored model
+            }
+
+            // Add the transformed mesh to the group
             group.add(mesh);
         });
 
@@ -255,15 +267,15 @@ export async function loadModelData(model) {
         let legTransforms;
 
         legTransforms = [
-            { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0), scale: new THREE.Vector3(1, 1, 1) },
-            { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0), scale: new THREE.Vector3(-1, 1, 1) },
+            { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0) },
+            { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0), scale: new THREE.Vector3(-1, 1, 1) }
         ];
 
         loadAndTransformModel(levante_legs_sofaUrl, legTransforms, group, '000000', null, 'paint', null, null, null);
 
         let elementTransforms = [
-            { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0), scale: new THREE.Vector3(1, 1, 1) },
-            { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0), scale: new THREE.Vector3(-1, 1, 1) },
+            { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0)) },
+            { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0)), scale: new THREE.Vector3(-1, 1, 1) }
         ];
 
         if (model.upholsteryDuotone) {
@@ -280,14 +292,14 @@ export async function loadModelData(model) {
         let legTransforms;
 
         legTransforms = [
-            { position: new THREE.Vector3(0.2, (model.seatHeight == 47 ? 0.03 : 0), 0), scale: new THREE.Vector3(1, 1, 1) },
+            { position: new THREE.Vector3(0.2, (model.seatHeight == 47 ? 0.03 : 0), 0) },
             { position: new THREE.Vector3(-0.2, (model.seatHeight == 47 ? 0.03 : 0), 0), scale: new THREE.Vector3(-1, 1, 1) },
         ];
 
         loadAndTransformModel(levante_legs_sofaUrl, legTransforms, group, '000000', null, 'paint', null, null, null);
 
         let elementTransforms = [
-            { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0), scale: new THREE.Vector3(1, 1, 1) },
+            { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0) },
             { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0), scale: new THREE.Vector3(-1, 1, 1) },
         ];
 
@@ -305,7 +317,7 @@ export async function loadModelData(model) {
         let legTransforms;
 
         legTransforms = [
-            { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0), scale: new THREE.Vector3(1, 1, 1) },
+            { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0) },
             { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0), scale: new THREE.Vector3(-1, 1, 1) },
         ];
 
@@ -314,7 +326,7 @@ export async function loadModelData(model) {
         let elementTransforms;
         if (model.type == "art6093") {
             elementTransforms = [
-                { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0), scale: new THREE.Vector3(1, 1, 1) },
+                { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0) },
             ];
         } else {
             elementTransforms = [
@@ -336,7 +348,7 @@ export async function loadModelData(model) {
         let legTransforms;
         if (model.type == "art5310") {
             legTransforms = [
-                { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0), scale: new THREE.Vector3(1, 1, 1) },
+                { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0) },
             ];
         } else {
             legTransforms = [
@@ -351,7 +363,7 @@ export async function loadModelData(model) {
         let elementTransforms;
         if (model.type == "art5310") {
             elementTransforms = [
-                { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0), scale: new THREE.Vector3(1, 1, 1) },
+                { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0) },
             ];
         } else {
             elementTransforms = [
@@ -374,7 +386,7 @@ export async function loadModelData(model) {
         let legTransformsRight;
         if (model.type == "art5311") {
             legTransformsRight = [
-                { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0.35), scale: new THREE.Vector3(1, 1, 1) },
+                { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0.35) },
             ];
         } else {
             legTransformsRight = [
@@ -385,7 +397,7 @@ export async function loadModelData(model) {
         let legTransformsMiddle;
         if (model.type == "art5311") {
             legTransformsMiddle = [
-                { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0), scale: new THREE.Vector3(1, 1, 1) },
+                { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0) },
             ];
         } else {
             legTransformsMiddle = [
@@ -396,7 +408,7 @@ export async function loadModelData(model) {
         let legTransformsLeft;
         if (model.type == "art5311") {
             legTransformsLeft = [
-                { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0), scale: new THREE.Vector3(1, 1, 1) },
+                { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0) },
             ];
         } else {
             legTransformsLeft = [
@@ -411,7 +423,7 @@ export async function loadModelData(model) {
         let elementTransforms;
         if (model.type == "art5311") {
             elementTransforms = [
-                { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0), scale: new THREE.Vector3(1, 1, 1) },
+                { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0) },
             ];
         } else {
             elementTransforms = [
@@ -434,7 +446,7 @@ export async function loadModelData(model) {
         let legTransformsRight;
         if (model.type == "art5312") {
             legTransformsRight = [
-                { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0.2), scale: new THREE.Vector3(1, 1, 1) },
+                { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0.2) },
             ];
         } else {
             legTransformsRight = [
@@ -445,7 +457,7 @@ export async function loadModelData(model) {
         let legTransformsMiddle;
         if (model.type == "art5312") {
             legTransformsMiddle = [
-                { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0), scale: new THREE.Vector3(1, 1, 1) },
+                { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0) },
             ];
         } else {
             legTransformsMiddle = [
@@ -456,7 +468,7 @@ export async function loadModelData(model) {
         let legTransformsLeft;
         if (model.type == "art5312") {
             legTransformsLeft = [
-                { position: new THREE.Vector3(-0.15, (model.seatHeight == 47 ? 0.03 : 0), 0), scale: new THREE.Vector3(1, 1, 1) },
+                { position: new THREE.Vector3(-0.15, (model.seatHeight == 47 ? 0.03 : 0), 0) },
             ];
         } else {
             legTransformsLeft = [
@@ -471,7 +483,7 @@ export async function loadModelData(model) {
         let elementTransforms;
         if (model.type == "art5312") {
             elementTransforms = [
-                { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0), scale: new THREE.Vector3(1, 1, 1) },
+                { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0) },
             ];
         } else {
             elementTransforms = [
@@ -494,7 +506,7 @@ export async function loadModelData(model) {
         let legTransformsRight;
         if (model.type == "art5313") {
             legTransformsRight = [
-                { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0.25), scale: new THREE.Vector3(1, 1, 1) },
+                { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0.25) },
             ];
         } else {
             legTransformsRight = [
@@ -505,7 +517,7 @@ export async function loadModelData(model) {
         let legTransformsMiddle;
         if (model.type == "art5313") {
             legTransformsMiddle = [
-                { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0), scale: new THREE.Vector3(1, 1, 1) },
+                { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0) },
             ];
         } else {
             legTransformsMiddle = [
@@ -516,7 +528,7 @@ export async function loadModelData(model) {
         let legTransformsLeft;
         if (model.type == "art5313") {
             legTransformsLeft = [
-                { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0), scale: new THREE.Vector3(1, 1, 1) },
+                { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0) },
             ];
         } else {
             legTransformsLeft = [
@@ -531,7 +543,7 @@ export async function loadModelData(model) {
         let elementTransforms;
         if (model.type == "art5313") {
             elementTransforms = [
-                { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0), scale: new THREE.Vector3(1, 1, 1) },
+                { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0) },
             ];
         } else {
             elementTransforms = [
@@ -554,7 +566,7 @@ export async function loadModelData(model) {
         let legTransforms;
         if (model.type = "art846") {
             legTransforms = [
-                { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0), scale: new THREE.Vector3(1, 1, 1) },
+                { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0) },
             ]
         }
         else {
@@ -569,7 +581,7 @@ export async function loadModelData(model) {
         let elementTransforms;
         if (model.type == "art846") {
             elementTransforms = [
-                { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0), scale: new THREE.Vector3(1, 1, 1) },
+                { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0) },
             ];
         } else {
             elementTransforms = [
@@ -591,11 +603,11 @@ export async function loadModelData(model) {
         let legTransforms;
         if (model.type = "art598") {
             legTransforms = [
-                { position: new THREE.Vector3(-0.25, (model.seatHeight == 47 ? 0.03 : 0), 0), scale: new THREE.Vector3(1, 1, 1) },
+                { position: new THREE.Vector3(-0.25, (model.seatHeight == 47 ? 0.03 : 0), 0) },
             ];
             loadAndTransformModel(levante_leg_corner_leftUrl, legTransforms, group, '000000', null, 'paint', null, null, null);
             legTransforms = [
-                { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0), scale: new THREE.Vector3(1, 1, 1) },
+                { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0) },
             ];
             loadAndTransformModel(levante_leg_longchairUrl, legTransforms, group, '000000', null, 'paint', null, null, null);
 
@@ -614,7 +626,7 @@ export async function loadModelData(model) {
         let elementTransforms;
         if (model.type == "art598") {
             elementTransforms = [
-                { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0), scale: new THREE.Vector3(1, 1, 1) },
+                { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0) },
             ];
         } else {
             elementTransforms = [
@@ -637,7 +649,7 @@ export async function loadModelData(model) {
         let legTransforms;
         if (model.type == 'art2502' || model.type == 'art3002' || model.type == 'art846' || model.type == 'art553' || model.type == 'art598' || model.type == 'art860' || model.type == 'art6093' || model.type == 'art9091') {
             legTransforms = [
-                { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 1.2), rotation: new THREE.Euler(0, THREE.MathUtils.degToRad(45), 0), scale: new THREE.Vector3(1, 1, 1) },
+                { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 1.2), rotation: new THREE.Euler(0, THREE.MathUtils.degToRad(45), 0) },
             ];
         } else if (model.type == 'art5314' || model.type == 'art5316' || model.type == 'art5315' || model.type == 'art5317') {
             legTransforms = [
@@ -649,7 +661,7 @@ export async function loadModelData(model) {
             ];
         } else {
             legTransforms = [
-                { position: new THREE.Vector3(-0.5, (model.seatHeight == 47 ? 0.03 : 0), 0.5), scale: new THREE.Vector3(1, 1, 1) },
+                { position: new THREE.Vector3(-0.5, (model.seatHeight == 47 ? 0.03 : 0), 0.5) },
             ];
         }
         loadAndTransformModel(levante_legs_footstoolUrl, legTransforms, group, '000000', null, 'paint', null, null, null);
@@ -657,7 +669,7 @@ export async function loadModelData(model) {
         let elementTransforms;
         if (model.type == 'art2502' || model.type == 'art3002' || model.type == 'art846' || model.type == 'art553' || model.type == 'art598' || model.type == 'art860' || model.type == 'art6093' || model.type == 'art9091') {
             elementTransforms = [
-                { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 1.2), rotation: new THREE.Euler(0, THREE.MathUtils.degToRad(45), 0), scale: new THREE.Vector3(1, 1, 1) },
+                { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 1.2), rotation: new THREE.Euler(0, THREE.MathUtils.degToRad(45), 0) },
             ];
         } else if (model.type == 'art5314' || model.type == 'art5316' || model.type == 'art5315' || model.type == 'art5317') {
             elementTransforms = [
@@ -669,7 +681,7 @@ export async function loadModelData(model) {
             ];
         } else {
             elementTransforms = [
-                { position: new THREE.Vector3(-0.5, (model.seatHeight == 47 ? 0.03 : 0), 0.5), scale: new THREE.Vector3(1, 1, 1) },
+                { position: new THREE.Vector3(-0.5, (model.seatHeight == 47 ? 0.03 : 0), 0.5) },
             ];
         }
         loadAndTransformModel(levante_footstoolUrl, elementTransforms, group, null, model.upholstery.path, model.upholstery.structure, null, null, null);
@@ -774,27 +786,33 @@ export function captureScreenshot() {
 if (windowHeight > windowWidth) {
     document.getElementById("arButton").addEventListener("click", async () => {
         try {
-            await exportModel(); // Wacht tot het model succesvol is geëxporteerd
-            if (modelDownloadURL) {
-                const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 
-                if (isIOS) {
-                    const usdzUrl = modelDownloadURL.replace(/\.[^/.]+$/, ".usdz");
-                    const arQuickLookUrl = `${usdzUrl}#allowsContentScaling=0&disableOcclusion=true`;
-                    window.location.href = arQuickLookUrl;
-                } else {
-                    const intentUrl = `intent://arvr.google.com/scene-viewer/1.0?file=${encodeURIComponent(modelDownloadURL)}&mode=ar_only&resizable=false&disable_occlusion=true#Intent;scheme=https;package=com.google.ar.core;action=android.intent.action.VIEW;S.browser_fallback_url=https://developers.google.com/ar;end;`;
-                    window.location.href = intentUrl;
-                }
+            // Verkrijg de benodigde URL voor het platform
+            const { glbURL, usdzURL } = await exportModel();
+
+            if (isIOS) {
+                // Gebruik de USDZ URL voor iOS
+                const arQuickLookUrl = `${usdzURL}?allowsContentScaling=0&disableOcclusion=true`;
+
+                console.log('AR Quick Look URL (iOS):', arQuickLookUrl);
+
+                // Dynamisch een link maken voor Quick Look
+                const arLink = document.createElement('a');
+                arLink.setAttribute('href', arQuickLookUrl);
+                arLink.setAttribute('rel', 'ar');
+                arLink.click(); // Simuleer klikken op de link om AR te starten
             } else {
-                console.error('Model URL not available. Ensure the model is exported first.');
+                // Gebruik de GLB URL voor Android
+                const intentUrl = `intent://arvr.google.com/scene-viewer/1.0?file=${encodeURIComponent(glbURL)}&mode=ar_only&resizable=false&disable_occlusion=true#Intent;scheme=https;package=com.google.ar.core;action=android.intent.action.VIEW;S.browser_fallback_url=https://developers.google.com/ar;end;`;
+                console.log('Generated Intent URL (Android):', intentUrl);
+                window.location.href = intentUrl;  // Verzendt naar Scene Viewer
             }
         } catch (error) {
             console.error('Error during AR setup:', error);
         }
     });
 }
-
 
 async function exportModel() {
     const exporter = new GLTFExporter();
@@ -804,68 +822,47 @@ async function exportModel() {
         includeCustomExtensions: true,
     };
 
-    // Verwijder tijdelijke objecten
-    scene.remove(ground);
-
-    return new Promise((resolve, reject) => {
-        exporter.parse(
-            scene,
-            async (result) => {
-                try {
-                    const blob = new Blob([result], { type: 'model/gltf-binary' });
-
-                    // Upload GLB naar Firebase Storage
-                    const storageRefGLB = ref(storage, 'glbModels/model.glb');
-                    await uploadBytes(storageRefGLB, blob);
-                    console.log('GLB model successfully uploaded!');
-
-                    // Ophalen GLB-download-URL
-                    modelDownloadURL = await getDownloadURL(storageRefGLB);
-                    console.log('GLB model URL:', modelDownloadURL);
-
-                    // Upload USDZ-bestand
-                    await uploadUSDZ();
-
-                    resolve(); // Resolving de hele exportfunctie
-                } catch (error) {
-                    console.error('Error during GLB upload or URL retrieval:', error);
-                    reject(error);
-                }
-            },
-            (error) => {
-                console.error('Error during export:', error);
-                reject(error);
-            },
-            options
-        );
-    });
-}
-
-async function uploadUSDZ() {
-    const usdzFilePath = 'https://vanwoerdenwonen-levante.web.app/projects/vanwoerdenwonen-levante/gltf/model.usdz';
-
     try {
-        // Controleer of het USDZ-bestand toegankelijk is
-        const response = await fetch(usdzFilePath);
-        if (!response.ok) throw new Error('Failed to fetch the .usdz file');
+        scene.remove(ground);  // Verwijder tijdelijke grondobject
 
-        const usdzBlob = await response.blob();
+        return new Promise((resolve, reject) => {
+            exporter.parse(
+                scene,
+                async (result) => {
+                    try {
+                        // Verwerk de GLB export voor Android
+                        const blob = new Blob([result], { type: 'model/gltf-binary' });
+                        const storageRefGLB = ref(storage, 'glbModels/model.glb');
+                        await uploadBytes(storageRefGLB, blob);
+                        const glbURL = await getDownloadURL(storageRefGLB);  // Bewaar de GLB URL
 
-        // Upload naar Firebase Storage
-        const storageRefUSDZ = ref(storage, 'glbModels/model.usdz');
-        await uploadBytes(storageRefUSDZ, usdzBlob);
-        console.log('USDZ model successfully uploaded!');
+                        // Stel de USDZ URL (alleen nodig voor iOS)
+                        const usdzURL = 'https://firebasestorage.googleapis.com/v0/b/vanwoerdenwonen-tripletise.appspot.com/o/glbModels%2Fmodel.usdz?alt=media';
 
-        const usdzDownloadURL = await getDownloadURL(storageRefUSDZ);
-        console.log('USDZ model URL:', usdzDownloadURL);
-    } catch (error) {
-        console.error('Error fetching or uploading USDZ file:', error);
-        throw error; // Zorg dat fouten correct worden doorgegeven
+                        console.log('GLB model URL (Android):', glbURL);
+                        console.log('USDZ model URL (iOS):', usdzURL);
+
+                        resolve({ glbURL, usdzURL });  // Retourneer beide URL's
+                    } catch (error) {
+                        console.error('Error during model export:', error);
+                        reject(error);
+                    }
+                },
+                (error) => {
+                    console.error('Error during export:', error);
+                    reject(error);
+                },
+                options
+            );
+        });
+    } finally {
+        addGround();  // Voeg grondobject opnieuw toe (voor consistentie)
     }
 }
 
 
 
+/*
 // Helperfunctie om GLB-data te combineren
 function combineGLBData(jsonBuffer, binaryData) {
     const headerBuffer = new ArrayBuffer(12);
@@ -909,3 +906,4 @@ function combineGLBData(jsonBuffer, binaryData) {
 
     return glbData;
 }
+    */
