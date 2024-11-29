@@ -95,22 +95,46 @@ if (windowHeight < windowWidth) {
 const levante_sofa_25Url = projectmap + 'gltf/levante_sofa_25.gltf';
 const levante_sofa_3Url = projectmap + 'gltf/levante_sofa_3.gltf';
 const levante_longchairUrl = projectmap + 'gltf/levante_longchair.gltf';
+const levante_longchair_mirrorUrl = projectmap + 'gltf/levante_longchair_mirror.gltf';
 const levante_leg_longchairUrl = projectmap + 'gltf/levante_leg_longchair.gltf';
+const levante_leg_longchair_mirrorUrl = projectmap + 'gltf/levante_leg_longchair_mirror.gltf';
 const levante_legs_sofa_25Url = projectmap + 'gltf/levante_legs_sofa_25.gltf';
 const levante_legs_sofa_3Url = projectmap + 'gltf/levante_legs_sofa_3.gltf';
 const levante_leg_corner_rightUrl = projectmap + 'gltf/levante_leg_corner_right.gltf';
+const levante_leg_corner_right_mirrorUrl = projectmap + 'gltf/levante_leg_corner_right_mirror.gltf';
+
 const levante_leg_corner_middleUrl = projectmap + 'gltf/levante_leg_corner_middle.gltf';
+const levante_leg_corner_middle_mirrorUrl = projectmap + 'gltf/levante_leg_corner_middle_mirror.gltf';
+
 const levante_leg_corner_leftUrl = projectmap + 'gltf/levante_leg_corner_left.gltf';
+const levante_leg_corner_left_mirrorUrl = projectmap + 'gltf/levante_leg_corner_left_mirror.gltf';
+
 const levante_s_maleUrl = projectmap + 'gltf/levante_s_male.gltf';
+const levante_s_male_mirrorUrl = projectmap + 'gltf/levante_s_male_mirror.gltf';
+
 const levante_s_femaleUrl = projectmap + 'gltf/levante_s_female.gltf';
+const levante_s_female_mirrorUrl = projectmap + 'gltf/levante_s_female_mirror.gltf';
+
 const levante_m_maleUrl = projectmap + 'gltf/levante_m_male.gltf';
+const levante_m_male_mirrorUrl = projectmap + 'gltf/levante_m_male_mirror.gltf';
+
 const levante_m_femaleUrl = projectmap + 'gltf/levante_m_female.gltf';
+const levante_m_female_mirrorUrl = projectmap + 'gltf/levante_m_female_mirror.gltf';
+
 const levante_l_maleUrl = projectmap + 'gltf/levante_l_male.gltf';
+const levante_l_male_mirrorUrl = projectmap + 'gltf/levante_l_male.gltf';
+
 const levante_l_femaleUrl = projectmap + 'gltf/levante_l_female.gltf';
+const levante_l_female_mirrorUrl = projectmap + 'gltf/levante_l_female.gltf';
+
 const levante_recamiereUrl = projectmap + 'gltf/levante_recamiere.gltf';
 const levante_recamiere_mirrorUrl = projectmap + 'gltf/levante_recamiere_mirror.gltf';
+
 const levante_footstoolUrl = projectmap + 'gltf/levante_footstool.gltf';
+const levante_footstool_mirrorUrl = projectmap + 'gltf/levante_footstool_mirror.gltf';
+
 const levante_legs_footstoolUrl = projectmap + 'gltf/levante_legs_footstool.gltf';
+const levante_legs_footstool_mirrorUrl = projectmap + 'gltf/levante_legs_footstool.gltf';
 
 const textureCache = {}; // Cache voor opgeslagen textures
 
@@ -334,8 +358,6 @@ export async function loadModelData(model) {
                 loadAndTransformModel(levante_recamiere_mirrorUrl, elementTransforms, group, null, model.upholstery.path, model.upholstery.structure, null, null, null);
             }
         }
-
-
         scene.add(group);
         models.push(group);
 
@@ -569,7 +591,6 @@ export async function loadModelData(model) {
         else {
             legTransforms = [
                 { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0), scale: new THREE.Vector3(-1, 1, 1) },
-
             ];
         }
         loadAndTransformModel(levante_leg_corner_leftUrl, legTransforms, group, '000000', null, 'paint', null, null, null);
