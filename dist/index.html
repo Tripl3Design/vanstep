@@ -182,7 +182,42 @@
         if (windowHeight > windowWidth) {
 
           document.write( /*html*/ `
-          <model-viewer id="ar-viewer" style="display: none" src="" ar ar-modes="webxr scene-viewer quick-look" camera-controls disable-pan ar-scale="fixed" ar-placement="floor"></model-viewer>
+
+          <style>
+    #loader {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        //background: rgba(255, 255, 255, 0.8);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999; /* Zorg dat het boven andere elementen staat */
+    }
+
+    .spinner {
+        border: 6px solid #fff; /* Lichte rand */
+        border-top: 6px solid #000; /* Blauwe rand */
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        animation: spin 1s linear infinite; /* Rotatie animatie */
+    }
+
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+</style>
+          <div id="loader" style="display: none;">
+    <div class="spinner"></div>
+</div>
 
             <div style="height: 100%; background: #d4d4d4;" class="col-12 vh-100 m-0 p-0" id="modelviewerCol">
                             <div class="position-absolute w-100">
@@ -192,24 +227,21 @@
                                 <!-- you can add controls in the canvas here -->
                              </div>
 
-                             <div style="position: fixed; bottom: 100px;" class="col-12 w-100 text-center">
+                             <div style="position: fixed; bottom: 100px;" class="col-12 w-100 text-center border border-dark">
                               <div class="btn-group btn-group-lg" role="group" aria-label="buttongroup">
                                 
                                 <button type="button" class="d-flex btn rounded-pill btn-sm btn-dark me-2" onclick="shareWithWhatsApp()">
                                   <span class="material-symbols-outlined m-0 p-1">share</span>
                                     </button>
 
+                                <button id="arButton" type="button" class="d-flex btn rounded-pill btn-sm btn-dark me-2">
+                                    <span class="material-symbols-outlined m-0 p-1">view_in_ar</span>
+                                    <span style="font-size: .75rem; margin-top: 6px;">&nbsp;&nbsp;bekijk in de ruimte&nbsp;&nbsp;</span>
+                                </button>
 
-<a href="javascript:void(0);" id="arButton" class="text-decoration-none">
-    <button type="button" class="d-flex btn rounded-pill btn-sm btn-dark me-2">
-        <span class="material-symbols-outlined m-0 p-1">view_in_ar</span>
-        <span style="font-size: .75rem; margin-top: 6px;">&nbsp;&nbsp;bekijk in de ruimte&nbsp;&nbsp;</span>
-    </button>
-</a>
-
-                                  <button type="button" class="d-flex btn rounded-pill btn-sm btn-dark me-2" onclick="downloadPdf()">
-                                      <span class="material-symbols-outlined m-0 p-1">picture_as_pdf</span><span style="font-size: .75rem; margin-top: 6px;">&nbsp;&nbsp;offerte&nbsp;&nbsp;</span>
-                                    </button>
+                                <button type="button" class="d-flex btn rounded-pill btn-sm btn-dark me-2" onclick="downloadPdf()">
+                                    <span class="material-symbols-outlined m-0 p-1">picture_as_pdf</span><span style="font-size: .75rem; margin-top: 6px;">&nbsp;&nbsp;offerte&nbsp;&nbsp;</span>
+                                </button>
                               </div>
                             </div>
                             `);
