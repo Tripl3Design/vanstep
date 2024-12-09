@@ -804,8 +804,8 @@ if (windowHeight > windowWidth) {
                 if (!usdzURL) {
                     throw new Error('USDZ URL ontbreekt.');
                 }
-
-                const arQuickLookUrl = `${usdzURL}?allowsContentScaling=0&disableOcclusion=true`;
+    
+                const arQuickLookUrl = `${usdzURL}?allowsContentScaling=0`;
                 console.log('AR Quick Look URL (iOS):', arQuickLookUrl);
 
                 const arLink = document.createElement('a');
