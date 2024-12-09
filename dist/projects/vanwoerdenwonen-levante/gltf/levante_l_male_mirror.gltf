@@ -3,7 +3,7 @@
     {
       "bufferView": 0,
       "componentType": 5126,
-      "count": 23311,
+      "count": 17998,
       "max": [
         53.13536834716797,
         54.95936584472656,
@@ -20,14 +20,14 @@
       "bufferView": 0,
       "byteOffset": 12,
       "componentType": 5126,
-      "count": 23311,
+      "count": 17998,
       "type": "VEC3"
     },
     {
       "bufferView": 0,
       "byteOffset": 24,
       "componentType": 5126,
-      "count": 23311,
+      "count": 17998,
       "type": "VEC2"
     },
     {
@@ -38,9 +38,9 @@
     },
     {
       "bufferView": 0,
-      "byteOffset": 745952,
+      "byteOffset": 575936,
       "componentType": 5126,
-      "count": 847,
+      "count": 671,
       "max": [
         50.96392059326172,
         52.522823333740234,
@@ -55,16 +55,16 @@
     },
     {
       "bufferView": 0,
-      "byteOffset": 745964,
+      "byteOffset": 575948,
       "componentType": 5126,
-      "count": 847,
+      "count": 671,
       "type": "VEC3"
     },
     {
       "bufferView": 0,
-      "byteOffset": 745976,
+      "byteOffset": 575960,
       "componentType": 5126,
-      "count": 847,
+      "count": 671,
       "type": "VEC2"
     },
     {
@@ -81,20 +81,20 @@
   "bufferViews": [
     {
       "buffer": 0,
-      "byteLength": 773056,
+      "byteLength": 597408,
       "byteStride": 32,
       "target": 34962
     },
     {
       "buffer": 0,
       "byteLength": 435024,
-      "byteOffset": 773056,
+      "byteOffset": 597408,
       "target": 34963
     }
   ],
   "buffers": [
     {
-      "byteLength": 1208080,
+      "byteLength": 1032432,
       "uri": "levante_l_male_mirror.bin"
     }
   ],
