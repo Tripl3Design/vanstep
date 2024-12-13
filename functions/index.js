@@ -10,33 +10,6 @@ const mollieApiKey = "test_QrMUtevQVUnnxFUyWkmxWEpJNrxDNn";
 // Initialize Mollie client
 const mollieClient = createMollieClient({ apiKey: mollieApiKey });
 
-/*
-exports.mollieAuthRedirect = functions.https.onRequest((req, res) => {
-  console.log("mollieAuthRedirect function triggered.");
-  
-  // Stel de vereiste parameters in
-  const clientId = 'app_R9oCYGHTeYkhaSKS5MmerBxZ';
-  const redirectUri = 'https://vanwoerdenwonen-levante.web.app';
-  const responseType = 'code';
-  const scope = 'payments.read customers.read';
-  const state = 'your-state-param';
-  
-  // Bouw de Mollie OAuth URL handmatig
-  const redirectUrl = `https://www.mollie.com/oauth2/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=${responseType}&scope=${encodeURIComponent(scope)}&state=${state}`;
-  
-  console.log("Redirect URL: ", redirectUrl);
-  
-  try {
-    res.redirect(redirectUrl);
-  } catch (error) {
-    console.error("Error creating redirect URL:", error);
-    res.status(500).send("Failed to create redirect URL");
-  }
-});
-*/
-
-
-
 exports.mollieAuthRedirect = functions.https.onRequest((req, res) => {
   corsHandler(req, res, async () => {
     console.log("mollieAuthRedirect function triggered.");
@@ -54,8 +27,8 @@ exports.mollieAuthRedirect = functions.https.onRequest((req, res) => {
           value: formattedAmount, // Het bedrag als string met twee decimalen
         },
         description: description,
-        redirectUrl: 'https://vanwoerdenwonen-levante.web.app/betaling-geslaagd', // Waar de klant naartoe wordt gestuurd na de betaling
-        webhookUrl: 'https://vanwoerdenwonen-levante.web.app/betaling-webhook', // Waar Mollie je site informeert over de betaling
+        redirectUrl: 'https://vanwoerdenwonen-tripletise.web.app?betaling-geslaagd', // Waar de klant naartoe wordt gestuurd na de betaling
+        webhookUrl: 'https://vanwoerdenwonen-tripletise.web.app/betaling-webhook', // Waar Mollie je site informeert over de betaling
       });
 
       // Haal de URL van de betaling op
@@ -74,13 +47,6 @@ exports.mollieAuthRedirect = functions.https.onRequest((req, res) => {
     }
   });
 });
-
-
-
-
-
-
-
 
 exports.mollieOAuthCallback = functions.https.onRequest(async (req, res) => {
   console.log("mollieOAuthCallback function triggered.");
