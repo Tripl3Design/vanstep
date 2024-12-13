@@ -44,13 +44,13 @@
     "footstool": true,
     "upholstery": {
       "hexColor": "a2706a",
-      "type": "adore",
-      "path": "projects/vanwoerdenwonen-levante/Textures/vww/essa/slate-87.jpg"
+      "type": "essa",
+      "path": "projects/vanwoerdenwonen-levante/Textures/vww/essa/cabernet-205.jpg"
     },
     "upholsteryDuotone": {
       "hexColor": "78531a",
       "type": "adore",
-      "path": "projects/vanwoerdenwonen-levante/Textures/vww/essa/caramel-16.jpg"
+      "path": "projects/vanwoerdenwonen-levante/Textures/vww/adore/darkgrey-68.jpg"
     }
   }
 ]

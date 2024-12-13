@@ -405,16 +405,12 @@ export async function loadModelData(model) {
     } else if (model.type == "art5311" || model.type == "art5316") {
         const group = new THREE.Group();
 
-        let legTransformsRight;
+        let legTransformsRight = [
+            { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0.35) },
+        ];
         if (model.type == "art5311") {
-            legTransformsRight = [
-                { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0.35) },
-            ];
             loadAndTransformModel(levante_leg_corner_rightUrl, legTransformsRight, group, '000000', null, 'paint', null, null, null);
         } else {
-            legTransformsRight = [
-                { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), -0.35) },
-            ];
             loadAndTransformModel(levante_leg_corner_right_mirrorUrl, legTransformsRight, group, '000000', null, 'paint', null, null, null);
         }
 
@@ -515,16 +511,13 @@ export async function loadModelData(model) {
     } else if (model.type == "art5313" || model.type == "art5317") {
         const group = new THREE.Group();
 
-        let legTransformsRight;
+        let legTransformsRight = [
+            { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0.2) },
+        ];
         if (model.type == "art5313") {
-            legTransformsRight = [
-                { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0) },
-            ];
+ 
             loadAndTransformModel(levante_leg_corner_rightUrl, legTransformsRight, group, '000000', null, 'paint', null, null, null);
         } else {
-            legTransformsRight = [
-                { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0) },
-            ];
             loadAndTransformModel(levante_leg_corner_right_mirrorUrl, legTransformsRight, group, '000000', null, 'paint', null, null, null);
         }
 
@@ -566,7 +559,6 @@ export async function loadModelData(model) {
                 loadAndTransformModel(levante_l_female_mirrorUrl, elementTransforms, group, null, model.upholstery.path, model.upholstery.structure, null, null, null);
             }
         }
-
 
         scene.add(group);
         models.push(group);
@@ -646,17 +638,13 @@ export async function loadModelData(model) {
             }
         } else {
             if (model.upholsteryDuotone) {
-                loadAndTransformModel(levante_l_male_mirrorUrl, elementTransforms, group, null, model.upholstery.path, model.upholstery.structure, null, model.upholsteryDuotone.path, model.upholsteryDuotone.structure);
+               loadAndTransformModel(levante_l_male_mirrorUrl, elementTransforms, group, null, model.upholstery.path, model.upholstery.structure, null, model.upholsteryDuotone.path, model.upholsteryDuotone.structure);
                 loadAndTransformModel(levante_longchair_mirrorUrl, elementTransforms, group, null, model.upholstery.path, model.upholstery.structure, null, model.upholsteryDuotone.path, model.upholsteryDuotone.structure);
             } else {
-                loadAndTransformModel(levante_l_male_mirrorUrl, elementTransforms, group, null, model.upholstery.path, model.upholstery.structure, null, null, null);
-                loadAndTransformModel(levante_longchair_mirrorUrl, elementTransforms, group, null, model.upholstery.path, model.upholstery.structure, null, null, null);
+               loadAndTransformModel(levante_l_male_mirrorUrl, elementTransforms, group, null, model.upholstery.path, model.upholstery.structure, null, null, null);
+            loadAndTransformModel(levante_longchair_mirrorUrl, elementTransforms, group, null, model.upholstery.path, model.upholstery.structure, null, null, null);
             }
         }
-
-
-
-
 
         scene.add(group);
         models.push(group);
@@ -667,15 +655,15 @@ export async function loadModelData(model) {
         let legTransforms;
         if (model.type == 'art2502' || model.type == 'art3002' || model.type == 'art846' || model.type == 'art553' || model.type == 'art598' || model.type == 'art860' || model.type == 'art6093' || model.type == 'art9091') {
             legTransforms = [
-                { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), -1.2), rotation: new THREE.Euler(0, THREE.MathUtils.degToRad(45), 0) },
+                { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 1.2), rotation: new THREE.Euler(0, THREE.MathUtils.degToRad(45), 0) },
             ];
         } else if (model.type == 'art5314' || model.type == 'art5316' || model.type == 'art5315' || model.type == 'art5317') {
             legTransforms = [
-                { position: new THREE.Vector3(-0.6, (model.seatHeight == 47 ? 0.03 : 0), -0.6), rotation: new THREE.Euler(0, THREE.MathUtils.degToRad(0), 0) },
+                { position: new THREE.Vector3(0.6, (model.seatHeight == 47 ? 0.03 : 0), 0.6), rotation: new THREE.Euler(0, THREE.MathUtils.degToRad(90), 0) },
             ];
         } else if (model.type == 'art6091') {
             legTransforms = [
-                { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), -1.2), rotation: new THREE.Euler(0, THREE.MathUtils.degToRad(-45), 0) },
+                { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 1.2), rotation: new THREE.Euler(0, THREE.MathUtils.degToRad(45), 0) },
             ];
         } else {
             legTransforms = [
@@ -691,11 +679,11 @@ export async function loadModelData(model) {
             ];
         } else if (model.type == 'art5314' || model.type == 'art5316' || model.type == 'art5315' || model.type == 'art5317') {
             elementTransforms = [
-                { position: new THREE.Vector3(.6, (model.seatHeight == 47 ? 0.03 : 0), .6), rotation: new THREE.Euler(0, THREE.MathUtils.degToRad(0), 0) },
+                { position: new THREE.Vector3(0.6, (model.seatHeight == 47 ? 0.03 : 0), 0.6), rotation: new THREE.Euler(0, THREE.MathUtils.degToRad(90), 0) },
             ];
         } else if (model.type == 'art6091') {
             elementTransforms = [
-                { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 1.2), rotation: new THREE.Euler(0, THREE.MathUtils.degToRad(-45), 0) },
+                { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 1.2), rotation: new THREE.Euler(0, THREE.MathUtils.degToRad(45), 0) },
             ];
         } else {
             elementTransforms = [
@@ -805,13 +793,13 @@ if (windowHeight > windowWidth) {
     document.getElementById("arButton").addEventListener("click", async () => {
         const loader = document.getElementById("loader");
         loader.style.display = "flex"; // Laat de loader zien
-    
+
         try {
             const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-    
+
             // Laat zien dat het model wordt gedownload
             const { glbURL, usdzURL } = await exportModel();
-    
+
             if (isIOS) {
                 if (!usdzURL) {
                     throw new Error('USDZ URL ontbreekt.');
@@ -819,23 +807,21 @@ if (windowHeight > windowWidth) {
     
                 const arQuickLookUrl = `${usdzURL}?allowsContentScaling=0`;
                 console.log('AR Quick Look URL (iOS):', arQuickLookUrl);
-    
+
                 const arLink = document.createElement('a');
                 arLink.setAttribute('href', arQuickLookUrl);
                 arLink.setAttribute('rel', 'ar');
                 document.body.appendChild(arLink);
                 arLink.click();
                 document.body.removeChild(arLink);
-            } else if (navigator.userAgent.includes("Android")) {
+            } else {
                 if (!glbURL) {
                     throw new Error('GLB URL ontbreekt.');
                 }
-    
+
                 const intentUrl = `intent://arvr.google.com/scene-viewer/1.0?file=${encodeURIComponent(glbURL)}&mode=ar_only&resizable=false&disable_occlusion=true#Intent;scheme=https;package=com.google.ar.core;action=android.intent.action.VIEW;S.browser_fallback_url=https://developers.google.com/ar;end;`;
                 console.log('Generated Intent URL (Android):', intentUrl);
                 window.location.href = intentUrl;
-            } else {
-                alert('AR-ervaring wordt niet ondersteund op dit apparaat.');
             }
         } catch (error) {
             console.error('Error during AR setup:', error);
