@@ -1,10 +1,18 @@
 const functions = require('firebase-functions');
+const admin = require('firebase-admin');
+admin.initializeApp();
+const db = admin.firestore();
+
 const { createMollieClient } = require('@mollie/api-client');
 const cors = require('cors');  // Importeer de CORS module
 const corsHandler = cors({ origin: true });  // Hiermee staan we verzoeken van alle domeinen toe
 
+const express = require('express');
+const app = express();
+app.use(express.json()); // Parse JSON payloads
 
-// Access the Mollie API key
+
+// Access the Mollie API keys
 const mollieApiKey = "test_QrMUtevQVUnnxFUyWkmxWEpJNrxDNn";
 
 // Initialize Mollie client
@@ -14,11 +22,15 @@ exports.mollieAuthRedirect = functions.https.onRequest((req, res) => {
   corsHandler(req, res, async () => {
     console.log("mollieAuthRedirect function triggered.");
 
-    // Haal het bedrag uit de request body
-    const { amount, description } = req.body;
+    const { amount, description, orderId } = req.body;
+    if (!amount || !description || !orderId) {
+      return res.status(400).json({
+        success: false,
+        message: "Amount, description, and orderId are required."
+      });
+    }
 
-    // Zorg ervoor dat het bedrag een geldige string is met twee decimalen
-    const formattedAmount = parseFloat(amount).toFixed(2); // Bijv. 10.00 of 15.99
+    const formattedAmount = parseFloat(amount).toFixed(2);
 
     try {
       const payment = await mollieClient.payments.create({
@@ -28,7 +40,10 @@ exports.mollieAuthRedirect = functions.https.onRequest((req, res) => {
         },
         description: description,
         redirectUrl: 'https://vanwoerdenwonen-tripletise.web.app?betaling-geslaagd', // Waar de klant naartoe wordt gestuurd na de betaling
-        webhookUrl: 'https://vanwoerdenwonen-tripletise.web.app/betaling-webhook', // Waar Mollie je site informeert over de betaling
+        webhookUrl: 'https://us-central1-vanwoerdenwonen-tripletise.cloudfunctions.net/mollieWebhook',
+        metadata: {
+          orderId: orderId,
+        }
       });
 
       // Haal de URL van de betaling op
@@ -50,9 +65,8 @@ exports.mollieAuthRedirect = functions.https.onRequest((req, res) => {
 
 exports.mollieOAuthCallback = functions.https.onRequest(async (req, res) => {
   console.log("mollieOAuthCallback function triggered.");
-  
   const { code, state } = req.query;
-  
+
   if (!code) {
     return res.status(400).send("Authorization code is missing");
   }
@@ -67,7 +81,7 @@ exports.mollieOAuthCallback = functions.https.onRequest(async (req, res) => {
     });
 
     console.log("Tokens received: ", tokens);
-    
+
     // Maak de betaling aan met behulp van de Mollie API (gebruik de tokens indien nodig)
     const payment = await mollieClient.payments.create({
       amount: {
@@ -75,8 +89,8 @@ exports.mollieOAuthCallback = functions.https.onRequest(async (req, res) => {
         value: '10.00' // Bedrag van de betaling
       },
       description: 'Betaling voor Product X',
-      redirectUrl: 'https://vanwoerdenwonen-levante.web.app/betaling-geslaagd',
-      webhookUrl: 'https://vanwoerdenwonen-levante.web.app/betaling-webhook'
+      redirectUrl: 'https://vanwoerdenwonen-tripletise.web.app?betaling-geslaagd',
+      webhookUrl: 'https://us-central1-vanwoerdenwonen-tripletise.cloudfunctions.net/mollieWebhook'
     });
 
     const paymentUrl = payment.links.checkout.href;
@@ -89,3 +103,130 @@ exports.mollieOAuthCallback = functions.https.onRequest(async (req, res) => {
   }
 });
 
+exports.saveOrUpdateOrder = functions.https.onRequest(async (req, res) => {
+  corsHandler(req, res, async () => {
+    const { orderID, orderData } = req.body;
+
+    if (!orderData) {
+      return res.status(400).json({
+        success: false,
+        message: 'Ordergegevens zijn vereist'
+      });
+    }
+
+    try {
+      if (orderID) {
+        const orderRef = db.collection('orders').doc(orderID);
+        const orderDoc = await orderRef.get();
+
+        if (orderDoc.exists) {
+          await orderRef.update(orderData);
+
+          return res.status(200).json({
+            success: true,
+            message: 'Order succesvol bijgewerkt!',
+            orderID: orderID
+          });
+        } else {
+          const newOrderRef = await db.collection('orders').add(orderData);
+
+          return res.status(201).json({
+            success: true,
+            message: 'Order niet gevonden, nieuwe order aangemaakt!',
+            orderID: newOrderRef.id
+          });
+        }
+      } else {
+        const newOrderRef = await db.collection('orders').add(orderData);
+
+        return res.status(201).json({
+          success: true,
+          message: 'Nieuwe order succesvol aangemaakt!',
+          orderID: newOrderRef.id
+        });
+      }
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: 'Er is een fout opgetreden bij het opslaan of bijwerken van de order.',
+        error: error.message
+      });
+    }
+  });
+});
+
+exports.mollieWebhook = functions.https.onRequest(async (req, res) => {
+  corsHandler(req, res, async () => {
+    console.log("Webhook payload:", req.body);
+
+    // Valideer alleen de aanwezigheid van de transactie-ID
+    const { id } = req.body;
+    if (!id) {
+      console.error("Transactie-ID ontbreekt in de payload");
+      return res.status(400).json({
+        success: false,
+        message: 'Transactie-ID ontbreekt in de webhook-payload'
+      });
+    }
+
+    try {
+      // Haal de betalingsdetails op van Mollie
+      const payment = await mollieClient.payments.get(id);
+
+      console.log("Betalingsgegevens ontvangen:", payment);
+
+      // Haal orderID en status uit de betalingen
+      const orderID = payment.metadata.orderId; // Metadata bevat je orderID
+      const paymentStatus = payment.status;    // Betaalstatus (bijv. "paid", "failed")
+
+      if (!orderID) {
+        console.error("OrderID ontbreekt in de betalingsmetadata");
+        return res.status(400).json({
+          success: false,
+          message: 'Geen orderID gevonden in de betalingsmetadata'
+        });
+      }
+
+      // Update de order in Firestore
+      const orderRef = db.collection('orders').doc(orderID);
+      const orderDoc = await orderRef.get();
+
+      if (!orderDoc.exists) {
+        console.error("Order niet gevonden in Firestore");
+        return res.status(404).json({
+          success: false,
+          message: 'Order niet gevonden'
+        });
+      }
+
+      const currentOrderData = orderDoc.data();
+
+      // Update Firestore met de nieuwe status en Mollie-transactie-ID
+      const updatedOrderData = {
+        ...currentOrderData,
+        paymentData: {
+          ...currentOrderData.paymentData,
+          status: paymentStatus,
+          molliePaymentId: id
+        },
+        lastUpdated: admin.firestore.FieldValue.serverTimestamp()
+      };
+
+      await orderRef.update(updatedOrderData);
+
+      res.status(200).json({
+        success: true,
+        message: 'Betaling succesvol verwerkt',
+        orderID: orderID,
+        paymentStatus: paymentStatus
+      });
+    } catch (error) {
+      console.error("Fout bij het verwerken van de webhook:", error);
+      res.status(500).json({
+        success: false,
+        message: 'Er is een fout opgetreden bij het verwerken van de webhook',
+        error: error.message
+      });
+    }
+  });
+});
