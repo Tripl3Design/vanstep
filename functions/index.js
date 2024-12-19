@@ -11,56 +11,53 @@ const express = require('express');
 const app = express();
 app.use(express.json()); // Parse JSON payloads
 
-
 // Access the Mollie API keys
-const mollieApiKey = "test_QrMUtevQVUnnxFUyWkmxWEpJNrxDNn";
+//const mollieApiKey = "test_QrMUtevQVUnnxFUyWkmxWEpJNrxDNn";
+const mollieApiKey = "live_AyQeAeswQTt57FUUWkEfSAcqHfVdES";
 
 // Initialize Mollie client
 const mollieClient = createMollieClient({ apiKey: mollieApiKey });
 
-exports.mollieAuthRedirect = functions.https.onRequest((req, res) => {
-  corsHandler(req, res, async () => {
-    console.log("mollieAuthRedirect function triggered.");
+exports.mollieAuthRedirect = functions.https.onRequest(async (req, res) => {
+  const { amount, description, orderId } = req.body;
 
-    const { amount, description, orderId } = req.body;
-    if (!amount || !description || !orderId) {
-      return res.status(400).json({
-        success: false,
-        message: "Amount, description, and orderId are required."
-      });
-    }
+  if (!amount || !description || !orderId) {
+    return res.status(400).json({
+      success: false,
+      message: "Amount, description, orderId are required."
+    });
+  }
 
-    const formattedAmount = parseFloat(amount).toFixed(2);
+  const formattedAmount = parseFloat(amount).toFixed(2);
 
-    try {
-      const payment = await mollieClient.payments.create({
-        amount: {
-          currency: 'EUR',
-          value: formattedAmount, // Het bedrag als string met twee decimalen
-        },
-        description: description,
-        redirectUrl: 'https://vanwoerdenwonen-tripletise.web.app?betaling-geslaagd', // Waar de klant naartoe wordt gestuurd na de betaling
-        webhookUrl: 'https://us-central1-vanwoerdenwonen-tripletise.cloudfunctions.net/mollieWebhook',
-        metadata: {
-          orderId: orderId,
-        }
-      });
+  try {
+    const payment = await mollieClient.payments.create({
+      amount: {
+        currency: 'EUR',
+        value: formattedAmount, // Het bedrag als string met twee decimalen
+      },
+      description: description,
+      redirectUrl: 'https://vanwoerdenwonen-tripletise.web.app?betaling-geslaagd', // Waar de klant naartoe wordt gestuurd na de betaling
+      webhookUrl: 'https://us-central1-vanwoerdenwonen-tripletise.cloudfunctions.net/mollieWebhook',
+      metadata: {
+        orderId: orderId,
+      }
+    });
 
-      // Haal de URL van de betaling op
-      const paymentUrl = payment.links.checkout.href;
-      console.log("Payment URL:", paymentUrl); // Voeg een log toe om de URL te inspecteren
+    // Haal de URL van de betaling op
+    const paymentUrl = payment.links.checkout.href;
+    console.log("Payment URL:", paymentUrl); // Voeg een log toe om de URL te inspecteren
 
-      // Stuur de paymentUrl terug naar de frontend
-      res.status(200).json({ paymentUrl: paymentUrl });
-    } catch (error) {
-      console.error("Error creating payment:", error);
-      res.status(500).json({
-        error: true,
-        message: "Failed to create payment",
-        details: error.message,
-      });
-    }
-  });
+    // Stuur de paymentUrl terug naar de frontend
+    res.status(200).json({ paymentUrl: paymentUrl });
+  } catch (error) {
+    console.error("Error creating payment:", error);
+    res.status(500).json({
+      error: true,
+      message: "Failed to create payment",
+      details: error.message,
+    });
+  }
 });
 
 exports.mollieOAuthCallback = functions.https.onRequest(async (req, res) => {
@@ -150,6 +147,51 @@ exports.saveOrUpdateOrder = functions.https.onRequest(async (req, res) => {
         success: false,
         message: 'Er is een fout opgetreden bij het opslaan of bijwerken van de order.',
         error: error.message
+      });
+    }
+  });
+});
+
+exports.getIssuers = functions.https.onRequest(async (req, res) => {
+  corsHandler(req, res, async () => {
+    try {
+      // Haal alle betaalmethoden op
+      const methods = await mollieClient.methods.all();
+
+      // Log de volledige response van de API
+      console.log("Complete Mollie Methods Response:", JSON.stringify(methods, null, 2));
+
+      if (!methods || methods.length === 0) {
+        console.error("No payment methods returned from Mollie API.");
+        return res.status(404).json({ error: "No methods found from Mollie API." });
+      }
+
+      // Zoek naar de iDEAL betaalmethode
+      const idealMethod = methods.find(method => method.id === 'ideal');
+      console.log("Found iDEAL Method:", idealMethod);
+
+      if (!idealMethod) {
+        console.error("iDEAL payment method not found.");
+        return res.status(404).json({ error: "iDEAL method not found." });
+      }
+
+      const idealIssuers = idealMethod.issuers;
+      console.log('Mollie Issuers:', idealIssuers);  // Log de issuers van de iDEAL methode
+
+      // Als er geen issuers zijn, stuur een lege lijst terug
+      if (!idealIssuers || idealIssuers.length === 0) {
+        console.warn("No issuers found for iDEAL.");
+        return res.status(200).json([]);  // Lege lijst als geen banken gevonden
+      }
+
+      // Stuur de issuers terug naar de frontend
+      res.status(200).json(idealIssuers);
+    } catch (error) {
+      console.error("Fout bij ophalen van de betaalmethoden:", error);
+      res.status(500).json({
+        error: true,
+        message: "Kon bankenlijst niet ophalen",
+        details: error.message,
       });
     }
   });
