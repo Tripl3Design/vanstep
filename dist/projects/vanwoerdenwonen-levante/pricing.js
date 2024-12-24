@@ -37,7 +37,7 @@ function pricing(model) {
 function handleAddToCartClick() {
     const { dataURL, blob } = mainModule.captureScreenshot();
     const product = {
-        name: currentModel.name, // Gebruik een globale of externe referentie
+        model: currentModel, // Gebruik een globale of externe referentie
         price: currentTotalPrice, // Gebruik globale of externe referentie
         imageUrl: dataURL
     };

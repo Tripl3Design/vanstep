@@ -100,6 +100,16 @@ exports.mollieOAuthCallback = functions.https.onRequest(async (req, res) => {
   }
 });
 
+exports.getMollieAuthUrl = functions.https.onRequest((req, res) => {
+  const clientId = 'pfl_vKrpzVqBA2'; // Vervang door jouw Client ID
+  const redirectUri = 'https://your-app.com/mollie-callback'; // Pas dit aan naar je eigen callback-URL
+  const state = 'optional-custom-state'; // Optioneel: Gebruik dit voor extra beveiliging, zoals een gebruikers-ID
+
+  const authUrl = `https://www.mollie.com/oauth2/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=payments.read+payments.write+profile.read&state=${state}`;
+
+  res.status(200).json({ authUrl });
+});
+
 exports.saveOrUpdateOrder = functions.https.onRequest(async (req, res) => {
   corsHandler(req, res, async () => {
     const { orderID, orderData } = req.body;
