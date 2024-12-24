@@ -13,8 +13,8 @@ const app = express();
 app.use(express.json()); // Parse JSON payloads
 
 // Access the Mollie API keys
-const mollieApiKey = "test_8GneksMmafeywsSH2MfnFrWdf9vRUC"; // test VanWoerdenWonen
-//const mollieApiKey = "live_q8hrsmSaU38bSctz52xdG5CA3p7VdN"; // live VanWoerdenWonen
+//const mollieApiKey = "test_8GneksMmafeywsSH2MfnFrWdf9vRUC"; // test VanWoerdenWonen
+const mollieApiKey = "live_q8hrsmSaU38bSctz52xdG5CA3p7VdN"; // live VanWoerdenWonen
 //const mollieApiKey = "test_QrMUtevQVUnnxFUyWkmxWEpJNrxDNn"; // test TripleDesign
 //const mollieApiKey = "live_AyQeAeswQTt57FUUWkEfSAcqHfVdES"; // live TripleDesign
 
