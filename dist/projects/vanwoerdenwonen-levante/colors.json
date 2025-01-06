@@ -672,6 +672,20 @@
             "colorBg": "d4d4d4",
             "iconColor": "light",
             "colorGroup": "grey"
+        },
+        {
+            "colorBrand": "vww",
+            "colorType": "essa",
+            "colorName": "bisque",
+            "colorCode": "91",
+            "colorPricegroup": 3,
+            "colorHex": "",
+            "colorStructure": "boucle",
+            "colorPath": "projects/vanwoerdenwonen-levante/Textures/vww/essa/bisque-91.jpg",
+            "colorPathThumb": "projects/vanwoerdenwonen-levante/Textures/vww/essa/bisque-91_thumb.jpg",
+            "colorBg": "d4d4d4",
+            "iconColor": "light",
+            "colorGroup": "grey"
         }
     ]
 }

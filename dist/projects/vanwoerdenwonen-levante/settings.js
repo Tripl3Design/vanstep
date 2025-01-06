@@ -216,13 +216,12 @@ function updateControlPanel(model, selectedLayer, expandedLayer) {
     const upholstery = model.upholstery.path;
     let upholsteryIndex = ALLCOLORS.upholsteries.findIndex(item => item.colorPath === upholstery);
     var upholsteryValue = document.querySelectorAll(`.upholsteryColors_colorButton`);
+    model.upholstery.type = ALLCOLORS.upholsteries[upholsteryIndex].colorType;
     model.upholstery.name = ALLCOLORS.upholsteries[upholsteryIndex].colorName;
     model.upholstery.path = ALLCOLORS.upholsteries[upholsteryIndex].colorPath;
     model.upholstery.pricegroup = ALLCOLORS.upholsteries[upholsteryIndex].colorPricegroup;
     model.upholstery.structure = ALLCOLORS.upholsteries[upholsteryIndex].colorStructure;
     model.upholstery.pathThumb = ALLCOLORS.upholsteries[upholsteryIndex].colorPathThumb;
-
-
 
     if (parser.getDevice().type != 'mobile' && parser.getDevice().type != 'tablet') {
         upholsteryValue.forEach(item => item.addEventListener('mouseover', () => {
@@ -283,6 +282,7 @@ function updateControlPanel(model, selectedLayer, expandedLayer) {
         if (upholsteryDuotoneIndex === -1) {
             upholsteryDuotoneIndex = 0;
         }
+        model.upholsteryDuotone.type = ALLCOLORS.upholsteries[upholsteryDuotoneIndex].colorType;
         model.upholsteryDuotone.name = ALLCOLORS.upholsteries[upholsteryDuotoneIndex].colorName;
         model.upholsteryDuotone.path = ALLCOLORS.upholsteries[upholsteryDuotoneIndex].colorPath;
         model.upholsteryDuotone.pricegroup = ALLCOLORS.upholsteries[upholsteryDuotoneIndex].colorPricegroup;
@@ -388,6 +388,7 @@ async function handleModelSelection() {
         showFeaturedModel(ALLMODELS[modelIndex]);
     }
 }
+
 
 function initSettings(model) {
     const accordions = {};
@@ -641,14 +642,28 @@ function initSettings(model) {
                         </div>
                     </div>
                     -->
-                    <div class="h6 fw-normal">stoffen</div>
+                    <div class="h6 fw-normal">stofgroep adore</div>
                     <div class="col-12 m-0 p-0">
-                        <div id="upholsteriesPicker" class="m-0 p-0"></div>
+                        <div id="upholsteriesAdorePicker" class="m-0 p-0"></div>
+                    </div>
+                    <div class="h6 fw-normal">stofgroep dream</div>
+                    <div class="col-12 m-0 p-0">
+                        <div id="upholsteriesDreamPicker" class="m-0 p-0"></div>
+                    </div>
+                    <div class="h6 fw-normal">stofgroep essa</div>
+                    <div class="col-12 m-0 p-0">
+                        <div id="upholsteriesEssaPicker" class="m-0 p-0"></div>
                     </div>
                 </div>`,
         "onload": function () {
-            let containerElemsUpholsteries = document.getElementById(`upholsteriesPicker`);
-            addTextures(`upholsteryColors`, ALLCOLORS.upholsteries, containerElemsUpholsteries);
+            let containerElemsAdoreUpholsteries = document.getElementById(`upholsteriesAdorePicker`);
+            addTextures(`upholsteryColors`, 'adore', ALLCOLORS.upholsteries, containerElemsAdoreUpholsteries);
+
+            let containerElemsDreamUpholsteries = document.getElementById(`upholsteriesDreamPicker`);
+            addTextures(`upholsteryColors`, 'dream', ALLCOLORS.upholsteries, containerElemsDreamUpholsteries);
+
+            let containerElemsEssaUpholsteries = document.getElementById(`upholsteriesEssaPicker`);
+            addTextures(`upholsteryColors`, 'essa', ALLCOLORS.upholsteries, containerElemsEssaUpholsteries);
         }
     }
     if (model.upholsteryDuotone) {
@@ -695,14 +710,28 @@ function initSettings(model) {
                         </div>
                     </div>
                     -->
-                    <div class="h6 fw-normal">kleur</div>
+                    <div class="h6 fw-normal">stofgroep adore</div>
                     <div class="col-12 m-0 p-0">
-                        <div id="upholsteriesDuotonePicker" class="m-0 p-0"></div>
+                        <div id="upholsteriesDuotoneAdorePicker" class="m-0 p-0"></div>
+                    </div>
+                    <div class="h6 fw-normal">stofgroep dream</div>
+                    <div class="col-12 m-0 p-0">
+                        <div id="upholsteriesDuotoneDreamPicker" class="m-0 p-0"></div>
+                    </div>
+                    <div class="h6 fw-normal">stofgroep essa</div>
+                    <div class="col-12 m-0 p-0">
+                        <div id="upholsteriesDuotoneEssaPicker" class="m-0 p-0"></div>
                     </div>
                 </div>`,
             "onload": function () {
-                let containerElemsUpholsteries = document.getElementById(`upholsteriesDuotonePicker`);
-                addTextures(`upholsteryDuotoneColors`, ALLCOLORS.upholsteries, containerElemsUpholsteries);
+                let containerElemsDuotoneAdoreUpholsteries = document.getElementById(`upholsteriesDuotoneAdorePicker`);
+                addTextures(`upholsteryDuotoneColors`, 'adore', ALLCOLORS.upholsteries, containerElemsDuotoneAdoreUpholsteries);
+
+                let containerElemsDuotoneDreamUpholsteries = document.getElementById(`upholsteriesDuotoneDreamPicker`);
+                addTextures(`upholsteryDuotoneColors`, 'dream', ALLCOLORS.upholsteries, containerElemsDuotoneDreamUpholsteries);
+
+                let containerElemsDuotoneEssaUpholsteries = document.getElementById(`upholsteriesDuotoneEssaPicker`);
+                addTextures(`upholsteryDuotoneColors`, 'essa', ALLCOLORS.upholsteries, containerElemsDuotoneEssaUpholsteries);
             }
         }
     }

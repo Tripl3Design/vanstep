@@ -35,42 +35,45 @@ function addColors(name, colorScheme, containerElem) {
     containerElem.innerHTML = html.join('\n');
 }
 
-function addTextures(name, colorScheme, containerElem) {
+function addTextures(name, colorType, colorScheme, containerElem) {
+    // Voeg een uniek nummer toe aan elk item in de colorScheme
+    let textureItemsWithIndex = colorScheme.map((item, index) => ({
+        ...item,
+        uniqueId: `${name}Index_${index}` // Voeg een uniek ID toe aan elk item
+    }));
+
+    // Filter de items op colorType als dat nodig is
+    const filteredItems = textureItemsWithIndex.filter(item => item.colorType === colorType);
+
+    // Als er geen items gevonden worden, geef een bericht weer
+    if (filteredItems.length === 0) {
+        containerElem.innerHTML = `<p>No items found for colorType: ${colorType}</p>`;
+        return;
+    }
+
+    // HTML array voor het opbouwen van de inhoud
     const html = [];
     html.push( /*html*/ `
         <div class="row row-cols-auto m-0 p-0">
-            `);
+    `);
 
-    const textureItems = [];
-
-    for (let i = 0; i < colorScheme.length; i++) {
-        var colorPath = colorScheme[i].colorPath;
-        if (colorPath != undefined) {
-            //colorPath = "img/transparant.png";
-
-            textureItems.push(colorScheme[i]);
-        }
-    }
-
-    for (let c = 0; c < textureItems.length; c++) {
-        //if (c % 3 == 0) {
-        //    html.push( /*html*/ `
-        //       <!--<div class="col m-0 p-0"></div>
-        //      <div class="col m-0 p-0"></div>
-        //       <div class="col m-0 p-0"></div>-->
-        //    `);
-        // }
+    // Loop door de gefilterde items en voeg de HTML toe
+    filteredItems.forEach((item) => {
+        // Gebruik het unieke ID dat we aan elk item hebben toegevoegd
+        const uniqueId = item.uniqueId;
 
         html.push( /*html*/ `
-                <div class="col d-flex align-items-center m-0 p-1" style="aspect-ratio: 1">
-                    <img id="${name}Index_${c}" style="background-color: #${textureItems[c].colorHex}; width: 50px;" src="${textureItems[c].colorPathThumb}" class="rounded-pill img-fluid mx-auto p-0 border    border-5    colorButton ${name}_colorButton" alt="${textureItems[c].colorNameNL}">
-                </div>
-            `);
-    }
+            <div class="col d-flex align-items-center m-0 p-1" style="aspect-ratio: 1">
+                <img id="${uniqueId}" style="background-color: #${item.colorHex}; width: 50px;" src="${item.colorPathThumb}" class="rounded-pill img-fluid mx-auto p-0 border border-5 colorButton ${name}_colorButton" alt="${item.colorNameNL}">
+            </div>
+        `);
+    });
 
     html.push( /*html*/ `
         </div>
-`);
+    `);
+
+    // Zet de HTML content in het container element
     containerElem.innerHTML = html.join('\n');
 }
 
