@@ -167,7 +167,7 @@
   </script>
 </head>
 
-<body onload="bodyOnload();">
+<body>
   <div class="container-fluid m-0 p-0">
     <div class="row m-0 p-0 overflow-hidden">
 
@@ -320,109 +320,109 @@
           
               <div id="offcanvasContent" style="height: calc(100% - 80px); width: 100%; overflow: auto;" class="overflow-x-hidden">
           `);
-          const modelviewer = document.getElementById('modelviewer');
-          const mobileOffcanvas = document.getElementById('mobileOffcanvas');
-          const collapseOffcanvas = document.getElementById('collapseOffcanvas');
+        const modelviewer = document.getElementById('modelviewer');
+        const mobileOffcanvas = document.getElementById('mobileOffcanvas');
+        const collapseOffcanvas = document.getElementById('collapseOffcanvas');
 
-          const minHeight = 80;
-          const halfHeight = window.visualViewport.height / 2;
-          const fullHeight = window.visualViewport.height - 86;
+        const minHeight = 80;
+        const halfHeight = window.visualViewport.height / 2;
+        const fullHeight = window.visualViewport.height - 86;
 
-          let isFirstSwipe = true;
+        let isFirstSwipe = true;
 
-          // Stel de offcanvas standaard in op halfHeight
-          //mobileOffcanvas.style.height = halfHeight + 'px';
-          //modelviewer.style.height = halfHeight + 'px';
+        // Stel de offcanvas standaard in op halfHeight
+        //mobileOffcanvas.style.height = halfHeight + 'px';
+        //modelviewer.style.height = halfHeight + 'px';
 
-          // Swipe start (touchstart)
-          collapseOffcanvas.addEventListener('touchstart', function (e) {
-            if (isFirstSwipe) {
-              const swipeMessage = document.getElementById('swipeMessage');
-              swipeMessage.classList.add('hidden');
-              isFirstSwipe = false;
-            }
-            mobileOffcanvas.style.transition = 'none';
-            modelviewer.style.transition = 'none';
+        // Swipe start (touchstart)
+        collapseOffcanvas.addEventListener('touchstart', function (e) {
+          if (isFirstSwipe) {
+            const swipeMessage = document.getElementById('swipeMessage');
+            swipeMessage.classList.add('hidden');
+            isFirstSwipe = false;
+          }
+          mobileOffcanvas.style.transition = 'none';
+          modelviewer.style.transition = 'none';
 
-            startY = e.touches[0].clientY;
-            currentHeight = mobileOffcanvas.offsetHeight;
-          });
+          startY = e.touches[0].clientY;
+          currentHeight = mobileOffcanvas.offsetHeight;
+        });
 
-          // Swipe bewegen (touchmove)
-          collapseOffcanvas.addEventListener('touchmove', function (e) {
-            const moveY = e.touches[0].clientY;
-            const deltaY = startY - moveY;
-            let newHeight = currentHeight + deltaY;
+        // Swipe bewegen (touchmove)
+        collapseOffcanvas.addEventListener('touchmove', function (e) {
+          const moveY = e.touches[0].clientY;
+          const deltaY = startY - moveY;
+          let newHeight = currentHeight + deltaY;
 
-            // Pas de hoogte aan binnen de grenzen
-            if (newHeight >= minHeight && newHeight <= fullHeight) {
-              mobileOffcanvas.style.height = newHeight + 'px';
-            }
-          });
+          // Pas de hoogte aan binnen de grenzen
+          if (newHeight >= minHeight && newHeight <= fullHeight) {
+            mobileOffcanvas.style.height = newHeight + 'px';
+          }
+        });
 
-          // Swipe eindigen (touchend)
-          collapseOffcanvas.addEventListener('touchend', function () {
-            mobileOffcanvas.style.transition = 'height 0.3s ease';
-            modelviewer.style.transition = 'height 0.3s ease';
+        // Swipe eindigen (touchend)
+        collapseOffcanvas.addEventListener('touchend', function () {
+          mobileOffcanvas.style.transition = 'height 0.3s ease';
+          modelviewer.style.transition = 'height 0.3s ease';
 
-            const offcanvasHeight = mobileOffcanvas.offsetHeight;
+          const offcanvasHeight = mobileOffcanvas.offsetHeight;
 
-            // Snap naar de dichtstbijzijnde hoogte
-            if (offcanvasHeight < halfHeight / 2) {
-              mobileOffcanvas.style.height = minHeight + 'px';
-              modelviewer.style.height = fullHeight + 'px';
-            } else if (offcanvasHeight >= halfHeight / 2 && offcanvasHeight < (halfHeight + fullHeight) / 2) {
-              mobileOffcanvas.style.height = halfHeight + 'px';
-              modelviewer.style.height = halfHeight + 'px';
-            } else {
-              mobileOffcanvas.style.height = fullHeight + 'px';
-              modelviewer.style.height = halfHeight + 'px';
-            }
-          });
+          // Snap naar de dichtstbijzijnde hoogte
+          if (offcanvasHeight < halfHeight / 2) {
+            mobileOffcanvas.style.height = minHeight + 'px';
+            modelviewer.style.height = fullHeight + 'px';
+          } else if (offcanvasHeight >= halfHeight / 2 && offcanvasHeight < (halfHeight + fullHeight) / 2) {
+            mobileOffcanvas.style.height = halfHeight + 'px';
+            modelviewer.style.height = halfHeight + 'px';
+          } else {
+            mobileOffcanvas.style.height = fullHeight + 'px';
+            modelviewer.style.height = halfHeight + 'px';
+          }
+        });
 
-          // Swipe omhoog (swiped-up)
-          collapseOffcanvas.addEventListener('swiped-up', function () {
-            // Voeg transitie toe voor swipe-up actie
-            mobileOffcanvas.style.transition = 'height 0.3s ease';
-            modelviewer.style.transition = 'height 0.3s ease';
+        // Swipe omhoog (swiped-up)
+        collapseOffcanvas.addEventListener('swiped-up', function () {
+          // Voeg transitie toe voor swipe-up actie
+          mobileOffcanvas.style.transition = 'height 0.3s ease';
+          modelviewer.style.transition = 'height 0.3s ease';
 
-            if (mobileOffcanvas.style.height === minHeight + 'px') {
-              mobileOffcanvas.style.height = halfHeight + 'px';
-              modelviewer.style.height = halfHeight + 'px';
-            } else if (mobileOffcanvas.style.height === halfHeight + 'px') {
-              mobileOffcanvas.style.height = fullHeight + 'px';
-              modelviewer.style.height = halfHeight + 'px';
-            }
-          });
+          if (mobileOffcanvas.style.height === minHeight + 'px') {
+            mobileOffcanvas.style.height = halfHeight + 'px';
+            modelviewer.style.height = halfHeight + 'px';
+          } else if (mobileOffcanvas.style.height === halfHeight + 'px') {
+            mobileOffcanvas.style.height = fullHeight + 'px';
+            modelviewer.style.height = halfHeight + 'px';
+          }
+        });
 
-          // Swipe omlaag (swiped-down)
-          collapseOffcanvas.addEventListener('swiped-down', function () {
-            // Voeg transitie toe voor swipe-down actie
-            mobileOffcanvas.style.transition = 'height 0.3s ease';
-            modelviewer.style.transition = 'height 0.3s ease';
+        // Swipe omlaag (swiped-down)
+        collapseOffcanvas.addEventListener('swiped-down', function () {
+          // Voeg transitie toe voor swipe-down actie
+          mobileOffcanvas.style.transition = 'height 0.3s ease';
+          modelviewer.style.transition = 'height 0.3s ease';
 
-            if (mobileOffcanvas.style.height === fullHeight + 'px') {
-              mobileOffcanvas.style.height = halfHeight + 'px';
-              modelviewer.style.height = halfHeight + 'px';
-            } else if (mobileOffcanvas.style.height === halfHeight + 'px') {
-              mobileOffcanvas.style.height = minHeight + 'px';
-              modelviewer.style.height = fullHeight + 'px';
-            }
-          });
-          document.write( /*html*/ `
+          if (mobileOffcanvas.style.height === fullHeight + 'px') {
+            mobileOffcanvas.style.height = halfHeight + 'px';
+            modelviewer.style.height = halfHeight + 'px';
+          } else if (mobileOffcanvas.style.height === halfHeight + 'px') {
+            mobileOffcanvas.style.height = minHeight + 'px';
+            modelviewer.style.height = fullHeight + 'px';
+          }
+        });
+        document.write( /*html*/ `
                           <div class="offcanvas-body small">
                           <div class="p-1 m-0">
                           `);
-        } else {
-          document.write( /*html*/ `
+      } else {
+        document.write( /*html*/ `
                           <div class="col-6 vh-100 m-0 p-0" id="controlpanelCol">
                             <div class="m-0 p-0" id="controlpanel">
                               <div class="px-xxl-5 px-xl-4 px-lg-3 px-md-3 px-sm-3    pt-xxl-5 pt-xl-4 pt-lg-3 pt-md-3 pt-sm-3    pb-0    m-0">
                           `);
-        }
-        // desktop versie
-        if (windowHeight < windowWidth) {
-          document.write( /*html*/ `
+      }
+      // desktop versie
+      if (windowHeight < windowWidth) {
+        document.write( /*html*/ `
                           <div class="row m-0 p-0">
                             <div class="col-12 m-0 p-0    pb-xxl-4 pb-xl-3 pb-lg-2 pb-md-2 pb-sm-2">
                                 <h3 class="productname text-start m-0 p-0" id="producttitle">
@@ -431,8 +431,8 @@
                             </div>
                           </div>
                           `);
-        }
-      </script>
+      }
+    </script>
 
     <div id="controlpanelContainer"></div>
   </div>
@@ -473,6 +473,7 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
     crossorigin="anonymous"></script>
+  <script>bodyOnload();</script>
 </body>
 
 </html>
