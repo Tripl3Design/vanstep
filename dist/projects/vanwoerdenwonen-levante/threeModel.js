@@ -515,7 +515,7 @@ export async function loadModelData(model) {
             { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0.2) },
         ];
         if (model.type == "art5313") {
- 
+
             loadAndTransformModel(levante_leg_corner_rightUrl, legTransformsRight, group, '000000', null, 'paint', null, null, null);
         } else {
             loadAndTransformModel(levante_leg_corner_right_mirrorUrl, legTransformsRight, group, '000000', null, 'paint', null, null, null);
@@ -638,11 +638,11 @@ export async function loadModelData(model) {
             }
         } else {
             if (model.upholsteryDuotone) {
-               loadAndTransformModel(levante_l_male_mirrorUrl, elementTransforms, group, null, model.upholstery.path, model.upholstery.structure, null, model.upholsteryDuotone.path, model.upholsteryDuotone.structure);
+                loadAndTransformModel(levante_l_male_mirrorUrl, elementTransforms, group, null, model.upholstery.path, model.upholstery.structure, null, model.upholsteryDuotone.path, model.upholsteryDuotone.structure);
                 loadAndTransformModel(levante_longchair_mirrorUrl, elementTransforms, group, null, model.upholstery.path, model.upholstery.structure, null, model.upholsteryDuotone.path, model.upholsteryDuotone.structure);
             } else {
-               loadAndTransformModel(levante_l_male_mirrorUrl, elementTransforms, group, null, model.upholstery.path, model.upholstery.structure, null, null, null);
-            loadAndTransformModel(levante_longchair_mirrorUrl, elementTransforms, group, null, model.upholstery.path, model.upholstery.structure, null, null, null);
+                loadAndTransformModel(levante_l_male_mirrorUrl, elementTransforms, group, null, model.upholstery.path, model.upholstery.structure, null, null, null);
+                loadAndTransformModel(levante_longchair_mirrorUrl, elementTransforms, group, null, model.upholstery.path, model.upholstery.structure, null, null, null);
             }
         }
 
@@ -804,23 +804,16 @@ if (windowHeight > windowWidth) {
                 if (!usdzURL) {
                     throw new Error('USDZ URL ontbreekt.');
                 }
-    
                 const arQuickLookUrl = `${usdzURL}?allowsContentScaling=0`;
-                console.log('AR Quick Look URL (iOS):', arQuickLookUrl);
-
-                const arLink = document.createElement('a');
-                arLink.setAttribute('href', arQuickLookUrl);
-                arLink.setAttribute('rel', 'ar');
-                document.body.appendChild(arLink);
-                arLink.click();
-                document.body.removeChild(arLink);
+                console.log('Generated URL (IOS):', arQuickLookUrl);
+                window.location.href = arQuickLookUrl;
             } else {
                 if (!glbURL) {
                     throw new Error('GLB URL ontbreekt.');
                 }
 
                 const intentUrl = `intent://arvr.google.com/scene-viewer/1.0?file=${encodeURIComponent(glbURL)}&mode=ar_only&resizable=false&disable_occlusion=true#Intent;scheme=https;package=com.google.ar.core;action=android.intent.action.VIEW;S.browser_fallback_url=https://developers.google.com/ar;end;`;
-                console.log('Generated Intent URL (Android):', intentUrl);
+                console.log('Generated URL (Android):', intentUrl);
                 window.location.href = intentUrl;
             }
         } catch (error) {
