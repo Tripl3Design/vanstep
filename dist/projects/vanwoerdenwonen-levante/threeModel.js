@@ -804,9 +804,14 @@ if (windowHeight > windowWidth) {
                 if (!usdzURL) {
                     throw new Error('USDZ URL ontbreekt.');
                 }
-                const arQuickLookUrl = `${usdzURL}?allowsContentScaling=0`;
-                console.log('Generated URL (IOS):', arQuickLookUrl);
-                window.location.href = arQuickLookUrl;
+                const a = document.createElement('a');
+                a.href = usdzURL;
+                a.rel = "ar";
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+    
+                console.log('Generated URL (iOS):', usdzURL);
             } else {
                 if (!glbURL) {
                     throw new Error('GLB URL ontbreekt.');
