@@ -794,24 +794,26 @@ if (windowHeight > windowWidth) {
         const loader = document.getElementById("loader");
         loader.style.display = "flex"; // Laat de loader zien
 
-        try {
-            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+        const uap = new UAParser();
+        console.log(uap.getResult());
+        const result = uap.getResult(); // Deze methode geeft het resultaat terug
 
+        try {
             // Laat zien dat het model wordt gedownload
             const { glbURL, usdzURL } = await exportModel();
 
-            if (isIOS) {
+            if (result.os.name.toLowerCase().includes("ios") || result.browser.name.toLowerCase().includes("safari")) {
                 if (!usdzURL) {
                     throw new Error('USDZ URL ontbreekt.');
                 }
+
+                console.log('Generated URL (Ios):', usdzURL);
                 const a = document.createElement('a');
-                a.href = usdzURL;
-                a.rel = "ar";
+                a.href = usdzURL; // encodeer de URL voor veilige overdracht
+                a.setAttribute('rel', 'ar');
                 document.body.appendChild(a);
                 a.click();
                 document.body.removeChild(a);
-    
-                console.log('Generated URL (iOS):', usdzURL);
             } else {
                 if (!glbURL) {
                     throw new Error('GLB URL ontbreekt.');
@@ -835,18 +837,24 @@ async function exportModel() {
     const usdzExporter = new USDZExporter();
     const options = {
         binary: true,               // Export as binary GLB
-        embedImages: true,          // Embed images into the GLB file
         includeCustomExtensions: true, // Include custom extensions if applicable
     };
 
-    // Detect platform
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    // Gebruik UA-Parser versie 2 om de gebruikersagent te analyseren
+    const uap = new UAParser();
+    console.log(uap.getResult());
+    const result = uap.getResult(); // Deze methode geeft het resultaat terug
+
+    console.log(result.browser); // {name: "Chromium", version: "15.0.874.106", major: "15", type: undefined}
+    console.log(result.device); // {model: undefined, type: undefined, vendor: undefined}
+    console.log(result.os); // {name: "Ubuntu", version: "11.10"}
+
 
     try {
         // Temporarily remove the ground object to avoid exporting it
         scene.remove(ground);
 
-        if (isIOS) {
+        if (result.os.name.toLowerCase().includes("ios") || result.browser.name.toLowerCase().includes("safari")) {
             // --- Generate USDZ ---
             const usdzBlob = await usdzExporter.parseAsync(scene); // Use async parsing for reliability
             console.log('USDZ Blob created:', usdzBlob);
