@@ -799,18 +799,21 @@ if (windowHeight > windowWidth) {
         const result = uap.getResult(); // Deze methode geeft het resultaat terug
 
         try {
-            // Laat zien dat het model wordt gedownload
             const { glbURL, usdzURL } = await exportModel();
 
             if (result.os.name.toLowerCase().includes("ios") || result.browser.name.toLowerCase().includes("safari")) {
                 if (!usdzURL) {
                     throw new Error('USDZ URL ontbreekt.');
                 }
-
                 console.log('Generated URL (Ios):', usdzURL);
+
                 const a = document.createElement('a');
-                a.href = usdzURL; // encodeer de URL voor veilige overdracht
+                a.href = usdzURL;
                 a.setAttribute('rel', 'ar');
+                const img = document.createElement('img');
+                img.src = 'img/logo_vanwoerdenwonen.webp';
+                img.alt = 'Bekijk in AR';
+                a.appendChild(img);
                 document.body.appendChild(a);
                 a.click();
                 document.body.removeChild(a);

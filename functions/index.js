@@ -231,20 +231,6 @@ exports.sendTestEmail = functions.https.onRequest(async (req, res) => {
   });
 });
 
-exports.getUSDZ = functions.https.onRequest(async (req, res) => {
-  corsHandler(req, res, async () => {
-    const fileRef = admin.storage().bucket().file("usdzModels/model.usdz");
-    try {
-      const [url] = await fileRef.getSignedUrl({
-        action: "read",
-        expires: "01-01-2030",
-      });
-      res.redirect(301, url);
-    } catch (error) {
-      res.status(500).send("Fout bij ophalen van USDZ-bestand.");
-    }
-  });
-});
 
 /*
 exports.getIssuers = functions.https.onRequest(async (req, res) => {
