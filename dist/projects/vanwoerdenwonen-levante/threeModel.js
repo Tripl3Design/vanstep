@@ -789,8 +789,10 @@ export function captureScreenshot() {
     return { dataURL, blob };
 }
 
-if (windowHeight > windowWidth) {
-    document.getElementById("arButton").addEventListener("click", async () => {
+const arButton = document.getElementById("arButton");
+
+if (arButton) {
+    arButton.addEventListener("click", async () => {
         const loader = document.getElementById("loader");
         loader.style.display = "flex"; // Laat de loader zien
 
@@ -805,7 +807,7 @@ if (windowHeight > windowWidth) {
                 if (!usdzURL) {
                     throw new Error('USDZ URL ontbreekt.');
                 }
-                console.log('Generated URL (Ios):', usdzURL);
+                console.log('Generated URL (iOS):', usdzURL);
 
                 const a = document.createElement('a');
                 a.href = usdzURL;
@@ -833,7 +835,10 @@ if (windowHeight > windowWidth) {
             loader.style.display = "none"; // Verberg de loader
         }
     });
+} else {
+    console.warn("AR-knop niet gevonden, AR-functionaliteit wordt niet geladen.");
 }
+
 
 async function exportModel() {
     const gltfExporter = new GLTFExporter();

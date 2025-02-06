@@ -176,11 +176,10 @@
   <div class="container-fluid m-0 p-0">
     <div class="row m-0 p-0 overflow-hidden">
 
-      <script>
-        // mobile version
-        if (windowHeight > windowWidth) {
 
-          document.write( /*html*/ `
+
+      <script>
+        document.write( /*html*/ `
 
           <style>
     #loader {
@@ -214,10 +213,13 @@
         }
     }
 </style>
-          <div id="loader" style="display: none;">
-    <div class="spinner"></div>
+<div id="loader" style="display: none;">
+  <div class="spinner"></div>
 </div>
-
+`);
+          // mobile version
+        if (windowHeight > windowWidth) {
+          document.write( /*html*/ `
             <div style="height: 100%; background: #d4d4d4;" class="col-12 vh-100 m-0 p-0" id="modelviewerCol">
                             <div class="position-absolute w-100">
                               <div style="letter-spacing: 1.5px;" class="h2 text-center m-0 p-0 mt-4" id="producttitleMobile">
@@ -248,44 +250,65 @@
                             </div>
                             `);
         } else {
-          document.write( /*html*/`
-            <div style="height: 100%; background: #d4d4d4;" class="col-md-6 col-12 vh-100 m-0 p-0" id="modelviewerCol">
-<div class="brandlogo position-absolute top-0 start-0    pt-5    ps-5"><img src="img/logo_${brand}.webp" class="img-fluid"></div>
+          const uap = new UAParser();
+          console.log(uap.getResult());
+          const result = uap.getResult(); // Deze methode geeft het resultaat terug
+          console.log(result.device.type); // Geeft 'mobile', 'tablet', of undefined terug
 
-                            <div class="row m-0 p-0">
-                              <div class="col-md-6 col-12 position-absolute bottom-0 m-0 p-0">
-                                <!-- you can add controls in the canvas here -->
-                                 <div class="col-12 position-absolute bottom-0 m-0 p-3 z-0 d-flex justify-content-between">
-                               
-                                  <div class="text-start">
-                                       <!-- only van doesburg 
-                                     <button id="startNewButton" type="button" class="d-flex btn btn-sm btn-outline-dark rounded-0 p-1 m-1">
-                                      #
-                                    </button>-->
-                                  </div>
-                                  <!-- only van doesburg -->
-                                  <div class="text-end">
-                                
-                                    <button type="button" class="btn btn-sm btn-outline-dark rounded-0 p-1 m-1" onclick="shareTroughQr()">
-                                      <span class="material-symbols-outlined m-0 p-1">view_in_ar</span>
-                                    </button>
-                                    <button type="button" class="btn btn-sm btn-outline-dark rounded-0 p-1 m-1" onclick="shareWithWhatsApp()">
-                                      <span class="material-symbols-outlined m-0 p-1">share</span>
-                                    </button>
-                                    <button type="button" class="btn btn-sm btn-outline-dark rounded-0 p-1 m-1" onclick="downloadPdf()">
-                                      <span class="material-symbols-outlined m-0 p-1">picture_as_pdf</span>
-                                    </button>
-                                    <button id="downloadModel" type="button" class="btn btn-sm btn-outline-dark rounded-0 p-1 m-1">
-                                      <span class="material-symbols-outlined m-0 p-1">download</span>
-                                    </button>
-                                    <button id="fullscreen" type="button" class="btn btn-sm btn-outline-dark rounded-0 p-1 m-1">
-                                      <span class="material-symbols-outlined m-0 p-1">open_in_full</span>
-                                    </button>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                            `);
+          // Begin met de HTML-opbouw
+          let htmlContent = `
+  <div style="height: 100%; background: #d4d4d4;" class="col-md-6 col-12 vh-100 m-0 p-0" id="modelviewerCol">
+    <div class="brandlogo position-absolute top-0 start-0 pt-5 ps-5">
+      <img src="img/logo_${brand}.webp" class="img-fluid">
+    </div>
+
+    <div class="row m-0 p-0">
+      <div class="col-md-6 col-12 position-absolute bottom-0 m-0 p-0">
+        <div class="col-12 position-absolute bottom-0 m-0 p-3 z-0 d-flex justify-content-between">
+          <div class="text-start">
+          </div>
+
+          <div class="text-end">
+`;
+
+          // **Controleer het apparaattype en voeg de juiste AR-knop toe**
+          if (result.device.type === 'mobile' || result.device.type === 'tablet' || /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent)) {
+            htmlContent += `
+              <button id="arButton" type="button" class="btn btn-sm btn-outline-dark rounded-0 p-1 m-1"">
+                <span class="material-symbols-outlined m-0 p-1">view_in_ar</span>AR
+              </button>
+            `;
+          } else {
+            htmlContent += `
+              <button type="button" class="btn btn-sm btn-outline-dark rounded-0 p-1 m-1" onclick="shareTroughQr()">
+                <span class="material-symbols-outlined m-0 p-1">view_in_ar</span>
+              </button>
+            `;
+          }
+
+          // **Voeg de overige knoppen toe**
+          htmlContent += `
+            <button type="button" class="btn btn-sm btn-outline-dark rounded-0 p-1 m-1" onclick="shareWithWhatsApp()">
+              <span class="material-symbols-outlined m-0 p-1">share</span>
+            </button>
+            <button type="button" class="btn btn-sm btn-outline-dark rounded-0 p-1 m-1" onclick="downloadPdf()">
+              <span class="material-symbols-outlined m-0 p-1">picture_as_pdf</span>
+            </button>
+            <button id="downloadModel" type="button" class="btn btn-sm btn-outline-dark rounded-0 p-1 m-1">
+              <span class="material-symbols-outlined m-0 p-1">download</span>
+            </button>
+            <button id="fullscreen" type="button" class="btn btn-sm btn-outline-dark rounded-0 p-1 m-1">
+              <span class="material-symbols-outlined m-0 p-1">open_in_full</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+          // **Schrijf de HTML naar de pagina**
+          document.write(htmlContent);
+
         }
         // mobile version
         if (windowHeight > windowWidth) {
@@ -471,7 +494,6 @@
                 </div> 
             </div>
           </div>
-
         </div>
       </div>
     </div>     
@@ -480,10 +502,37 @@
   </script>
   </div>
 
+  <!-- Bootstrap Modal zonder afgeronde randen -->
+  <div class="modal fade" id="qrModal" tabindex="-1" aria-labelledby="qrModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content rounded-0">
+        <div class="modal-header">
+          <h5 class="modal-title" id="qrModalLabel">Scan de QR-code</h5>
+          <button type="button" class="btn-close rounded-0" data-bs-dismiss="modal" aria-label="Sluiten"></button>
+        </div>
+        <div class="modal-body d-flex">
+          <!-- QR-code container -->
+          <div id="qrCanvas" class="me-3"></div>
+
+          <!-- Uitleg en knop onder elkaar -->
+          <div>
+            <p class="mb-2">Scan de QR-code met je tablet of telefoon en klik op:</p>
+
+            <!-- Bekijk in de ruimte knop -->
+            <div class="rounded-pill btn-sm btn-dark d-flex align-items-center justify-content-center"
+              style="width: 180px; height: 40px;">
+              <span class="material-symbols-outlined">view_in_ar</span>
+              <span class="ms-2" style="font-size: 0.85rem;">Bekijk in de ruimte</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
     crossorigin="anonymous"></script>
-
 </body>
 
 </html>
