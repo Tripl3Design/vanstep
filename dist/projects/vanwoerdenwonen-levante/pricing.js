@@ -136,9 +136,6 @@ function pricing(model) {
     }
 }
 
-
-
-
 function handleAddToCartClick() {
     const { dataURL, blob } = mainModule.captureScreenshot();
     const product = {
