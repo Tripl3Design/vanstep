@@ -141,6 +141,8 @@
 
   <script src='projects/vanwoerdenwonen-levante/settings.js'></script>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
   <script src="https://cdn.jsdelivr.net/npm/ua-parser-js@2.0.0/dist/ua-parser.min.js"></script>
 
   <script>
@@ -229,6 +231,7 @@
 
                              <div style="position: fixed; bottom: 100px;" class="col-12 w-100 text-center">
                               <div class="btn-group btn-group-lg m-0 p-0" role="group" aria-label="buttongroup" style="gap: 10px;">
+                                
                                 <button type="button" class="d-flex btn rounded-pill btn-sm btn-dark m-0" onclick="shareWithWhatsApp()">
                                   <span class="material-symbols-outlined m-0 p-1">share</span>
                                 </button>
@@ -262,6 +265,10 @@
                                   </div>
                                   <!-- only van doesburg -->
                                   <div class="text-end">
+                                
+                                    <button type="button" class="btn btn-sm btn-outline-dark rounded-0 p-1 m-1" onclick="shareTroughQr()">
+                                      <span class="material-symbols-outlined m-0 p-1">view_in_ar</span>
+                                    </button>
                                     <button type="button" class="btn btn-sm btn-outline-dark rounded-0 p-1 m-1" onclick="shareWithWhatsApp()">
                                       <span class="material-symbols-outlined m-0 p-1">share</span>
                                     </button>

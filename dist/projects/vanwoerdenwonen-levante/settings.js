@@ -63,6 +63,59 @@ async function shareWithWhatsApp() {
     }
 }
 
+async function shareTroughQr() {
+    console.log('shareTroughQr');
+
+    try {
+        // Sla de configuratie op in Firestore
+        const docRef = await addDoc(collection(db, "clientModels"), {
+            brand: brand,
+            product: product,
+            from: document.referrer,
+            model: FEATUREDMODEL,
+            timestamp: serverTimestamp()
+        });
+        console.log("Document saved with ID: ", docRef.id);
+
+        const configuratorUrl = `${document.referrer}?brand=${brand}&product=${product}&fsid=${docRef.id}`;
+        
+        // Maak een div-element voor de popup
+        let qrPopup = document.createElement("div");
+        qrPopup.style.position = "fixed";
+        qrPopup.style.top = "80%";
+        qrPopup.style.left = "50%";
+        qrPopup.style.transform = "translate(-50%, -50%)";
+        qrPopup.style.padding = "20px";
+        qrPopup.style.background = "white";
+        qrPopup.style.border = "1px solid black";
+        qrPopup.style.zIndex = "1000";
+        qrPopup.style.textAlign = "center";
+
+        // Voeg een QR-code toe aan de popup
+        let qrCanvas = document.createElement("div");
+        qrPopup.appendChild(qrCanvas);
+        
+        // Sluitknop
+        let closeButton = document.createElement("button");
+        closeButton.innerText = "Sluiten";
+        closeButton.style.marginTop = "10px";
+        closeButton.onclick = () => document.body.removeChild(qrPopup);
+        qrPopup.appendChild(closeButton);
+
+        document.body.appendChild(qrPopup);
+
+        // QR-code genereren met QRCode.js
+        new QRCode(qrCanvas, {
+            text: configuratorUrl,
+            width: 200,
+            height: 200
+        });
+
+    } catch (e) {
+        console.error("Error: ", e);
+    }
+}
+
 function updateFeaturedModel(model) {
     import('/projects/vanwoerdenwonen-levante/threeModel.js')
         .then(main => {
@@ -83,7 +136,6 @@ function updateFeaturedModel(model) {
             console.error('Error loading module:', error);
         });
 }
-
 function updateControlPanel(model, selectedLayer, expandedLayer) {
     const settings = initSettings(model);
     const elem = document.getElementById('controlpanelContainer');

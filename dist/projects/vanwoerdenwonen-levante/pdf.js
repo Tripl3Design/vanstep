@@ -1,6 +1,3 @@
-// Gebruik dit in een <input type="file"> in HTML
-document.getElementById('fileInput').addEventListener('change', convertToBase64);
-
 function createPdf(model, mainImage, title, fsid) {
     const configuratorUrl = `${document.referrer}?brand=${brand}&product=${product}&fsid=${fsid}`;
     const now = new Date();

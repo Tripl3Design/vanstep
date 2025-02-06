@@ -58,7 +58,7 @@ function pricing(model) {
 
     // Globale variabelen om prijs en model op te slaan
     currentModel = model;
-    currentTotalPrice = totalPrice;
+    currentTotalPrice = discountedPrice.toFixed(0);
 
     document.getElementById('add-to-cart-button').addEventListener('click', handleAddToCartClick, { once: true });
 
@@ -142,8 +142,8 @@ function pricing(model) {
 function handleAddToCartClick() {
     const { dataURL, blob } = mainModule.captureScreenshot();
     const product = {
-        model: currentModel, // Gebruik een globale of externe referentie
-        price: currentTotalPrice, // Gebruik globale of externe referentie
+        model: currentModel,
+        price: currentTotalPrice,
         imageUrl: dataURL
     };
 
