@@ -1,3 +1,4 @@
+
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
@@ -789,14 +790,12 @@ export function captureScreenshot() {
     return { dataURL, blob };
 }
 
-if (windowHeight > windowWidth) {
-    document.getElementById("arButton").addEventListener("click", async () => {
+const arButton = document.getElementById("arButton");
+
+if (arButton) {
+    arButton.addEventListener("click", async () => {
         const loader = document.getElementById("loader");
         loader.style.display = "flex"; // Laat de loader zien
-
-        const uap = new UAParser();
-        console.log(uap.getResult());
-        const result = uap.getResult(); // Deze methode geeft het resultaat terug
 
         try {
             const { glbURL, usdzURL } = await exportModel();
@@ -805,7 +804,7 @@ if (windowHeight > windowWidth) {
                 if (!usdzURL) {
                     throw new Error('USDZ URL ontbreekt.');
                 }
-                console.log('Generated URL (Ios):', usdzURL);
+                console.log('Generated URL (iOS):', usdzURL);
 
                 const a = document.createElement('a');
                 a.href = usdzURL;
@@ -833,7 +832,10 @@ if (windowHeight > windowWidth) {
             loader.style.display = "none"; // Verberg de loader
         }
     });
+} else {
+    console.warn("AR-knop niet gevonden, AR-functionaliteit wordt niet geladen.");
 }
+
 
 async function exportModel() {
     const gltfExporter = new GLTFExporter();
@@ -843,21 +845,11 @@ async function exportModel() {
         includeCustomExtensions: true, // Include custom extensions if applicable
     };
 
-    // Gebruik UA-Parser versie 2 om de gebruikersagent te analyseren
-    const uap = new UAParser();
-    console.log(uap.getResult());
-    const result = uap.getResult(); // Deze methode geeft het resultaat terug
-
-    console.log(result.browser); // {name: "Chromium", version: "15.0.874.106", major: "15", type: undefined}
-    console.log(result.device); // {model: undefined, type: undefined, vendor: undefined}
-    console.log(result.os); // {name: "Ubuntu", version: "11.10"}
-
-
     try {
         // Temporarily remove the ground object to avoid exporting it
         scene.remove(ground);
 
-        if (result.os.name.toLowerCase().includes("ios") || result.browser.name.toLowerCase().includes("safari")) {
+        if (uap.getOS().name.toLowerCase().includes("ios") || uap.getBrowser().name.toLowerCase().includes("safari")) {
             // --- Generate USDZ ---
             const usdzBlob = await usdzExporter.parseAsync(scene); // Use async parsing for reliability
             console.log('USDZ Blob created:', usdzBlob);

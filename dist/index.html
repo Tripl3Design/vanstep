@@ -2,10 +2,24 @@
 <html lang="en">
 
 <head>
-  <!-- Required meta tags -->
+  <!-- Meta & SEO -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" href="img/ico/favicon.ico" type="image/x-icon">
+
+  <!-- Fonts & Stylesheets -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap">
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0">
+  <link rel="stylesheet" href="css/styles.min.css">
+
+  <!-- Extern Sources -->
+  <script src="https://cdn.jsdelivr.net/npm/ua-parser-js@2.0.0/dist/ua-parser.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+  <!-- Three.js importmap -->
   <script type="importmap">
     {
       "imports": {
@@ -13,158 +27,27 @@
         "three/addons/": "https://cdn.jsdelivr.net/npm/three@v0.173.0/examples/jsm/"
       }
     }
-</script>
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
-    import { getFirestore, collection, addDoc, getDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
-    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-storage.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyC0XTl5lSTSN0mxCqGsYxsrIpFtoU-ooEI",
-      authDomain: "vanwoerdenwonen-tripletise.firebaseapp.com",
-      projectId: "vanwoerdenwonen-tripletise",
-      storageBucket: "vanwoerdenwonen-tripletise.appspot.com",
-      messagingSenderId: "663075472335",
-      appId: "1:663075472335:web:bde178dfb46caaf1f808ba"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    const storage = getStorage(app);
-    const auth = getAuth(app);
-
-    // Export necessary functions to the window object for easy access
-    window.db = db;
-    window.collection = collection;
-    window.addDoc = addDoc;
-    window.getDoc = getDoc;
-    window.doc = doc;
-    window.serverTimestamp = serverTimestamp;
-    window.storage = storage;
-    window.ref = ref;
-    window.uploadBytes = uploadBytes;
-    window.getDownloadURL = getDownloadURL;
-
-    // On redirect back to your app, handle Mollie response
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        const params = new URLSearchParams(window.location.search);
-        const authCode = params.get('code');
-        if (authCode) {
-          // Handle code in your UI or call a Firebase function to finalize setup
-          console.log("Mollie Auth Code: ", authCode);
-          // You can store the authCode or pass it to a Firebase Function
-        }
-      }
-    });
-
-    // Function to retrieve URL parameters
-    function getUrlParameter(name) {
-      name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
-      const regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
-      const results = regex.exec(location.search);
-      return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
-    }
-
-    const fsid = getUrlParameter('fsid');
-
-    if (fsid) {
-      // Use the updated Firestore syntax
-      const docRef = doc(db, 'clientModels', fsid);
-      getDoc(docRef).then((docSnap) => {
-        if (docSnap.exists()) {
-          const data = docSnap.data();
-
-          // Add Open Graph metadata
-          const metaTitle = document.createElement('meta');
-          metaTitle.setAttribute('property', 'og:title');
-          metaTitle.content = "bank evan";
-          document.head.appendChild(metaTitle);
-          console.log(metaTitle);
-
-          const metaDescription = document.createElement('meta');
-          metaDescription.setAttribute('property', 'og:description');
-          metaDescription.content = "Configureer jouw meubel";
-          document.head.appendChild(metaDescription);
-          console.log(metaDescription);
-
-          const metaImage = document.createElement('meta');
-          metaImage.setAttribute('property', 'og:image');
-          metaImage.content = data.imageUrl;
-          document.head.appendChild(metaImage);
-          console.log(metaImage);
-
-          const metaType = document.createElement('meta');
-          metaType.setAttribute('property', 'og:type');
-          metaType.content = 'website';
-          document.head.appendChild(metaType);
-          console.log(metaType);
-
-          console.log("Open Graph metadata added:", data);
-        } else {
-          console.error("Document not found");
-        }
-      }).catch((error) => {
-        console.error("Error retrieving document:", error);
-      });
-    }
   </script>
+
+  <!-- Kritieke kleine scripts -->
   <script>
     console.log('%cThis configurator is made by TripleDesign. Visit tripledesign.nl for more info!', 'background:red;color:#fff;font-weight: bold;');
     const brand = 'vanwoerdenwonen';
     const product = 'levante';
     const title = 'Bank Evan';
-    console.log(brand);
-    console.log(product);
-  </script>
-  <!-- Google Icons -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-  <link rel="stylesheet"
-    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap">
-  <link rel="stylesheet" href="css/styles.min.css">
-
-  <!-- MakePDF -->
-  <script src='https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.12/pdfmake.min.js'></script>
-  <script src='https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.12/vfs_fonts.js'></script>
-
-  <script src="https://cdn.jsdelivr.net/npm/swiped-events@1.2.0/dist/swiped-events.min.js"></script>
-
-  <script src="js/ua-parser.min.js"></script>
-  <script src='js/controlpanel.js'></script>
-  <script src='js/colorChanger.js'></script>
-  <script src='projects/vanwoerdenwonen-levante/pdf.js'></script>
-  <script src='projects/vanwoerdenwonen-levante/pricing.js'></script>
-
-  <script src='projects/vanwoerdenwonen-levante/settings.js'></script>
-
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-
-  <script src="https://cdn.jsdelivr.net/npm/ua-parser-js@2.0.0/dist/ua-parser.min.js"></script>
-
-  <script>
-    /*
-    "use strict"
-        if (window.top == window.self) {
-          window.location.href = 'http://furnitise.nl';
-        }
-        */
-
-    window.addEventListener("orientationchange", function () {
-      window.location.reload();
-    });
 
     const capitalizeFirstLetter = (str) => str.charAt(0).toUpperCase() + str.slice(1);
     document.title = `${capitalizeFirstLetter(title)} | ${capitalizeFirstLetter(brand)}`;
-
-    const parser = new UAParser(); // Instantiate the parser
-    const device = parser.getDevice();
-
-    const windowWidth = window.innerWidth;
+  </script>
+  <script>
     const windowHeight = window.innerHeight;
+    const windowWidth = window.innerWidth;
+
+    const uap = new UAParser();
+    console.log(uap.getResult());
+    console.log(uap.getDevice().type);
+    //hack for IpadAir and IpadPro (not visible on Chrome DevTools)
+    console.log(uap.getDevice().withFeatureCheck());
 
     function bodyOnload() {
       handleModelSelection();
@@ -173,14 +56,12 @@
 </head>
 
 <body onload="bodyOnload();">
+
+
   <div class="container-fluid m-0 p-0">
     <div class="row m-0 p-0 overflow-hidden">
-
       <script>
-        // mobile version
-        if (windowHeight > windowWidth) {
-
-          document.write( /*html*/ `
+        document.write( /*html*/ `
 
           <style>
     #loader {
@@ -214,10 +95,13 @@
         }
     }
 </style>
-          <div id="loader" style="display: none;">
-    <div class="spinner"></div>
+<div id="loader" style="display: none;">
+  <div class="spinner"></div>
 </div>
-
+`);
+        // mobile version
+        if (windowHeight > windowWidth) {
+          document.write( /*html*/ `
             <div style="height: 100%; background: #d4d4d4;" class="col-12 vh-100 m-0 p-0" id="modelviewerCol">
                             <div class="position-absolute w-100">
                               <div style="letter-spacing: 1.5px;" class="h2 text-center m-0 p-0 mt-4" id="producttitleMobile">
@@ -248,44 +132,64 @@
                             </div>
                             `);
         } else {
-          document.write( /*html*/`
-            <div style="height: 100%; background: #d4d4d4;" class="col-md-6 col-12 vh-100 m-0 p-0" id="modelviewerCol">
-<div class="brandlogo position-absolute top-0 start-0    pt-5    ps-5"><img src="img/logo_${brand}.webp" class="img-fluid"></div>
 
-                            <div class="row m-0 p-0">
-                              <div class="col-md-6 col-12 position-absolute bottom-0 m-0 p-0">
-                                <!-- you can add controls in the canvas here -->
-                                 <div class="col-12 position-absolute bottom-0 m-0 p-3 z-0 d-flex justify-content-between">
-                               
-                                  <div class="text-start">
-                                       <!-- only van doesburg 
-                                     <button id="startNewButton" type="button" class="d-flex btn btn-sm btn-outline-dark rounded-0 p-1 m-1">
-                                      #
-                                    </button>-->
-                                  </div>
-                                  <!-- only van doesburg -->
-                                  <div class="text-end">
-                                
-                                    <button type="button" class="btn btn-sm btn-outline-dark rounded-0 p-1 m-1" onclick="shareTroughQr()">
-                                      <span class="material-symbols-outlined m-0 p-1">view_in_ar</span>
-                                    </button>
-                                    <button type="button" class="btn btn-sm btn-outline-dark rounded-0 p-1 m-1" onclick="shareWithWhatsApp()">
-                                      <span class="material-symbols-outlined m-0 p-1">share</span>
-                                    </button>
-                                    <button type="button" class="btn btn-sm btn-outline-dark rounded-0 p-1 m-1" onclick="downloadPdf()">
-                                      <span class="material-symbols-outlined m-0 p-1">picture_as_pdf</span>
-                                    </button>
-                                    <button id="downloadModel" type="button" class="btn btn-sm btn-outline-dark rounded-0 p-1 m-1">
-                                      <span class="material-symbols-outlined m-0 p-1">download</span>
-                                    </button>
-                                    <button id="fullscreen" type="button" class="btn btn-sm btn-outline-dark rounded-0 p-1 m-1">
-                                      <span class="material-symbols-outlined m-0 p-1">open_in_full</span>
-                                    </button>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                            `);
+
+          // Begin met de HTML-opbouw
+          let htmlContent = `
+  <div style="height: 100%; background: #d4d4d4;" class="col-md-6 col-12 vh-100 m-0 p-0" id="modelviewerCol">
+    <div class="brandlogo position-absolute top-0 start-0 pt-5 ps-5">
+      <img src="img/logo_${brand}.webp" class="img-fluid">
+    </div>
+
+    <div class="row m-0 p-0">
+      <div class="col-md-6 col-12 position-absolute bottom-0 m-0 p-0">
+        <div class="col-12 position-absolute bottom-0 m-0 p-3 z-0 d-flex justify-content-between">
+          <div class="text-start">
+          </div>
+
+          <div class="text-end">
+`;
+
+          // **Controleer het apparaattype en voeg de juiste AR-knop toe**
+          //if (result.device.type === 'mobile' || result.device.type === 'tablet' || /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent)) {
+
+          if (uap.getDevice().type === 'mobile' || uap.getDevice().type === 'tablet' || uap.getDevice().withFeatureCheck().type === 'tablet') {
+            htmlContent += `
+              <button id="arButton" type="button" class="btn btn-sm btn-outline-dark rounded-0 p-1 m-1"">
+                <span class="material-symbols-outlined m-0 p-1">view_in_ar</span>AR
+              </button>
+            `;
+          } else {
+            htmlContent += `
+              <button type="button" class="btn btn-sm btn-outline-dark rounded-0 p-1 m-1" onclick="shareTroughQr()">
+                <span class="material-symbols-outlined m-0 p-1">view_in_ar</span>
+              </button>
+            `;
+          }
+
+          // **Voeg de overige knoppen toe**
+          htmlContent += `
+            <button type="button" class="btn btn-sm btn-outline-dark rounded-0 p-1 m-1" onclick="shareWithWhatsApp()">
+              <span class="material-symbols-outlined m-0 p-1">share</span>
+            </button>
+            <button type="button" class="btn btn-sm btn-outline-dark rounded-0 p-1 m-1" onclick="downloadPdf()">
+              <span class="material-symbols-outlined m-0 p-1">picture_as_pdf</span>
+            </button>
+            <button id="downloadModel" type="button" class="btn btn-sm btn-outline-dark rounded-0 p-1 m-1">
+              <span class="material-symbols-outlined m-0 p-1">download</span>
+            </button>
+            <button id="fullscreen" type="button" class="btn btn-sm btn-outline-dark rounded-0 p-1 m-1">
+              <span class="material-symbols-outlined m-0 p-1">open_in_full</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+          // **Schrijf de HTML naar de pagina**
+          document.write(htmlContent);
+
         }
         // mobile version
         if (windowHeight > windowWidth) {
@@ -454,9 +358,9 @@
         <div class="row sticky-bottom bg-white m-0 p-0">
           <div class="row py-0    px-xxl-5 px-xl-4 px-3    m-0">
             <div class="border-top border-2 border-dark"></div>
-              <div class="productInfoPrice col-6    m-0 p-0 pt-xxl-4 pt-xl-4 pt-3"></div>
+              <div class="productInfoPrice col-8    m-0 p-0 pt-xxl-4 pt-xl-4 pt-3"></div>
 
-              <div class="col-6 p-0 m-0 pt-3">
+              <div class="col-4 p-0 m-0 pt-3">
 
                 <button id="add-to-cart-button" type="button" style="background-color: #1a5951; color: white; letter-spacing: 1.5px;" class="float-end d-flex btn btn-success rounded-pill px-4 download-button">
                   <span class="material-symbols-outlined mt-1">shopping_cart</span>&nbsp;&nbsp;<span class="mt-1 h6">bestellen</span>
@@ -471,7 +375,6 @@
                 </div> 
             </div>
           </div>
-
         </div>
       </div>
     </div>     
@@ -479,6 +382,91 @@
     }
   </script>
   </div>
+
+  <!-- Bootstrap Modal zonder afgeronde randen -->
+  <div class="modal fade" id="qrModal" tabindex="-1" aria-labelledby="qrModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content rounded-0">
+        <div class="modal-header">
+          <h5 class="modal-title" id="qrModalLabel">Scan de QR-code</h5>
+          <button type="button" class="btn-close rounded-0" data-bs-dismiss="modal" aria-label="Sluiten"></button>
+        </div>
+        <div class="modal-body d-flex">
+          <!-- QR-code container -->
+          <div id="qrCanvas" class="me-3"></div>
+
+          <!-- Uitleg en knop onder elkaar -->
+          <div>
+            <p class="mb-2">Scan de QR-code met je tablet of telefoon en klik op:</p>
+
+            <!-- Bekijk in de ruimte knop -->
+            <div class="rounded-pill btn-sm btn-dark d-flex align-items-center justify-content-center"
+              style="width: 180px; height: 40px;">
+              <span class="material-symbols-outlined">view_in_ar</span>
+              <span class="ms-2" style="font-size: 0.85rem;">Bekijk in de ruimte</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Externe scripts met `defer` -->
+  <script src="js/controlpanel.js" defer></script>
+  <script src="js/colorChanger.js" defer></script>
+  <script src="projects/vanwoerdenwonen-levante/pdf.js" defer></script>
+  <script src="projects/vanwoerdenwonen-levante/pricing.js" defer></script>
+  <script src="projects/vanwoerdenwonen-levante/settings.js" defer></script>
+
+  <!-- PDFMake -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.12/pdfmake.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.12/vfs_fonts.js"></script>
+
+  <!-- Firebase, maar met `defer` -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-storage.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyC0XTl5lSTSN0mxCqGsYxsrIpFtoU-ooEI",
+      authDomain: "vanwoerdenwonen-tripletise.firebaseapp.com",
+      projectId: "vanwoerdenwonen-tripletise",
+      storageBucket: "vanwoerdenwonen-tripletise.appspot.com",
+      messagingSenderId: "663075472335",
+      appId: "1:663075472335:web:bde178dfb46caaf1f808ba"
+    };
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const storage = getStorage(app);
+    const auth = getAuth(app);
+
+    // Export necessary functions to the window object for easy access
+    window.db = db;
+    window.collection = collection;
+    window.addDoc = addDoc;
+    window.getDoc = getDoc;
+    window.doc = doc;
+    window.serverTimestamp = serverTimestamp;
+    window.storage = storage;
+    window.ref = ref;
+    window.uploadBytes = uploadBytes;
+    window.getDownloadURL = getDownloadURL;
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) console.log("Gebruiker ingelogd:", user.uid);
+    });
+  </script>
+
+  <!-- Voorkomen dat herladen problemen geeft -->
+  <script>
+    window.addEventListener("orientationchange", function () {
+      setTimeout(() => {
+        if (document.readyState === "complete") window.location.reload();
+      }, 500);
+    });
+  </script>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"

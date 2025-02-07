@@ -27,7 +27,7 @@ function pricing(model) {
     const priceElement = document.querySelector('.productInfoPrice');
     if (priceElement) {
         priceElement.textContent = '€ ' + totalPrice.toFixed(0) + ',-';
-        if (parser.getDevice().type != 'mobile') {
+        if (uap.getDevice().type != 'mobile') {
             priceElement.innerHTML = '<div id="totalPrice" class="h5 fw-bold">€ ' + totalPrice.toFixed(0) + ',-</div>';
         } else {
             priceElement.innerHTML = '<div id="totalPrice"><span class="material-symbols-outlined align-middle">shopping_cart </span>&nbsp;&nbsp;&nbsp;€ ' + totalPrice.toFixed(0) + ',-</div>';
@@ -65,7 +65,7 @@ function pricing(model) {
     const priceElement = document.querySelector('.productInfoPrice');
     if (priceElement) {
         // If device is mobile, add the shopping cart icon
-        if (parser.getDevice().type === 'mobile') {
+        if (windowHeight > windowWidth && uap.getDevice().type === 'mobile' || windowHeight > windowWidth && uap.getDevice().type === 'tablet' || windowHeight > windowWidth && uap.getDevice().withFeatureCheck().type === 'tablet') {
             priceHTML = `
                 <div">
                     <!--<span class="material-symbols-outlined align-middle">shopping_cart</span>-->
@@ -77,7 +77,7 @@ function pricing(model) {
         } else {
             priceHTML = `
                 <div class="h5 fw-bold">
-                  <span>Van </span>
+                  <span>van </span>
                     <span class="original-price" style="color: black;">€ ${totalPrice.toFixed(0)} ,- voor </span>
                     <span id="totalPrice" class="discounted-price">€ ${discountedPrice.toFixed(0)},-</span>
                 </div>

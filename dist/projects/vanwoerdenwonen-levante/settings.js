@@ -78,38 +78,20 @@ async function shareTroughQr() {
         console.log("Document saved with ID: ", docRef.id);
 
         const configuratorUrl = `${document.referrer}?brand=${brand}&product=${product}&fsid=${docRef.id}`;
+
+        // QR-code genereren in de modal
+        let qrCanvas = document.getElementById("qrCanvas");
+        qrCanvas.innerHTML = ""; // Leegmaken voordat we een nieuwe genereren
         
-        // Maak een div-element voor de popup
-        let qrPopup = document.createElement("div");
-        qrPopup.style.position = "fixed";
-        qrPopup.style.top = "80%";
-        qrPopup.style.left = "50%";
-        qrPopup.style.transform = "translate(-50%, -50%)";
-        qrPopup.style.padding = "20px";
-        qrPopup.style.background = "white";
-        qrPopup.style.border = "1px solid black";
-        qrPopup.style.zIndex = "1000";
-        qrPopup.style.textAlign = "center";
-
-        // Voeg een QR-code toe aan de popup
-        let qrCanvas = document.createElement("div");
-        qrPopup.appendChild(qrCanvas);
-        
-        // Sluitknop
-        let closeButton = document.createElement("button");
-        closeButton.innerText = "Sluiten";
-        closeButton.style.marginTop = "10px";
-        closeButton.onclick = () => document.body.removeChild(qrPopup);
-        qrPopup.appendChild(closeButton);
-
-        document.body.appendChild(qrPopup);
-
-        // QR-code genereren met QRCode.js
         new QRCode(qrCanvas, {
             text: configuratorUrl,
             width: 200,
             height: 200
         });
+
+        // Open de Bootstrap modal
+        let qrModal = new bootstrap.Modal(document.getElementById("qrModal"));
+        qrModal.show();
 
     } catch (e) {
         console.error("Error: ", e);
@@ -275,7 +257,7 @@ function updateControlPanel(model, selectedLayer, expandedLayer) {
     model.upholstery.structure = ALLCOLORS.upholsteries[upholsteryIndex].colorStructure;
     model.upholstery.pathThumb = ALLCOLORS.upholsteries[upholsteryIndex].colorPathThumb;
 
-    if (parser.getDevice().type != 'mobile' && parser.getDevice().type != 'tablet') {
+    if (uap.getDevice().type === 'mobile' || uap.getDevice().type === 'tablet' || uap.getDevice().withFeatureCheck().type === 'tablet') {
         upholsteryValue.forEach(item => item.addEventListener('mouseover', () => {
             upholsteryValue.forEach(item => { item.classList.remove('colorButtonActive') });
             const upholsteryId = item.id.split('_');
@@ -341,7 +323,7 @@ function updateControlPanel(model, selectedLayer, expandedLayer) {
         model.upholsteryDuotone.structure = ALLCOLORS.upholsteries[upholsteryDuotoneIndex].colorStructure;
         model.upholsteryDuotone.pathThumb = ALLCOLORS.upholsteries[upholsteryDuotoneIndex].colorPathThumb;
 
-        if (parser.getDevice().type != 'mobile' && parser.getDevice().type != 'tablet') {
+        if (uap.getDevice().type === 'mobile' || uap.getDevice().type === 'tablet' || uap.getDevice().withFeatureCheck().type === 'tablet') {
             upholsteryDuotoneValue.forEach(item => item.addEventListener('mouseover', () => {
                 upholsteryDuotoneValue.forEach(item => { item.classList.remove('colorButtonActive') });
                 const upholsteryDuotoneId = item.id.split('_');
@@ -445,12 +427,6 @@ async function handleModelSelection() {
 function initSettings(model) {
     const accordions = {};
 
-    let noDecor;
-    if (parser.getDevice().type == 'mobile' || urlParams.has('noDecor')) {
-        noDecor = "d-none";
-    } else {
-        noDecor = "d-block";
-    }
     accordions.type = {
         title: "type",
         options: ['numberOfSeats', 'dimensions'],

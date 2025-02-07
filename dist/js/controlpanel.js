@@ -196,7 +196,7 @@ function controlPanel_addLayer(name, settings, collapsed) {
 
 function controlPanel(settings, allModels, containerElem, expandedLayer) {
     const html = [];
-    if (parser.getDevice().type != 'mobile') {
+    if (uap.getDevice().type != 'mobile' || uap.getDevice().type != 'tablet' || uap.getDevice().withFeatureCheck().type != 'tablet') {
     html.push( /*html*/ `
     <div class="row m-0 p-0">
         <div id="featuredModels" class="text-nowrap carousel slide border-top border-1 border-dark m-0 p-0    py-3" data-bs-theme="dark">
@@ -215,7 +215,7 @@ function controlPanel(settings, allModels, containerElem, expandedLayer) {
                     <span class="visually-hidden">Previous</span>
                 </button>
                  `);
-    } else if (parser.getDevice().type == 'mobile') {
+    } else if (uap.getDevice().type === 'mobile' || uap.getDevice().type === 'tablet' || uap.getDevice().withFeatureCheck().type === 'tablet') {
         html.push( /*html*/ `
         <div class="d-flex justify-content-center">
                  `);
