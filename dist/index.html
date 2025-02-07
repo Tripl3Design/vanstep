@@ -62,7 +62,6 @@
     <div class="row m-0 p-0 overflow-hidden">
       <script>
         document.write( /*html*/ `
-        document.write( /*html*/ `
 
           <style>
     #loader {
@@ -456,10 +455,6 @@
     window.ref = ref;
     window.uploadBytes = uploadBytes;
     window.getDownloadURL = getDownloadURL;
-
-    onAuthStateChanged(auth, (user) => {
-      if (user) console.log("Gebruiker ingelogd:", user.uid);
-    });
   </script>
 
   <!-- Voorkomen dat herladen problemen geeft -->
