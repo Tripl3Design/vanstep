@@ -60,9 +60,19 @@ function createPdf(model, mainImage, title, fsid) {
                     widths: [100, 'auto'],
                     body: [
                         [{ text: 'type', fontSize: 10, bold: true }, { text: `Evan`, fontSize: 10 }],
-                        [{ text: 'artikelnummer', fontSize: 10, bold: true }, { text: `${model.type.substring(3)}`, fontSize: 10 }]
+                        [{
+                            text: 'artikelnummer', 
+                            fontSize: 10, 
+                            bold: true
+                        }, {
+                            text: model.footstool 
+                                ? `${model.type.substring(3)} (bank) & 9085110 (voetenbank)`
+                                : `${model.type.substring(3)}`,
+                            fontSize: 10
+                        }]
                     ]
-                }, margin: [0, 5, 0, 0]
+                },
+                margin: [0, 5, 0, 0]
             },
             {
                 canvas: [{
@@ -101,7 +111,7 @@ function createPdf(model, mainImage, title, fsid) {
                     widths: [100, 'auto'],
                     body: [
                         [{ text: 'zithoogte', fontSize: 10, bold: true }, { text: `${model.seatHeight} cm`, fontSize: 10 }],
-                        [{ text: 'voetenbank', fontSize: 10, bold: true }, { text: `${(model.footstool === true) ? 'ja' : 'nee'}`, fontSize: 10 }]
+                       // [{ text: 'voetenbank', fontSize: 10, bold: true }, { text: `${(model.footstool === true) ? 'ja' : 'nee'}`, fontSize: 10 }]
                     ]
                 }, margin: [0, 5, 0, 0]
             },
