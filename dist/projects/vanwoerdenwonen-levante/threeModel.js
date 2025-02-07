@@ -836,7 +836,6 @@ if (arButton) {
     console.warn("AR-knop niet gevonden, AR-functionaliteit wordt niet geladen.");
 }
 
-
 async function exportModel() {
     const gltfExporter = new GLTFExporter();
     const usdzExporter = new USDZExporter();
@@ -908,49 +907,3 @@ async function exportModel() {
         addGround();
     }
 }
-
-/*
-// Helperfunctie om GLB-data te combineren
-function combineGLBData(jsonBuffer, binaryData) {
-    const headerBuffer = new ArrayBuffer(12);
-    const headerView = new DataView(headerBuffer);
-    headerView.setUint32(0, 0x46546C67, true);
-    headerView.setUint32(4, 2, true);
-
-    const jsonChunkLength = jsonBuffer.byteLength;
-    const binaryChunkLength = binaryData ? binaryData.byteLength : 0;
-    const totalLength = 12 + 8 + jsonChunkLength + (binaryChunkLength ? 8 + binaryChunkLength : 0);
-
-    headerView.setUint32(8, totalLength, true);
-
-    const jsonChunkHeader = new ArrayBuffer(8);
-    const jsonChunkView = new DataView(jsonChunkHeader);
-    jsonChunkView.setUint32(0, jsonChunkLength, true);
-    jsonChunkView.setUint32(4, 0x4E4F534A, true);
-
-    let binaryChunkHeader = null;
-    if (binaryData) {
-        binaryChunkHeader = new ArrayBuffer(8);
-        const binaryChunkView = new DataView(binaryChunkHeader);
-        binaryChunkView.setUint32(0, binaryChunkLength, true);
-        binaryChunkView.setUint32(4, 0x004E4942, true);
-    }
-
-    const glbData = new Uint8Array(totalLength);
-    let offset = 0;
-    glbData.set(new Uint8Array(headerBuffer), offset);
-    offset += headerBuffer.byteLength;
-    glbData.set(new Uint8Array(jsonChunkHeader), offset);
-    offset += jsonChunkHeader.byteLength;
-    glbData.set(new Uint8Array(jsonBuffer), offset);
-    offset += jsonChunkLength;
-
-    if (binaryData) {
-        glbData.set(new Uint8Array(binaryChunkHeader), offset);
-        offset += binaryChunkHeader.byteLength;
-        glbData.set(new Uint8Array(binaryData), offset);
-    }
-
-    return glbData;
-}
-    */
