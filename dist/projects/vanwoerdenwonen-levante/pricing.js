@@ -78,6 +78,7 @@ function pricing(model) {
             priceHTML = `
                 <div class="h5 fw-bold">
                   <span>van </span>
+                  <span>van </span>
                     <span class="original-price" style="color: black;">€ ${totalPrice.toFixed(0)} ,- voor </span>
                     <span id="totalPrice" class="discounted-price">€ ${discountedPrice.toFixed(0)},-</span>
                 </div>
@@ -135,9 +136,6 @@ function pricing(model) {
         document.head.appendChild(style);
     }
 }
-
-
-
 
 function handleAddToCartClick() {
     const { dataURL, blob } = mainModule.captureScreenshot();
