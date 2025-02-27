@@ -64,6 +64,7 @@ export function initThree(containerElem) {
     controls.minDistance = 2;
     controls.maxDistance = 10;
     controls.maxPolarAngle = Math.PI / 2 - 0.1;
+    controls.target.set(0, 0.5, 0);
     controls.update();
 
     // Ground plane setup
