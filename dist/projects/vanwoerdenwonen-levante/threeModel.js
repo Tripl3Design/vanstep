@@ -801,7 +801,7 @@ if (arButton) {
         try {
             const { glbURL, usdzURL } = await exportModel();
 
-            if (result.os.name.toLowerCase().includes("ios") || result.browser.name.toLowerCase().includes("safari")) {
+            if (uap.getOS().name.toLowerCase().includes("ios") || uap.getBrowser().name.toLowerCase().includes("safari")) {
                 if (!usdzURL) {
                     throw new Error('USDZ URL ontbreekt.');
                 }
@@ -822,7 +822,7 @@ if (arButton) {
                     throw new Error('GLB URL ontbreekt.');
                 }
 
-                const intentUrl = `intent://arvr.google.com/scene-viewer/1.0?file=${encodeURIComponent(glbURL)}&mode=ar_only&resizable=false&disable_occlusion=true#Intent;scheme=https;package=com.google.ar.core;action=android.intent.action.VIEW;S.browser_fallback_url=https://developers.google.com/ar;end;`;
+                const intentUrl = `intent://arvr.google.com/scene-viewer/1.0?file=${encodeURIComponent(glbURL)}&mode=ar_only&resizable=false&disable_occlusion=true#Intent;scheme=https;package=com.google.ar.core;action=android.intent.action.VIEW;S.browser_fallback_url=vanwoerdenwonen.nl/ar;end;`;
                 console.log('Generated URL (Android):', intentUrl);
                 window.location.href = intentUrl;
             }
