@@ -64,6 +64,7 @@ export function initThree(containerElem) {
     controls.minDistance = 2;
     controls.maxDistance = 10;
     controls.maxPolarAngle = Math.PI / 2 - 0.1;
+    controls.target.set(0, 0.5, 0);
     controls.update();
 
     // Ground plane setup
@@ -840,12 +841,11 @@ async function exportModel() {
     const gltfExporter = new GLTFExporter();
     const usdzExporter = new USDZExporter();
     const options = {
-        binary: true,               // Export as binary GLB
-        includeCustomExtensions: true, // Include custom extensions if applicable
+        binary: true,
+        includeCustomExtensions: true,
     };
 
     try {
-        // Temporarily remove the ground object to avoid exporting it
         scene.remove(ground);
 
         if (uap.getOS().name.toLowerCase().includes("ios") || uap.getBrowser().name.toLowerCase().includes("safari")) {
