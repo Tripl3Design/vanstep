@@ -82,7 +82,7 @@ async function shareTroughQr() {
         // QR-code genereren in de modal
         let qrCanvas = document.getElementById("qrCanvas");
         qrCanvas.innerHTML = ""; // Leegmaken voordat we een nieuwe genereren
-        
+
         new QRCode(qrCanvas, {
             text: configuratorUrl,
             width: 200,
@@ -132,6 +132,7 @@ function updateControlPanel(model, selectedLayer, expandedLayer) {
     typeRadios.forEach(radio => radio.addEventListener('click', () => {
         model.type = radio.value;
 
+
         updateControlPanel(model, `type`);
         updateFeaturedModel(model);
         showSelected(false);
@@ -142,6 +143,10 @@ function updateControlPanel(model, selectedLayer, expandedLayer) {
     document.getElementById(model.type).checked = true;
     document.getElementById('numberOfSeatsText').textContent = numberOfSeats + ' zits';
     document.getElementById('dimensionsText').textContent = `${width} x ${depth} cm`;
+
+    model.width = width;
+    model.depth = depth;
+    console.log(model)
 
     // seatHeight
     let seatHeightRadios = document.querySelectorAll(`input[type=radio][name="seatHeight"]`);

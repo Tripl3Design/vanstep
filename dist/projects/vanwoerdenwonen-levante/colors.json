@@ -12,7 +12,7 @@
             "colorPathThumb": "projects/vanwoerdenwonen-levante/Textures/vww/adore/anthracite-67.jpg",
             "colorBg": "d4d4d4",
             "iconColor": "light",
-            "colorGroup": "grey"
+            "colorGroup": "gray"
         },
         {
             "colorBrand": "vww",
@@ -26,7 +26,7 @@
             "colorPathThumb": "projects/vanwoerdenwonen-levante/Textures/vww/adore/army-14.jpg",
             "colorBg": "d4d4d4",
             "iconColor": "light",
-            "colorGroup": "grey"
+            "colorGroup": "gray"
         },
         {
             "colorBrand": "vww",
@@ -40,7 +40,7 @@
             "colorPathThumb": "projects/vanwoerdenwonen-levante/Textures/vww/adore/aubergine-74.jpg",
             "colorBg": "d4d4d4",
             "iconColor": "light",
-            "colorGroup": "grey"
+            "colorGroup": "gray"
         },
         {
             "colorBrand": "vww",
@@ -54,7 +54,7 @@
             "colorPathThumb": "projects/vanwoerdenwonen-levante/Textures/vww/adore/beige-05.jpg",
             "colorBg": "d4d4d4",
             "iconColor": "light",
-            "colorGroup": "grey"
+            "colorGroup": "gray"
         },
         {
             "colorBrand": "vww",
@@ -68,7 +68,7 @@
             "colorPathThumb": "projects/vanwoerdenwonen-levante/Textures/vww/adore/blossom-166.jpg",
             "colorBg": "d4d4d4",
             "iconColor": "light",
-            "colorGroup": "grey"
+            "colorGroup": "gray"
         },
         {
             "colorBrand": "vww",
@@ -82,7 +82,7 @@
             "colorPathThumb": "projects/vanwoerdenwonen-levante/Textures/vww/adore/coffee-81.jpg",
             "colorBg": "d4d4d4",
             "iconColor": "light",
-            "colorGroup": "grey"
+            "colorGroup": "gray"
         },
         {
             "colorBrand": "vww",
@@ -96,7 +96,7 @@
             "colorPathThumb": "projects/vanwoerdenwonen-levante/Textures/vww/adore/coffee-81.jpg",
             "colorBg": "d4d4d4",
             "iconColor": "light",
-            "colorGroup": "grey"
+            "colorGroup": "gray"
         },
         {
             "colorBrand": "vww",
@@ -110,21 +110,21 @@
             "colorPathThumb": "projects/vanwoerdenwonen-levante/Textures/vww/adore/copper-126.jpg",
             "colorBg": "d4d4d4",
             "iconColor": "light",
-            "colorGroup": "grey"
+            "colorGroup": "gray"
         },
         {
             "colorBrand": "vww",
             "colorType": "adore",
-            "colorName": "darkgrey",
+            "colorName": "darkgray",
             "colorCode": "68",
             "colorPricegroup": 4,
             "colorHex": "3e3e3e",
             "colorStructure": "velvet",
-            "colorPath": "projects/vanwoerdenwonen-levante/Textures/vww/adore/darkgrey-68.jpg",
-            "colorPathThumb": "projects/vanwoerdenwonen-levante/Textures/vww/adore/darkgrey-68.jpg",
+            "colorPath": "projects/vanwoerdenwonen-levante/Textures/vww/adore/darkgray-68.jpg",
+            "colorPathThumb": "projects/vanwoerdenwonen-levante/Textures/vww/adore/darkgray-68.jpg",
             "colorBg": "d4d4d4",
             "iconColor": "light",
-            "colorGroup": "grey"
+            "colorGroup": "gray"
         },        {
             "colorBrand": "vww",
             "colorType": "adore",
@@ -137,7 +137,7 @@
             "colorPathThumb": "projects/vanwoerdenwonen-levante/Textures/vww/adore/dolphin-180.jpg",
             "colorBg": "d4d4d4",
             "iconColor": "light",
-            "colorGroup": "grey"
+            "colorGroup": "gray"
         },
         {
             "colorBrand": "vww",
@@ -151,7 +151,7 @@
             "colorPathThumb": "projects/vanwoerdenwonen-levante/Textures/vww/adore/ecru-102.jpg",
             "colorBg": "d4d4d4",
             "iconColor": "light",
-            "colorGroup": "grey"
+            "colorGroup": "gray"
         },
         {
             "colorBrand": "vww",
@@ -165,7 +165,7 @@
             "colorPathThumb": "projects/vanwoerdenwonen-levante/Textures/vww/adore/forest-162.jpg",
             "colorBg": "d4d4d4",
             "iconColor": "light",
-            "colorGroup": "grey"
+            "colorGroup": "gray"
         },
         {
             "colorBrand": "vww",
@@ -179,7 +179,7 @@
             "colorPathThumb": "projects/vanwoerdenwonen-levante/Textures/vww/adore/hazel-96.jpg",
             "colorBg": "d4d4d4",
             "iconColor": "light",
-            "colorGroup": "grey"
+            "colorGroup": "gray"
         },
         {
             "colorBrand": "vww",
@@ -193,7 +193,7 @@
             "colorPathThumb": "projects/vanwoerdenwonen-levante/Textures/vww/adore/indigo-90.jpg",
             "colorBg": "d4d4d4",
             "iconColor": "light",
-            "colorGroup": "grey"
+            "colorGroup": "gray"
         },
         {
             "colorBrand": "vww",
@@ -207,7 +207,7 @@
             "colorPathThumb": "projects/vanwoerdenwonen-levante/Textures/vww/adore/latte-211.jpg",
             "colorBg": "d4d4d4",
             "iconColor": "light",
-            "colorGroup": "grey"
+            "colorGroup": "gray"
         },
         {
             "colorBrand": "vww",
@@ -221,7 +221,7 @@
             "colorPathThumb": "projects/vanwoerdenwonen-levante/Textures/vww/adore/linen-110.jpg",
             "colorBg": "d4d4d4",
             "iconColor": "light",
-            "colorGroup": "grey"
+            "colorGroup": "gray"
         },
         {
             "colorBrand": "vww",
@@ -235,7 +235,7 @@
             "colorPathThumb": "projects/vanwoerdenwonen-levante/Textures/vww/adore/liver-10.jpg",
             "colorBg": "d4d4d4",
             "iconColor": "light",
-            "colorGroup": "grey"
+            "colorGroup": "gray"
         },
         {
             "colorBrand": "vww",
@@ -249,7 +249,7 @@
             "colorPathThumb": "projects/vanwoerdenwonen-levante/Textures/vww/adore/moss-59.jpg",
             "colorBg": "d4d4d4",
             "iconColor": "light",
-            "colorGroup": "grey"
+            "colorGroup": "gray"
         },
         {
             "colorBrand": "vww",
@@ -263,7 +263,7 @@
             "colorPathThumb": "projects/vanwoerdenwonen-levante/Textures/vww/adore/natural-01.jpg",
             "colorBg": "d4d4d4",
             "iconColor": "light",
-            "colorGroup": "grey"
+            "colorGroup": "gray"
         },
         {
             "colorBrand": "vww",
@@ -277,7 +277,7 @@
             "colorPathThumb": "projects/vanwoerdenwonen-levante/Textures/vww/adore/niagara-158.jpg",
             "colorBg": "d4d4d4",
             "iconColor": "light",
-            "colorGroup": "grey"
+            "colorGroup": "gray"
         },
         {
             "colorBrand": "vww",
@@ -291,7 +291,7 @@
             "colorPathThumb": "projects/vanwoerdenwonen-levante/Textures/vww/adore/oyster-175.jpg",
             "colorBg": "d4d4d4",
             "iconColor": "light",
-            "colorGroup": "grey"
+            "colorGroup": "gray"
         },
         {
             "colorBrand": "vww",
@@ -305,7 +305,7 @@
             "colorPathThumb": "projects/vanwoerdenwonen-levante/Textures/vww/adore/pale-200.jpg",
             "colorBg": "d4d4d4",
             "iconColor": "light",
-            "colorGroup": "grey"
+            "colorGroup": "gray"
         },
         {
             "colorBrand": "vww",
@@ -319,7 +319,7 @@
             "colorPathThumb": "projects/vanwoerdenwonen-levante/Textures/vww/adore/petrol-56.jpg",
             "colorBg": "d4d4d4",
             "iconColor": "light",
-            "colorGroup": "grey"
+            "colorGroup": "gray"
         },
         {
             "colorBrand": "vww",
@@ -333,7 +333,7 @@
             "colorPathThumb": "projects/vanwoerdenwonen-levante/Textures/vww/adore/sand-03.jpg",
             "colorBg": "d4d4d4",
             "iconColor": "light",
-            "colorGroup": "grey"
+            "colorGroup": "gray"
         },
         {
             "colorBrand": "vww",
@@ -347,7 +347,7 @@
             "colorPathThumb": "projects/vanwoerdenwonen-levante/Textures/vww/adore/steel-149.jpg",
             "colorBg": "d4d4d4",
             "iconColor": "light",
-            "colorGroup": "grey"
+            "colorGroup": "gray"
         },
         {
             "colorBrand": "vww",
@@ -361,7 +361,7 @@
             "colorPathThumb": "projects/vanwoerdenwonen-levante/Textures/vww/adore/tobacco-111.jpg",
             "colorBg": "d4d4d4",
             "iconColor": "light",
-            "colorGroup": "grey"
+            "colorGroup": "gray"
         },
         {
             "colorBrand": "vww",
@@ -375,7 +375,7 @@
             "colorPathThumb": "projects/vanwoerdenwonen-levante/Textures/vww/adore/winered-39.jpg",
             "colorBg": "d4d4d4",
             "iconColor": "light",
-            "colorGroup": "grey"
+            "colorGroup": "gray"
         },
 
         {
@@ -390,7 +390,7 @@
             "colorPathThumb": "projects/vanwoerdenwonen-levante/Textures/vww/dream/antraciet-46_thumb.jpg",
             "colorBg": "d4d4d4",
             "iconColor": "light",
-            "colorGroup": "grey"
+            "colorGroup": "gray"
         },
         {
             "colorBrand": "vww",
@@ -404,7 +404,7 @@
             "colorPathThumb": "projects/vanwoerdenwonen-levante/Textures/vww/dream/chianti-36_thumb.jpg",
             "colorBg": "d4d4d4",
             "iconColor": "light",
-            "colorGroup": "grey"
+            "colorGroup": "gray"
         },
         {
             "colorBrand": "vww",
@@ -418,35 +418,35 @@
             "colorPathThumb": "projects/vanwoerdenwonen-levante/Textures/vww/dream/cloud-122_thumb.jpg",
             "colorBg": "d4d4d4",
             "iconColor": "light",
-            "colorGroup": "grey"
+            "colorGroup": "gray"
         },
         {
             "colorBrand": "vww",
             "colorType": "dream",
-            "colorName": "grey",
+            "colorName": "gray",
             "colorCode": "45",
             "colorPricegroup": 4,
             "colorHex": "",
             "colorStructure": "boucle",
-            "colorPath": "projects/vanwoerdenwonen-levante/Textures/vww/dream/grey-45.jpg",
-            "colorPathThumb": "projects/vanwoerdenwonen-levante/Textures/vww/dream/grey-45_thumb.jpg",
+            "colorPath": "projects/vanwoerdenwonen-levante/Textures/vww/dream/gray-45.jpg",
+            "colorPathThumb": "projects/vanwoerdenwonen-levante/Textures/vww/dream/gray-45_thumb.jpg",
             "colorBg": "d4d4d4",
             "iconColor": "light",
-            "colorGroup": "grey"
+            "colorGroup": "gray"
         },
         {
             "colorBrand": "vww",
             "colorType": "dream",
-            "colorName": "lightgrey",
+            "colorName": "lightgray",
             "colorCode": "120",
             "colorPricegroup": 4,
             "colorHex": "",
             "colorStructure": "boucle",
-            "colorPath": "projects/vanwoerdenwonen-levante/Textures/vww/dream/lightgrey-120.jpg",
-            "colorPathThumb": "projects/vanwoerdenwonen-levante/Textures/vww/dream/lightgrey-120_thumb.jpg",
+            "colorPath": "projects/vanwoerdenwonen-levante/Textures/vww/dream/lightgray-120.jpg",
+            "colorPathThumb": "projects/vanwoerdenwonen-levante/Textures/vww/dream/lightgray-120_thumb.jpg",
             "colorBg": "d4d4d4",
             "iconColor": "light",
-            "colorGroup": "grey"
+            "colorGroup": "gray"
         },
         {
             "colorBrand": "vww",
@@ -460,7 +460,7 @@
             "colorPathThumb": "projects/vanwoerdenwonen-levante/Textures/vww/dream/nature-01_thumb.jpg",
             "colorBg": "d4d4d4",
             "iconColor": "light",
-            "colorGroup": "grey"
+            "colorGroup": "gray"
         },
         {
             "colorBrand": "vww",
@@ -474,7 +474,7 @@
             "colorPathThumb": "projects/vanwoerdenwonen-levante/Textures/vww/dream/olive-751_thumb.jpg",
             "colorBg": "d4d4d4",
             "iconColor": "light",
-            "colorGroup": "grey"
+            "colorGroup": "gray"
         },
         {
             "colorBrand": "vww",
@@ -488,7 +488,7 @@
             "colorPathThumb": "projects/vanwoerdenwonen-levante/Textures/vww/dream/peacock-436_thumb.jpg",
             "colorBg": "d4d4d4",
             "iconColor": "light",
-            "colorGroup": "grey"
+            "colorGroup": "gray"
         },
         {
             "colorBrand": "vww",
@@ -502,7 +502,7 @@
             "colorPathThumb": "projects/vanwoerdenwonen-levante/Textures/vww/dream/silver_cream-115_thumb.jpg",
             "colorBg": "d4d4d4",
             "iconColor": "light",
-            "colorGroup": "grey"
+            "colorGroup": "gray"
         },
         {
             "colorBrand": "vww",
@@ -516,22 +516,22 @@
             "colorPathThumb": "projects/vanwoerdenwonen-levante/Textures/vww/dream/silver-121_thumb.jpg",
             "colorBg": "d4d4d4",
             "iconColor": "light",
-            "colorGroup": "grey"
+            "colorGroup": "gray"
         },
 
         {
             "colorBrand": "vww",
             "colorType": "essa",
-            "colorName": "ashgrey",
+            "colorName": "ashgray",
             "colorCode": "16",
             "colorPricegroup": 3,
             "colorHex": "48e32",
             "colorStructure": "boucle",
-            "colorPath": "projects/vanwoerdenwonen-levante/Textures/vww/essa/ashgrey-16.jpg",
-            "colorPathThumb": "projects/vanwoerdenwonen-levante/Textures/vww/essa/ashgrey-16_thumb.jpg",
+            "colorPath": "projects/vanwoerdenwonen-levante/Textures/vww/essa/ashgray-16.jpg",
+            "colorPathThumb": "projects/vanwoerdenwonen-levante/Textures/vww/essa/ashgray-16_thumb.jpg",
             "colorBg": "d4d4d4",
             "iconColor": "light",
-            "colorGroup": "grey"
+            "colorGroup": "gray"
         },
         {
             "colorBrand": "vww",
@@ -545,7 +545,7 @@
             "colorPathThumb": "projects/vanwoerdenwonen-levante/Textures/vww/essa/cabernet-205_thumb.jpg",
             "colorBg": "d4d4d4",
             "iconColor": "light",
-            "colorGroup": "grey"
+            "colorGroup": "gray"
         },
         {
             "colorBrand": "vww",
@@ -559,7 +559,7 @@
             "colorPathThumb": "projects/vanwoerdenwonen-levante/Textures/vww/essa/caramel-16_thumb.jpg",
             "colorBg": "d4d4d4",
             "iconColor": "light",
-            "colorGroup": "grey"
+            "colorGroup": "gray"
         },
         {
             "colorBrand": "vww",
@@ -573,21 +573,21 @@
             "colorPathThumb": "projects/vanwoerdenwonen-levante/Textures/vww/essa/darkblue-48_thumb.jpg",
             "colorBg": "d4d4d4",
             "iconColor": "light",
-            "colorGroup": "grey"
+            "colorGroup": "gray"
         },
         {
             "colorBrand": "vww",
             "colorType": "essa",
-            "colorName": "grey",
+            "colorName": "gray",
             "colorCode": "65",
             "colorPricegroup": 3,
             "colorHex": "",
             "colorStructure": "boucle",
-            "colorPath": "projects/vanwoerdenwonen-levante/Textures/vww/essa/grey-65.jpg",
-            "colorPathThumb": "projects/vanwoerdenwonen-levante/Textures/vww/essa/grey-65_thumb.jpg",
+            "colorPath": "projects/vanwoerdenwonen-levante/Textures/vww/essa/gray-65.jpg",
+            "colorPathThumb": "projects/vanwoerdenwonen-levante/Textures/vww/essa/gray-65_thumb.jpg",
             "colorBg": "d4d4d4",
             "iconColor": "light",
-            "colorGroup": "grey"
+            "colorGroup": "gray"
         },
         {
             "colorBrand": "vww",
@@ -601,7 +601,7 @@
             "colorPathThumb": "projects/vanwoerdenwonen-levante/Textures/vww/essa/lava-165_thumb.jpg",
             "colorBg": "d4d4d4",
             "iconColor": "light",
-            "colorGroup": "grey"
+            "colorGroup": "gray"
         },
         {
             "colorBrand": "vww",
@@ -615,7 +615,7 @@
             "colorPathThumb": "projects/vanwoerdenwonen-levante/Textures/vww/essa/naturel-01_thumb.jpg",
             "colorBg": "d4d4d4",
             "iconColor": "light",
-            "colorGroup": "grey"
+            "colorGroup": "gray"
         },
         {
             "colorBrand": "vww",
@@ -629,7 +629,7 @@
             "colorPathThumb": "projects/vanwoerdenwonen-levante/Textures/vww/essa/shell-196_thumb.jpg",
             "colorBg": "d4d4d4",
             "iconColor": "light",
-            "colorGroup": "grey"
+            "colorGroup": "gray"
         },
         {
             "colorBrand": "vww",
@@ -643,7 +643,7 @@
             "colorPathThumb": "projects/vanwoerdenwonen-levante/Textures/vww/essa/slate-87_thumb.jpg",
             "colorBg": "d4d4d4",
             "iconColor": "light",
-            "colorGroup": "grey"
+            "colorGroup": "gray"
         },
         {
             "colorBrand": "vww",
@@ -657,7 +657,7 @@
             "colorPathThumb": "projects/vanwoerdenwonen-levante/Textures/vww/essa/turtle-88_thumb.jpg",
             "colorBg": "d4d4d4",
             "iconColor": "light",
-            "colorGroup": "grey"
+            "colorGroup": "gray"
         },
         {
             "colorBrand": "vww",
@@ -671,7 +671,7 @@
             "colorPathThumb": "projects/vanwoerdenwonen-levante/Textures/vww/essa/wood-108_thumb.jpg",
             "colorBg": "d4d4d4",
             "iconColor": "light",
-            "colorGroup": "grey"
+            "colorGroup": "gray"
         },
         {
             "colorBrand": "vww",
@@ -685,7 +685,7 @@
             "colorPathThumb": "projects/vanwoerdenwonen-levante/Textures/vww/essa/bisque-91_thumb.jpg",
             "colorBg": "d4d4d4",
             "iconColor": "light",
-            "colorGroup": "grey"
+            "colorGroup": "gray"
         }
     ]
 }

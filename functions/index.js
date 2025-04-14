@@ -1,5 +1,5 @@
 const functions = require('firebase-functions');
-const nodemailer = require('nodemailer');
+//const nodemailer = require('nodemailer');
 const admin = require('firebase-admin'); // Voeg de juiste import voor firebase-admin toe
 admin.initializeApp();  // Initialiseer de Firebase Admin SDK
 const db = admin.firestore();  // Verbind met Firestore
@@ -192,7 +192,7 @@ exports.mollieWebhook = functions.https.onRequest(async (req, res) => {
     }
   });
 });
-
+/*
 // Nodemailer transport instellen
 const transporter = nodemailer.createTransport({
   service: 'gmail',  // Aangezien je Google Workspace gebruikt
@@ -230,7 +230,7 @@ exports.sendTestEmail = functions.https.onRequest(async (req, res) => {
     }
   });
 });
-
+*/
 
 /*
 exports.getIssuers = functions.https.onRequest(async (req, res) => {
