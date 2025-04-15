@@ -98,7 +98,7 @@ async function shareTroughQr() {
     }
 }
 
-function updateFeaturedModel(model) {
+async function updateFeaturedModel(model) {
     import('/projects/vanwoerdenwonen-levante/threeModel.js')
         .then(main => {
             const viewer = document.getElementById('modelviewer');
@@ -118,6 +118,7 @@ function updateFeaturedModel(model) {
             console.error('Error loading module:', error);
         });
 }
+
 function updateControlPanel(model, selectedLayer, expandedLayer) {
     const settings = initSettings(model);
     const elem = document.getElementById('controlpanelContainer');
