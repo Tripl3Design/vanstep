@@ -10,7 +10,7 @@ import { USDZExporter } from 'three/addons/exporters/USDZExporter.js';
 let scene, camera, renderer, controls, rgbeLoader;
 let groundGeometry, groundMaterial, ground;
 
-let projectmap = 'projects/vanwoerdenwonen-levante/';
+let projectmap = 'https://vanwoerdenwonen-levante.web.app/projects/vanwoerdenwonen-levante/';
 
 export function initThree(containerElem) {
     // Scene setup
@@ -29,7 +29,6 @@ export function initThree(containerElem) {
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1;
-
 
     containerElem.appendChild(renderer.domElement);
 
@@ -826,6 +825,7 @@ function dataURLToBlob(dataURL) {
 }
 
 export function captureScreenshot() {
+    console.log('Hello i am here');
     renderer.render(scene, camera);
 
     const originalCanvas = renderer.domElement;

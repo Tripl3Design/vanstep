@@ -29,6 +29,31 @@ async function downloadPdf() {
     }
 }
 
+async function generateImage() {
+    try {
+        // Controleer of mainModule en renderer beschikbaar zijn
+        if (mainModule && mainModule.renderer && mainModule.scene) {
+            console.log("mainModule, renderer, and scene zijn beschikbaar.");
+            
+            // Verkrijg zowel de dataURL als de Blob van de screenshot
+            const { dataURL, blob } = mainModule.captureScreenshot();
+            
+            // Log de dataURL en blob om te zien wat we ontvangen
+            console.log("DataURL:", dataURL);
+            console.log("Blob:", blob);
+
+            // Als dataURL of blob null zijn, kunnen we dat hier loggen
+            if (!dataURL && !blob) {
+                console.error("Geen geldige afbeelding ontvangen: zowel dataURL als blob zijn null.");
+            }
+        } else {
+            console.error("mainModule, renderer, of scene ontbreekt.");
+        }
+    } catch (e) {
+        console.error("Error bij het genereren van afbeelding: ", e);
+    }
+}
+
 async function shareWithWhatsApp() {
     console.log('shareWithWhatsApp');
 
@@ -99,7 +124,8 @@ async function shareTroughQr() {
 }
 
 async function updateFeaturedModel(model) {
-    import('/projects/vanwoerdenwonen-levante/threeModel.js')
+    console.log('Hello I am here TOO');
+    import('https://vanwoerdenwonen-levante.web.app/projects/vanwoerdenwonen-levante/threeModel.js')
         .then(main => {
             const viewer = document.getElementById('modelviewer');
 
