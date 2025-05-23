@@ -716,7 +716,7 @@ export async function loadModelData(model) {
         }
 
         // Array om alle promises op te slaan
-        
+
 
         // Laad de benen van de stoel
         loadPromises.push(
@@ -870,7 +870,12 @@ if (arButton) {
                 console.log('Generated URL (iOS):', usdzURL);
 
                 const a = document.createElement('a');
-                a.href = usdzURL;
+                //a.href = usdzURL;
+                const noScaleURL = usdzURL.includes('?')
+                    ? `${usdzURL}&allowsContentScaling=0`
+                    : `${usdzURL}?allowsContentScaling=0`;
+                a.href = noScaleURL;
+
                 a.setAttribute('rel', 'ar');
                 const img = document.createElement('img');
                 img.src = 'img/logo_vanwoerdenwonen.webp';

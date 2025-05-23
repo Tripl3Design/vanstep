@@ -119,4 +119,3 @@ function handleAddToCartClick() {
 
     document.getElementById('add-to-cart-button').removeEventListener('click', handleAddToCartClick);
 }
-
