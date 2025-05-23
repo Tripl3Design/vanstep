@@ -7,10 +7,10 @@ import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { USDZExporter } from 'three/addons/exporters/USDZExporter.js';
 
-let scene, camera, renderer, controls, rgbeLoader;
+export let scene, camera, renderer, controls, rgbeLoader;
 let groundGeometry, groundMaterial, ground;
 
-let projectmap = 'https://vanwoerdenwonen-levante.web.app/projects/vanwoerdenwonen-levante/';
+export let projectmap = 'https://vanwoerdenwonen-levante.web.app/projects/vanwoerdenwonen-levante/';
 
 export function initThree(containerElem) {
     // Scene setup
@@ -825,7 +825,6 @@ function dataURLToBlob(dataURL) {
 }
 
 export function captureScreenshot() {
-    console.log('Hello i am here');
     renderer.render(scene, camera);
 
     const originalCanvas = renderer.domElement;

@@ -92,8 +92,27 @@ async function showSearchImages(modelFromSearch) {
     console.log(model);
     console.log(`https://${brand}-${product}.web.app?&data=${encodeURIComponent(JSON.stringify(model))}`);
 
-    await updateFeaturedModel(model);
-    //generateImage();
+    //await updateFeaturedModel(model);
+    //const main = await import('https://vanwoerdenwonen-levante.web.app/projects/vanwoerdenwonen-levante/threeModel.js');
+   // mainModule = main;
+
+//await mainModule.loadModelData(model);
+//await generateImage();
+
+
+await updateFeaturedModel(model);
+
+// Wacht een korte tijd om zeker te zijn dat het model gerenderd is
+await new Promise(resolve => setTimeout(resolve, 100)); // 100ms vertraging
+
+// Render opnieuw om zeker te zijn
+mainModule.renderer.render(mainModule.scene, mainModule.camera);
+
+// Screenshot maken
+await generateImage();
+
+
+
 
 
 
@@ -107,8 +126,8 @@ async function showSearchImages(modelFromSearch) {
                 console.warn("Kan productRender afbeelding niet instellen. imageEl:", imageEl, "dataURL:", dataURL);
             }
    */
-   // imageEl.src = 'https://firebasestorage.googleapis.com/v0/b/vanwoerdenwonen-tripletise.appspot.com/o/screenshots%2F1744791785268_screenshot.png?alt=media&token=c2981bf0-a902-42bc-b4e1-d04bb9a83a3b';
-     
+    //imageEl.src = 'https://firebasestorage.googleapis.com/v0/b/vanwoerdenwonen-tripletise.appspot.com/o/screenshots%2F1744791785268_screenshot.png?alt=media&token=c2981bf0-a902-42bc-b4e1-d04bb9a83a3b';
+
     const btn = document.querySelector('.goToConfigurator');
 
     btn.addEventListener('click', (e) => {
