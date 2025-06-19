@@ -30,19 +30,26 @@ async function downloadPdf() {
 }
 
 async function generateImage() {
- try {
+    try {
         if (mainModule && mainModule.renderer && mainModule.scene && mainModule.camera) {
-            mainModule.renderer.render(mainModule.scene, mainModule.camera);
+            // De canvas heeft nu (tijdelijk) een grootte, dus toDataURL() zou moeten werken
             const dataURL = mainModule.renderer.domElement.toDataURL('image/png');
             const imageEl = document.querySelector('.productRender');
+
             if (imageEl) {
-                imageEl.src = dataURL;
-                console.log("Afbeelding succesvol ingesteld met dataURL.");
+                if (dataURL === 'data:,') {
+                    console.warn("DataURL is leeg, waarschijnlijk is de canvas 0x0 of leeg gerenderd.");
+                    // Eventueel een fallback afbeelding tonen
+                    imageEl.src = 'https://firebasestorage.googleapis.com/v0/b/vanwoerdenwonen-tripletise.appspot.com/o/screenshots%2F1732545295859_screenshot.png?alt=media&token=9c7d7c26-3f52-4b1a-9f7c-2b349703bcf1';
+                } else {
+                    imageEl.src = dataURL;
+                    console.log("Afbeelding succesvol ingesteld met dataURL.");
+                }
             } else {
                 console.warn("Kan productRender element niet vinden.");
             }
         } else {
-            console.error("mainModule of onderdelen ontbreken.");
+            console.error("mainModule of onderdelen ontbreken bij generateImage.");
         }
     } catch (e) {
         console.error("Error bij het genereren van afbeelding:", e);
@@ -101,7 +108,7 @@ async function shareTroughQr() {
 
         // QR-code genereren in de modal
         let qrCanvas = document.getElementById("qrCanvas");
-        qrCanvas.innerHTML = ""; // Leegmaken voordat we een nieuwe genereren
+        qrCanvas.innerHTML = "";
 
         new QRCode(qrCanvas, {
             text: configuratorUrl,
@@ -257,21 +264,6 @@ function updateControlPanel(model, selectedLayer, expandedLayer) {
         delete model.footstool;
         document.getElementById('footstoolText').textContent = '';
     }
-
-    // upholstery
-    //let upholsteryCategory = document.querySelectorAll(`input[type=radio][name="upholsteriesCategory"]`);
-    //upholsteryCategory.forEach(radio => { radio.replaceWith(radio.cloneNode(true)) });
-    //upholsteryCategory = document.querySelectorAll(`input[type=radio][name="upholsteriesCategory"]`);
-    //document.getElementById(`upholsteriesCategory_${model.upholstery.category}`).checked = true;
-
-    //upholsteryCategory.forEach(radio => radio.addEventListener('click', () => {
-    //    model.upholstery.category = radio.value;
-    //    document.getElementById(`upholsteriesCategory_${model.upholstery.category}`).checked = true;
-
-    //    updateControlPanel(model, `upholstery`);
-    //    updateFeaturedModel(model);
-    //    showSelected(false);
-    //}));
 
     const upholstery = model.upholstery.path;
     let upholsteryIndex = ALLCOLORS.upholsteries.findIndex(item => item.colorPath === upholstery);
