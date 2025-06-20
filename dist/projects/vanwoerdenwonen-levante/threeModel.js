@@ -251,8 +251,6 @@ function loadAndTransformModel(
 
                     child.castShadow = true;
                     child.receiveShadow = true;
-
-                    // Verwijderd: Opacity aanpassing en transparantie
                 }
             });
 
