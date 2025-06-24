@@ -75,7 +75,12 @@ export function initThree(containerElem) {
 
     // desktop version
     if (windowHeight < windowWidth) {
-        document.getElementById('fullscreen').addEventListener('click', fullscreenToggle);
+        const fullscreenButton = document.getElementById('fullscreen');
+        if (fullscreenButton) {
+            fullscreenButton.addEventListener('click', fullscreenToggle);
+        } else {
+            console.warn("Element with ID 'fullscreen' not found. Fullscreen functionality might be unavailable.");
+        }
     }
 
     // Start the render loop
@@ -92,11 +97,16 @@ function addGround() {
     scene.add(ground);
 }
 
-// Desktop versie
+// desktop version
 if (windowHeight < windowWidth) {
-    document.getElementById('downloadModel').addEventListener('click', () => {
-        exportModel();
-    });
+    const downloadModelButton = document.getElementById('downloadModel');
+    if (downloadModelButton) {
+        downloadModelButton.addEventListener('click', () => {
+            exportModel();
+        });
+    } else {
+        console.warn("Element with ID 'downloadModel' not found. Model export functionality might be unavailable.");
+    }
 }
 
 const levante_sofa_25Url = projectmap + 'gltf/levante_sofa_25.gltf';
@@ -263,7 +273,7 @@ function loadAndTransformModel(
                 group.add(mesh);
             });
 
-            loadedModel.visible = true;
+            //loadedModel.visible = true;
 
             resolve(); // Resolve the promise when loading is complete
         }, undefined, function (error) {

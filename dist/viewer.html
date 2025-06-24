@@ -2,140 +2,162 @@
 <html lang="en">
 
 <head>
-  <!-- Meta & SEO -->
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" href="img/ico/favicon.ico" type="image/x-icon">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="img/ico/favicon.ico" type="image/x-icon">
 
-  <!-- Fonts & Stylesheets -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap">
-  <link rel="stylesheet"
-    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0">
-  <link rel="stylesheet" href="css/styles.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0">
+    <link rel="stylesheet" href="css/styles.min.css">
 
-  <!-- Extern Sources -->
-  <script src="https://cdn.jsdelivr.net/npm/ua-parser-js@2.0.0/dist/ua-parser.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/ua-parser-js@2.0.0/dist/ua-parser.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
-  <!-- Three.js importmap -->
-  <script type="importmap">
-    {
-      "imports": {
-        "three": "https://cdn.jsdelivr.net/npm/three@v0.173.0/build/three.module.js",
-        "three/addons/": "https://cdn.jsdelivr.net/npm/three@v0.173.0/examples/jsm/"
-      }
-    }
-  </script>
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://cdn.jsdelivr.net/npm/three@v0.173.0/build/three.module.js",
+                "three/addons/": "https://cdn.jsdelivr.net/npm/three@v0.173.0/examples/jsm/"
+            }
+        }
+    </script>
 
-  <!-- Kritieke kleine scripts -->
-  <script>
-    console.log('%cThis configurator is made by TripleDesign. Visit tripledesign.nl for more info!', 'background:red;color:#fff;font-weight: bold;');
-    const brand = 'vanwoerdenwonen';
-    const product = 'levante';
-    const title = 'Bank Evan';
+    <script>
+        console.log('%cThis configurator is made by TripleDesign. Visit tripledesign.nl for more info!', 'background:red;color:#fff;font-weight: bold;');
+        const brand = 'vanwoerdenwonen';
+        const product = 'levante';
+        const title = 'Bank Evan';
 
-    const capitalizeFirstLetter = (str) => str.charAt(0).toUpperCase() + str.slice(1);
-    document.title = `${capitalizeFirstLetter(title)} | ${capitalizeFirstLetter(brand)}`;
-  </script>
-  <script>
-    const windowHeight = window.innerHeight;
-    const windowWidth = window.innerWidth;
+        const capitalizeFirstLetter = (str) => str.charAt(0).toUpperCase() + str.slice(1);
+        document.title = `${capitalizeFirstLetter(title)} | ${capitalizeFirstLetter(brand)}`;
+    </script>
+    <script>
+        const windowHeight = window.innerHeight;
+        const windowWidth = window.innerWidth;
 
-    const uap = new UAParser();
-    console.log(uap.getResult());
-    console.log(uap.getDevice().type);
-    //hack for IpadAir and IpadPro (not visible on Chrome DevTools)
-    console.log(uap.getDevice().withFeatureCheck());
+        const uap = new UAParser();
+        console.log(uap.getResult());
+        console.log(uap.getDevice().type);
+        //hack for IpadAir and IpadPro (not visible on Chrome DevTools)
+        console.log(uap.getDevice().withFeatureCheck());
 
+        let mainModule = null;
 
+        // Functie om modelData uit de URL te halen
+        function getModelDataFromUrl() {
+            const params = new URLSearchParams(window.location.search);
+            const modelParam = params.get('model');
 
+            if (modelParam) {
+                try {
+                    const decodedModelParam = decodeURIComponent(modelParam);
+                    const parsedData = JSON.parse(decodedModelParam);
+                    console.log('ModelData geladen vanuit URL:', parsedData);
+                    return parsedData;
+                } catch (e) {
+                    console.error('Fout bij het parsen van modeldata uit URL:', e);
+                    return null;
+                }
+            }
+            return null;
+        }
 
-    let mainModule = null;
+        // Standaard modelData als er geen data in de URL staat
+        const defaultModelData = {
+  "type": "art5310",
+  "seatHeight": 44,
+  "legs": "legsStraight",
+  "upholstery": {
+    "hexColor": "a2706a",
+    "type": "essa",
+    "path": "projects/vanwoerdenwonen-levante/Textures/vww/essa/cabernet-205.jpg",
+    "structure": "boucle"
+  }
+};
 
-    const modelData = {
-      "id": 2,
-      "name": "bank evan",
-      "image": "projects/vanwoerdenwonen-levante/img/thumbnails/voorbeeld-opstelling-2.jpg",
-      "background": {
-        "original": "d4d4d4"
-      },
-      "type": "art5310",
-      "seatHeight": 44,
-      "legs": "legsStraight",
-      "upholstery": {
-        "hexColor": "c1bca8",
-        "type": "dream",
-        "path": "projects/vanwoerdenwonen-levante/Textures/vww/dream/nature-01.jpg"
+        // Functie die wordt aangeroepen wanneer de pagina laadt
+        function bodyOnload() {
+            let modelDataToLoad = getModelDataFromUrl(); // Probeer data uit URL te halen
+            if (!modelDataToLoad) {
+                console.warn('Geen geldige modeldata in URL gevonden, laad standaard modeldata.');
+                modelDataToLoad = defaultModelData; // Gebruik standaard data als URL leeg/ongeldig is
+            }
+            showModel(modelDataToLoad);
 
-      }
-    }
+            // NIEUW: Vul het tekstveld met de stringified defaultModelData
+            const jsonInput = document.getElementById('jsonInput');
+            if (jsonInput) {
+                jsonInput.value = JSON.stringify(defaultModelData, null, 2); // 'null, 2' voor mooie indentatie
+            }
+        }
 
-    function bodyOnload() {
-      showModel(modelData)
-    }
-  </script>
+        // Functie om JSON vanuit het tekstveld te laden
+        function loadJsonFromTextArea() {
+            const jsonInput = document.getElementById('jsonInput');
+            if (!jsonInput) {
+                console.error("Textarea with ID 'jsonInput' not found.");
+                return;
+            }
+
+            const jsonString = jsonInput.value;
+            if (!jsonString.trim()) {
+                alert('Plak eerst de JSON in het veld.');
+                return;
+            }
+
+            try {
+                const parsedData = JSON.parse(jsonString);
+                console.log('ModelData geladen vanuit tekstveld:', parsedData);
+                showModel(parsedData); // Laad het model met de geparste data
+            } catch (e) {
+                alert('Ongeldige JSON ingevoerd. Controleer de syntax.');
+                console.error('Fout bij het parsen van JSON uit tekstveld:', e);
+            }
+        }
+    </script>
 </head>
 
 <body onload="bodyOnload();">
+    <div style="height: 400px; width: 400px;" class="overflow-hidden border border-2 border-danger" id="modelviewer">
+    </div>
 
-  <div class="overflow-hidden" id="modelviewer"></div>
-
-
-
-
-
-
-
-
-
+    <div>
+        <textarea style="height: 400px; width: 600px;" id="jsonInput" ></textarea><br>
+        <button onclick="loadJsonFromTextArea()">Laad Model</button>
+        <p style="font-size: 0.8em; color: #666;">Pas de JSON aan en klik op 'Laad Model'.</p>
+    </div>
 
 </body>
 
-
-
-
-
-
-
-
-
-
-
-
 <script>
-  async function updateFeaturedModel(model) {
-    import('https://vanwoerdenwonen-levante.web.app/projects/vanwoerdenwonen-levante/threeModel.js')
-      .then(main => {
-        const viewer = document.getElementById('modelviewer');
+    async function updateFeaturedModel(model) {
+        import('https://vanwoerdenwonen-levante.web.app/projects/vanwoerdenwonen-levante/threeModel.js')
+            .then(main => {
+                const viewer = document.getElementById('modelviewer');
 
-        if (!mainModule) {
-          main.initThree(viewer);
-          mainModule = main;
-        }
-        if (mainModule && typeof mainModule.loadModelData === 'function') {
-          mainModule.loadModelData(model);
-        }
-        if (viewer) {
-          viewer.focus();
-        }
-      })
-      .catch(error => {
-        console.error('Error loading module:', error);
-      });
-  }
+                if (!mainModule) {
+                    main.initThree(viewer);
+                    mainModule = main;
+                }
+                if (mainModule && typeof mainModule.loadModelData === 'function') {
+                    mainModule.loadModelData(model);
+                }
+                if (viewer) {
+                    viewer.focus();
+                }
+            })
+            .catch(error => {
+                console.error('Error loading module:', error);
+            });
+    }
 
-
-
-
-
-
-  function showModel(modelData) {
-    // updateControlPanel(modelData, undefined, undefined, 0);
-    updateFeaturedModel(modelData);
-  }
-
+    function showModel(modelData) {
+        // updateControlPanel(modelData, undefined, undefined, 0);
+        updateFeaturedModel(modelData);
+    }
 </script>
 
 </html>

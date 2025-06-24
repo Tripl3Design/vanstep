@@ -3,9 +3,6 @@
     "id": 1,
     "name": "bank evan",
     "image": "projects/vanwoerdenwonen-levante/img/thumbnails/voorbeeld-opstelling-4.jpg",
-    "background": {
-      "original": "d4d4d4"
-    },
     "type": "art2502",
     "seatHeight": 44,
     "legs": "legsStraight",
@@ -19,9 +16,6 @@
     "id": 2,
     "name": "bank evan",
     "image": "projects/vanwoerdenwonen-levante/img/thumbnails/voorbeeld-opstelling-2.jpg",
-    "background": {
-      "original": "d4d4d4"
-    },
     "type": "art5310",
     "seatHeight": 44,
     "legs": "legsStraight",
@@ -32,12 +26,9 @@
     }
   },
   {
-    "id": 2,
+    "id": 3,
     "name": "bank evan",
     "image": "projects/vanwoerdenwonen-levante/img/thumbnails/voorbeeld-opstelling-3.jpg",
-    "background": {
-      "original": "d4d4d4"
-    },
     "type": "art5313",
     "seatHeight": 47,
     "legs": "legsStraight",
