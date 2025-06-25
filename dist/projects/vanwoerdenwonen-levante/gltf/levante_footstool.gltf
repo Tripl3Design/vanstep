@@ -3,16 +3,16 @@
     {
       "bufferView": 0,
       "componentType": 5126,
-      "count": 2184,
+      "count": 2200,
       "max": [
         31.88152313232422,
-        17.122037887573242,
-        8.3499755859375
+        0.11386891454458237,
+        17.122037887573242
       ],
       "min": [
         -13.933673858642578,
-        -11.2983980178833,
-        -0.11386891454458237
+        -8.3499755859375,
+        -11.2983980178833
       ],
       "type": "VEC3"
     },
@@ -20,14 +20,14 @@
       "bufferView": 0,
       "byteOffset": 12,
       "componentType": 5126,
-      "count": 2184,
+      "count": 2200,
       "type": "VEC3"
     },
     {
       "bufferView": 0,
       "byteOffset": 24,
       "componentType": 5126,
-      "count": 2184,
+      "count": 2200,
       "type": "VEC2"
     },
     {
@@ -43,41 +43,37 @@
   "bufferViews": [
     {
       "buffer": 0,
-      "byteLength": 69888,
+      "byteLength": 70400,
       "byteStride": 32,
       "target": 34962
     },
     {
       "buffer": 0,
       "byteLength": 47616,
-      "byteOffset": 69888,
+      "byteOffset": 70400,
       "target": 34963
     }
   ],
   "buffers": [
     {
-      "byteLength": 117504,
+      "byteLength": 118016,
       "uri": "levante_footstool.bin"
     }
   ],
   "images": [
     {
-      "uri": "boucle_Normal.png"
-    },
-    {
-      "uri": "defaultmetallicroughnesstex.jpeg"
+      "uri": "M_02___Defaultbasecolortexture.png"
     }
   ],
   "materials": [
     {
-      "name": "default",
-      "normalTexture": {
-        "index": 0
-      },
+      "name": "M_02___Default",
       "pbrMetallicRoughness": {
-        "metallicRoughnessTexture": {
-          "index": 1
-        }
+        "baseColorTexture": {
+          "index": 0
+        },
+        "metallicFactor": 0.0,
+        "roughnessFactor": 0.0
       }
     }
   ],
@@ -126,32 +122,26 @@
         0
       ],
       "matrix": [
-        0.6653909683227539,
-        2.613463720990694e-07,
-        0.7464950680732727,
+        0.6653908491134641,
+        2.9882903618272394e-07,
+        0.746495246887207,
         0.0,
-        0.7464950680732727,
-        -2.329521464616846e-07,
-        -0.6653909683227539,
+        -1.1770595165216946e-08,
+        -1.0,
+        4.1080113533098483e-07,
         0.0,
-        1.2242615775315274e-13,
-        1.0,
-        -3.5009801990781863e-07,
+        0.746495246887207,
+        -2.821300029154372e-07,
+        -0.6653908491134641,
         0.0,
         -0.14872759819030762,
         0.1950000039100647,
-        -6.826911271673453e-08,
+        -6.826910694144316e-08,
         1.0
       ]
     }
   ],
   "samplers": [
-    {
-      "magFilter": 9729,
-      "minFilter": 9729,
-      "wrapS": 10497,
-      "wrapT": 10497
-    },
     {
       "magFilter": 9729,
       "minFilter": 9729,
@@ -171,11 +161,6 @@
       "name": "texture_source0_sampler0",
       "sampler": 0,
       "source": 0
-    },
-    {
-      "name": "texture_source1_sampler1",
-      "sampler": 1,
-      "source": 1
     }
   ]
 }

@@ -3,16 +3,16 @@
     {
       "bufferView": 0,
       "componentType": 5126,
-      "count": 29256,
+      "count": 30755,
       "max": [
         43.5682487487793,
-        15.049793243408203,
-        32.07621383666992
+        -7.557687759399414,
+        15.049793243408203
       ],
       "min": [
         -43.5682487487793,
-        -24.651281356811523,
-        7.557687759399414
+        -32.07621383666992,
+        -24.651281356811523
       ],
       "type": "VEC3"
     },
@@ -20,58 +20,20 @@
       "bufferView": 0,
       "byteOffset": 12,
       "componentType": 5126,
-      "count": 29256,
+      "count": 30755,
       "type": "VEC3"
     },
     {
       "bufferView": 0,
       "byteOffset": 24,
       "componentType": 5126,
-      "count": 29256,
+      "count": 30755,
       "type": "VEC2"
     },
     {
       "bufferView": 1,
       "componentType": 5125,
-      "count": 129156,
-      "type": "SCALAR"
-    },
-    {
-      "bufferView": 0,
-      "byteOffset": 936192,
-      "componentType": 5126,
-      "count": 1020,
-      "max": [
-        40.79500198364258,
-        14.320413589477539,
-        31.701507568359375
-      ],
-      "min": [
-        -40.79500198364258,
-        -18.09650230407715,
-        12.303524017333984
-      ],
-      "type": "VEC3"
-    },
-    {
-      "bufferView": 0,
-      "byteOffset": 936204,
-      "componentType": 5126,
-      "count": 1020,
-      "type": "VEC3"
-    },
-    {
-      "bufferView": 0,
-      "byteOffset": 936216,
-      "componentType": 5126,
-      "count": 1020,
-      "type": "VEC2"
-    },
-    {
-      "bufferView": 1,
-      "byteOffset": 516624,
-      "componentType": 5125,
-      "count": 4476,
+      "count": 133632,
       "type": "SCALAR"
     }
   ],
@@ -81,64 +43,37 @@
   "bufferViews": [
     {
       "buffer": 0,
-      "byteLength": 968832,
+      "byteLength": 984160,
       "byteStride": 32,
       "target": 34962
     },
     {
       "buffer": 0,
       "byteLength": 534528,
-      "byteOffset": 968832,
+      "byteOffset": 984160,
       "target": 34963
     }
   ],
   "buffers": [
     {
-      "byteLength": 1503360,
+      "byteLength": 1518688,
       "uri": "levante_sofa_3.bin"
     }
   ],
   "images": [
     {
-      "uri": "boucle_Normal.png"
-    },
-    {
-      "uri": "defaultmetallicroughnesstex.jpeg"
-    },
-    {
-      "uri": "boucle_Normal.png"
-    },
-    {
-      "uri": "duotonemetallicroughnesstex.jpeg"
+      "uri": "M_02___Defaultbasecolortexture.png"
     }
   ],
   "materials": [
     {
-      "name": "default",
-      "normalTexture": {
-        "index": 0
-      },
+      "name": "M_02___Default",
       "pbrMetallicRoughness": {
-        "metallicRoughnessTexture": {
-          "index": 1
-        }
-      }
-    },
-    {
-      "name": "duotone",
-      "normalTexture": {
-        "index": 2
-      },
-      "pbrMetallicRoughness": {
-        "baseColorFactor": [
-          1.0,
-          0.0,
-          0.0,
-          1.0
-        ],
-        "metallicRoughnessTexture": {
-          "index": 3
-        }
+        "baseColorTexture": {
+          "index": 0
+        },
+        "metallicFactor": 0.0,
+        "roughnessFactor": 0.0
       }
     }
   ],
@@ -154,16 +89,6 @@
           },
           "indices": 3,
           "material": 0,
-          "mode": 4
-        },
-        {
-          "attributes": {
-            "NORMAL": 5,
-            "POSITION": 4,
-            "TEXCOORD_0": 6
-          },
-          "indices": 7,
-          "material": 1,
           "mode": 4
         }
       ]
@@ -202,12 +127,12 @@
         0.0,
         0.0,
         0.0,
+        -1.0000001192092896,
+        1.6292069915380125e-07,
         0.0,
-        -1.0,
         0.0,
-        0.0,
-        1.0,
-        0.0,
+        -1.6292069915380125e-07,
+        -1.0000001192092896,
         0.0,
         0.0,
         0.0,
@@ -217,24 +142,6 @@
     }
   ],
   "samplers": [
-    {
-      "magFilter": 9729,
-      "minFilter": 9729,
-      "wrapS": 10497,
-      "wrapT": 10497
-    },
-    {
-      "magFilter": 9729,
-      "minFilter": 9729,
-      "wrapS": 10497,
-      "wrapT": 10497
-    },
-    {
-      "magFilter": 9729,
-      "minFilter": 9729,
-      "wrapS": 10497,
-      "wrapT": 10497
-    },
     {
       "magFilter": 9729,
       "minFilter": 9729,
@@ -254,21 +161,6 @@
       "name": "texture_source0_sampler0",
       "sampler": 0,
       "source": 0
-    },
-    {
-      "name": "texture_source1_sampler1",
-      "sampler": 1,
-      "source": 1
-    },
-    {
-      "name": "texture_source2_sampler2",
-      "sampler": 2,
-      "source": 2
-    },
-    {
-      "name": "texture_source3_sampler3",
-      "sampler": 3,
-      "source": 3
     }
   ]
 }

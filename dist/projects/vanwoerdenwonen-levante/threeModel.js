@@ -11,6 +11,7 @@ export let scene, camera, renderer, controls, rgbeLoader;
 let groundGeometry, groundMaterial, ground;
 
 export let projectmap = 'https://vanwoerdenwonen-levante.web.app/projects/vanwoerdenwonen-levante/';
+//export let projectmap = 'http://127.0.0.1:5000/projects/vanwoerdenwonen-levante/';
 
 export function initThree(containerElem) {
     // Scene setup
