@@ -3,16 +3,16 @@
     {
       "bufferView": 0,
       "componentType": 5126,
-      "count": 970,
+      "count": 80841,
       "max": [
-        -31.912208557128906,
-        -1.0025749206542969,
-        -1.0552024841308594
+        16.848257064819336,
+        25.344532012939453,
+        22.21119499206543
       ],
       "min": [
-        -64.70938110351563,
-        -18.73828125,
-        -1.1822223663330078
+        -35.0848388671875,
+        -40.80815887451172,
+        -5.884906768798828
       ],
       "type": "VEC3"
     },
@@ -20,44 +20,20 @@
       "bufferView": 0,
       "byteOffset": 12,
       "componentType": 5126,
-      "count": 970,
-      "type": "VEC3"
-    },
-    {
-      "bufferView": 1,
-      "componentType": 5125,
-      "count": 4104,
-      "type": "SCALAR"
-    },
-    {
-      "bufferView": 0,
-      "byteOffset": 31040,
-      "componentType": 5126,
-      "count": 751,
-      "max": [
-        -31.81957244873047,
-        -1.10418701171875,
-        8.113763809204102
-      ],
-      "min": [
-        -65.03874206542969,
-        -18.922183990478516,
-        -1.1140575408935547
-      ],
+      "count": 80841,
       "type": "VEC3"
     },
     {
       "bufferView": 0,
-      "byteOffset": 31052,
+      "byteOffset": 24,
       "componentType": 5126,
-      "count": 751,
-      "type": "VEC3"
+      "count": 80841,
+      "type": "VEC2"
     },
     {
       "bufferView": 1,
-      "byteOffset": 16416,
       "componentType": 5125,
-      "count": 3168,
+      "count": 80844,
       "type": "SCALAR"
     }
   ],
@@ -67,46 +43,35 @@
   "bufferViews": [
     {
       "buffer": 0,
-      "byteLength": 55072,
+      "byteLength": 2586912,
       "byteStride": 32,
       "target": 34962
     },
     {
       "buffer": 0,
-      "byteLength": 29088,
-      "byteOffset": 55072,
+      "byteLength": 323376,
+      "byteOffset": 2586912,
       "target": 34963
     }
   ],
   "buffers": [
     {
-      "byteLength": 84160,
+      "byteLength": 2910288,
       "uri": "levante_leg_longchair_mirror.bin"
+    }
+  ],
+  "images": [
+    {
+      "uri": "M_02___Defaultbasecolortexture.png"
     }
   ],
   "materials": [
     {
-      "name": "black",
+      "name": "M_02___Default",
       "pbrMetallicRoughness": {
-        "baseColorFactor": [
-          0.09220340102910995,
-          3.030750050925235e-08,
-          0.1016950011253357,
-          1.0
-        ],
-        "metallicFactor": 0.0,
-        "roughnessFactor": 0.0
-      }
-    },
-    {
-      "name": "leg",
-      "pbrMetallicRoughness": {
-        "baseColorFactor": [
-          0.0,
-          0.9599999785423279,
-          1.0,
-          1.0
-        ],
+        "baseColorTexture": {
+          "index": 0
+        },
         "metallicFactor": 0.0,
         "roughnessFactor": 0.0
       }
@@ -114,24 +79,16 @@
   ],
   "meshes": [
     {
-      "name": "leg_longchair001",
+      "name": "longchair001",
       "primitives": [
         {
           "attributes": {
             "NORMAL": 1,
-            "POSITION": 0
+            "POSITION": 0,
+            "TEXCOORD_0": 2
           },
-          "indices": 2,
+          "indices": 3,
           "material": 0,
-          "mode": 4
-        },
-        {
-          "attributes": {
-            "NORMAL": 4,
-            "POSITION": 3
-          },
-          "indices": 5,
-          "material": 1,
           "mode": 4
         }
       ]
@@ -158,7 +115,7 @@
         1.0
       ],
       "mesh": 0,
-      "name": "leg_longchair001"
+      "name": "longchair001"
     },
     {
       "children": [
@@ -177,11 +134,19 @@
         1.0,
         0.0,
         0.0,
-        0.0,
-        0.0,
-        0.0,
+        -0.8207035873413085,
+        0.32205790977478027,
+        -0.34537458248138425,
         1.0
       ]
+    }
+  ],
+  "samplers": [
+    {
+      "magFilter": 9729,
+      "minFilter": 9729,
+      "wrapS": 10497,
+      "wrapT": 10497
     }
   ],
   "scenes": [
@@ -189,6 +154,13 @@
       "nodes": [
         1
       ]
+    }
+  ],
+  "textures": [
+    {
+      "name": "texture_source0_sampler0",
+      "sampler": 0,
+      "source": 0
     }
   ]
 }
