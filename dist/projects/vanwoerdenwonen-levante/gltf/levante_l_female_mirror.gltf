@@ -3,7 +3,44 @@
     {
       "bufferView": 0,
       "componentType": 5126,
-      "count": 25093,
+      "count": 1018,
+      "max": [
+        -26.65599822998047,
+        -14.928647994995117,
+        36.44771194458008
+      ],
+      "min": [
+        -51.10398864746094,
+        -34.73881912231445,
+        -53.60711669921875
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 0,
+      "byteOffset": 12,
+      "componentType": 5126,
+      "count": 1018,
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 0,
+      "byteOffset": 24,
+      "componentType": 5126,
+      "count": 1018,
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 1,
+      "componentType": 5125,
+      "count": 4266,
+      "type": "SCALAR"
+    },
+    {
+      "bufferView": 0,
+      "byteOffset": 32576,
+      "componentType": 5126,
+      "count": 24075,
       "max": [
         -16.137226104736328,
         -7.559693336486816,
@@ -18,22 +55,23 @@
     },
     {
       "bufferView": 0,
-      "byteOffset": 12,
+      "byteOffset": 32588,
       "componentType": 5126,
-      "count": 25093,
+      "count": 24075,
       "type": "VEC3"
     },
     {
       "bufferView": 0,
-      "byteOffset": 24,
+      "byteOffset": 32600,
       "componentType": 5126,
-      "count": 25093,
+      "count": 24075,
       "type": "VEC2"
     },
     {
       "bufferView": 1,
+      "byteOffset": 17064,
       "componentType": 5125,
-      "count": 109848,
+      "count": 105582,
       "type": "SCALAR"
     }
   ],
@@ -62,15 +100,40 @@
   ],
   "images": [
     {
-      "uri": "M_02___Defaultbasecolortexture.png"
+      "uri": "duotonebasecolortexture.png"
+    },
+    {
+      "uri": "fabric_01basecolortexture.png"
     }
   ],
   "materials": [
     {
-      "name": "M_02___Default",
+      "name": "duotone",
       "pbrMetallicRoughness": {
+        "baseColorFactor": [
+          0.6130970120429993,
+          0.07019370049238205,
+          0.020615600049495697,
+          1.0
+        ],
         "baseColorTexture": {
           "index": 0
+        },
+        "metallicFactor": 0.0,
+        "roughnessFactor": 0.0
+      }
+    },
+    {
+      "name": "fabric_01",
+      "pbrMetallicRoughness": {
+        "baseColorFactor": [
+          0.0473795011639595,
+          0.013452400453388691,
+          0.8698149919509888,
+          1.0
+        ],
+        "baseColorTexture": {
+          "index": 1
         },
         "metallicFactor": 0.0,
         "roughnessFactor": 0.0
@@ -89,6 +152,16 @@
           },
           "indices": 3,
           "material": 0,
+          "mode": 4
+        },
+        {
+          "attributes": {
+            "NORMAL": 5,
+            "POSITION": 4,
+            "TEXCOORD_0": 6
+          },
+          "indices": 7,
+          "material": 1,
           "mode": 4
         }
       ]
@@ -147,6 +220,12 @@
       "minFilter": 9729,
       "wrapS": 10497,
       "wrapT": 10497
+    },
+    {
+      "magFilter": 9729,
+      "minFilter": 9729,
+      "wrapS": 10497,
+      "wrapT": 10497
     }
   ],
   "scenes": [
@@ -161,6 +240,11 @@
       "name": "texture_source0_sampler0",
       "sampler": 0,
       "source": 0
+    },
+    {
+      "name": "texture_source1_sampler1",
+      "sampler": 1,
+      "source": 1
     }
   ]
 }
