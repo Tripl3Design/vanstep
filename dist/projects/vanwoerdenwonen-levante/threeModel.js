@@ -103,7 +103,7 @@ if (windowHeight < windowWidth) {
     const downloadModelButton = document.getElementById('downloadModel');
     if (downloadModelButton) {
         downloadModelButton.addEventListener('click', () => {
-            exportModel();
+            exportModelAndData();
         });
     } else {
         console.warn("Element with ID 'downloadModel' not found. Model export functionality might be unavailable.");
@@ -981,4 +981,32 @@ async function exportModel() {
         // Add the ground object back to the scene for consistency
         addGround();
     }
+}
+
+async function exportModelAndData() {
+    const exporter = new GLTFExporter();
+
+    //modelData = FEATUREDMODEL;
+   
+
+    exporter.parse(
+        scene,
+        function (result) {
+            let blob;
+            if (result instanceof ArrayBuffer) {
+                blob = new Blob([result], { type: 'model/gltf-binary' });
+            } else {
+                const json = JSON.stringify(result);
+                blob = new Blob([json], { type: 'application/json' });
+            }
+
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'model.glb';
+            link.click();
+
+            URL.revokeObjectURL(link.href);
+        },
+        { binary: true }
+    );
 }
