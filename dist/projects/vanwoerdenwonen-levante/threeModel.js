@@ -98,18 +98,6 @@ function addGround() {
     scene.add(ground);
 }
 
-// desktop version
-if (windowHeight < windowWidth) {
-    const downloadModelButton = document.getElementById('downloadModel');
-    if (downloadModelButton) {
-        downloadModelButton.addEventListener('click', () => {
-            exportModelAndData();
-        });
-    } else {
-        console.warn("Element with ID 'downloadModel' not found. Model export functionality might be unavailable.");
-    }
-}
-
 const levante_sofa_25Url = projectmap + 'gltf/levante_sofa_25.gltf';
 const levante_sofa_3Url = projectmap + 'gltf/levante_sofa_3.gltf';
 
@@ -983,30 +971,72 @@ async function exportModel() {
     }
 }
 
-async function exportModelAndData() {
+export async function exportModelAndData(modelConfig) {
+    console.log("Model JSON ontvangen in exportModelAndData:", modelConfig);
+
+    const originalSceneUserData = { ...scene.userData }; // Bewaar de originele userData
+
+    // Sla de modelConfig op in de 'extras' van de scene's userData
+    scene.userData.extras = {
+        ...scene.userData.extras,
+        modelConfig: modelConfig
+    };
+
     const exporter = new GLTFExporter();
+    const options = { // Definieer export opties, zoals binary: true
+        binary: true,
+        // inclusief andere opties die je nodig hebt voor GLB export
+    };
 
-    //modelData = FEATUREDMODEL;
-   
+    // --- Verwijder de ground voordat je exporteert ---
+    if (ground && scene.children.includes(ground)) { // Controleer of 'ground' bestaat en in de scene is
+        scene.remove(ground);
+        console.log("Ground removed before export.");
+    }
 
-    exporter.parse(
-        scene,
-        function (result) {
-            let blob;
-            if (result instanceof ArrayBuffer) {
-                blob = new Blob([result], { type: 'model/gltf-binary' });
-            } else {
-                const json = JSON.stringify(result);
-                blob = new Blob([json], { type: 'application/json' });
-            }
+    try {
+        await new Promise((resolve, reject) => {
+            exporter.parse(
+                scene, // Exporteer de scene met de aangepaste userData
+                function (result) {
+                    let blob;
+                    if (result instanceof ArrayBuffer) {
+                        blob = new Blob([result], { type: 'model/gltf-binary' });
+                    } else {
+                        // Dit pad wordt meestal niet genomen als binary: true is ingesteld
+                        const json = JSON.stringify(result);
+                        blob = new Blob([json], { type: 'application/json' });
+                    }
 
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = 'model.glb';
-            link.click();
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(blob);
+                    link.download = 'model_with_config.glb';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(link.href);
 
-            URL.revokeObjectURL(link.href);
-        },
-        { binary: true }
-    );
+                    resolve(); // Resolv de Promise na succesvolle export en download
+                },
+                function (error) { // Error callback voor exporter.parse
+                    console.error('Error during GLB export:', error);
+                    reject(error);
+                },
+                options // Geef de opties mee aan parse
+            );
+        });
+
+    } catch (error) {
+        console.error('Error during exportModelAndData:', error);
+        throw error; // Her-gooi de fout zodat de aanroepende functie deze kan afhandelen
+    } finally {
+        // --- Voeg de ground terug toe na de export ---
+        // Herstel de originele scene.userData, ongeacht of de export succesvol was
+        scene.userData = originalSceneUserData;
+        console.log("Scene userData hersteld na export.");
+
+        // Voeg ground terug toe
+        addGround();
+        console.log("Ground added back after export.");
+    }
 }

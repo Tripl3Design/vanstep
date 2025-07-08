@@ -8,6 +8,18 @@ const urlParams = new URLSearchParams(window.location.search);
 
 let mainModule = null;
 
+// desktop version
+if (windowHeight < windowWidth) {
+    const downloadModelButton = document.getElementById('downloadModel');
+    if (downloadModelButton) {
+        downloadModelButton.addEventListener('click', () => {
+            mainModule.exportModelAndData(FEATUREDMODEL);
+        });
+    } else {
+        console.warn("Element with ID 'downloadModel' not found. Model export functionality might be unavailable.");
+    }
+}
+
 async function downloadPdf() {
     try {
         // Verkrijg zowel de dataURL als de Blob van de screenshot
