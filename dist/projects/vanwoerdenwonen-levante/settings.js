@@ -60,7 +60,7 @@ async function downloadPdf() {
         console.error("Error: ", e);
     }
 }
-
+/*
 async function generateImage() {
     try {
         if (mainModule && mainModule.renderer && mainModule.scene && mainModule.camera) {
@@ -87,7 +87,7 @@ async function generateImage() {
         console.error("Error bij het genereren van afbeelding:", e);
     }
 }
-
+*/
 async function shareWithWhatsApp() {
     console.log('shareWithWhatsApp');
 

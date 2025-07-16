@@ -1047,29 +1047,40 @@ export async function exportModelAndData(modelConfig) {
 
 async function uploadScreenshotAndGetUrl() {
     try {
-        // --- STEP 1: Capture the screenshot using your existing function ---
-        // Your captureScreenshot() already handles rendering and creating the blob/dataURL.
-        const { dataURL, blob } = captureScreenshot(); // Call your function directly
+        if (!mainModule || !mainModule.renderer || !mainModule.scene || !mainModule.camera) {
+            console.error("mainModule of onderdelen ontbreken voor screenshot.");
+            throw new Error("Configurator modules niet klaar voor screenshot.");
+        }
+
+        const { dataURL, blob } = captureScreenshot(); // Je bestaande functie
 
         if (dataURL === 'data:,') {
             console.warn("DataURL is empty after screenshot, canvas might be empty or 0x0.");
             throw new Error("Empty image generated, screenshot failed.");
         }
 
-        // --- STEP 2: Upload the Blob to Firebase Storage ---
-        const storageRef = storage.ref(); 
+        // --- STAP 2: Upload de Blob naar Firebase Storage (MODULAIRE SYNTAX) ---
+        // Gebruik window.storage (of importeer 'storage' als module)
+        const storageInstance = window.storage; // Haal de storage instantie op
         
-        // Generate a unique name for the file in Storage
-        // Consider using 'image/jpeg' in toDataURL for smaller files if quality is acceptable.
-        const filename = `product_renders/${Date.now()}_${Math.random().toString(36).substring(2, 15)}.png`; // Keep as PNG if your captureScreenshot does PNG
-        const imageRef = storageRef.child(filename);
+        // Genereer een unieke naam voor het bestand in Storage
+        const filename = `product_renders/${Date.now()}_${Math.random().toString(36).substring(2, 15)}.png`; 
+        
+        // Maak een Storage Reference met de modulaire 'ref' functie
+        // Gebruik window.ref (of importeer 'ref' als module)
+        const imageRef = window.ref(storageInstance, filename); // <-- Aangepast!
 
         console.log(`Uploading image to: ${filename}`);
-        const uploadTaskSnapshot = await imageRef.put(blob); // Use the blob directly from your function
+        
+        // Upload de bytes (Blob) met de modulaire 'uploadBytes' functie
+        // Gebruik window.uploadBytes (of importeer 'uploadBytes' als module)
+        const uploadTaskSnapshot = await window.uploadBytes(imageRef, blob); // <-- Aangepast!
         console.log('Image uploaded successfully!');
 
-        // --- STEP 3: Get the public download URL ---
-        const downloadURL = await uploadTaskSnapshot.ref.getDownloadURL();
+        // --- STAP 3: Krijg de public download URL (MODULAIRE SYNTAX) ---
+        // Gebruik de modulaire 'getDownloadURL' functie
+        // Gebruik window.getDownloadURL (of importeer 'getDownloadURL' als module)
+        const downloadURL = await window.getDownloadURL(imageRef); // <-- Aangepast!
         console.log('Download URL for image:', downloadURL);
 
         return downloadURL; // Return the URL
