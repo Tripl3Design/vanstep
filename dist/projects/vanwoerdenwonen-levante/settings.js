@@ -18,7 +18,27 @@ if (windowHeight < windowWidth) {
     } else {
         console.warn("Element with ID 'downloadModel' not found. Model export functionality might be unavailable.");
     }
+
+     const saveConfigButtonButton = document.getElementById('saveConfig');
+    if (saveConfigButtonButton) {
+        saveConfigButtonButton.addEventListener('click', () => {
+            mainModule.exportDataToPim(FEATUREDMODEL);
+        });
+    } else {
+        console.warn("Element with ID 'saveConfig' not found. Model export functionality might be unavailable.");
+    }
 }
+
+// Functie om een unieke ID te genereren (bijvoorbeeld een UUID v4)
+// Je kunt een library gebruiken zoals 'uuid' (npm install uuid) of een simpele functie maken
+function generateUniqueId() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+    });
+}
+
+
 
 async function downloadPdf() {
     try {

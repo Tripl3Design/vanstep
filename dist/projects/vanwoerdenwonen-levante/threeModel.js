@@ -1040,3 +1040,107 @@ export async function exportModelAndData(modelConfig) {
         console.log("Ground added back after export.");
     }
 }
+
+
+
+
+
+async function uploadScreenshotAndGetUrl() {
+    try {
+        // --- STEP 1: Capture the screenshot using your existing function ---
+        // Your captureScreenshot() already handles rendering and creating the blob/dataURL.
+        const { dataURL, blob } = captureScreenshot(); // Call your function directly
+
+        if (dataURL === 'data:,') {
+            console.warn("DataURL is empty after screenshot, canvas might be empty or 0x0.");
+            throw new Error("Empty image generated, screenshot failed.");
+        }
+
+        // --- STEP 2: Upload the Blob to Firebase Storage ---
+        const storageRef = storage.ref(); 
+        
+        // Generate a unique name for the file in Storage
+        // Consider using 'image/jpeg' in toDataURL for smaller files if quality is acceptable.
+        const filename = `product_renders/${Date.now()}_${Math.random().toString(36).substring(2, 15)}.png`; // Keep as PNG if your captureScreenshot does PNG
+        const imageRef = storageRef.child(filename);
+
+        console.log(`Uploading image to: ${filename}`);
+        const uploadTaskSnapshot = await imageRef.put(blob); // Use the blob directly from your function
+        console.log('Image uploaded successfully!');
+
+        // --- STEP 3: Get the public download URL ---
+        const downloadURL = await uploadTaskSnapshot.ref.getDownloadURL();
+        console.log('Download URL for image:', downloadURL);
+
+        return downloadURL; // Return the URL
+        
+    } catch (e) {
+        console.error("Error during image upload:", e);
+        throw e; // Re-throw the error for the calling function to handle
+    }
+}
+
+
+const PIM_LITE_API_URL = "https://receiveconfiguredproduct-k6mygszfiq-uc.a.run.app/receiveConfiguredProduct"; 
+
+
+
+// Ensure PIM_LITE_API_URL and generateUniqueId() are defined and accessible.
+// Also ensure uploadScreenshotAndGetUrl() is defined and accessible.
+
+export async function exportDataToPim(modelConfig) {
+    console.log("Model JSON ontvangen in exportDataToPim:", modelConfig);
+
+    try {
+        // --- STAP 1: Genereer en upload de afbeelding ---
+        // Deze stap moet bovenaan in de try-block gebeuren,
+        // voordat je het 'dataToSend' object samenstelt.
+        const imageUrl = await uploadScreenshotAndGetUrl(); 
+        if (!imageUrl) {
+            throw new Error("Afbeelding URL kon niet worden gegenereerd of geüpload.");
+        }
+
+        // --- STAP 2: Bereid de data voor met de afbeelding URL ---
+        // Begin met een kopie van de originele modelConfig
+        let dataToSend = { ...modelConfig }; 
+        
+        // Verwijder het oude 'id' veld als het in modelConfig zit.
+        // We gebruiken 'sku' als de primaire unieke identifier voor het document.
+        if (dataToSend.id) {
+            console.warn("Oud 'id' veld gevonden in modelConfig. Dit wordt verwijderd ten gunste van 'sku'.", dataToSend.id);
+            delete dataToSend.id; 
+        }
+
+        // Genereer ALTIJD een NIEUWE, unieke SKU voor dit document.
+        dataToSend.sku = generateUniqueId(); 
+        
+        // Wijs de ZOWEENS GEGENEREERDE EN GEÜPLOADE afbeelding URL toe aan het 'image' veld.
+        dataToSend.image = imageUrl; 
+
+        console.log("Payload die naar PIM-Lite wordt gestuurd:", dataToSend); 
+
+        // --- STAP 3: Verstuur de JSON naar de Cloud Function ---
+        const response = await fetch(PIM_LITE_API_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(dataToSend)
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`HTTP error! Status: ${response.status}, Bericht: ${errorText}`);
+        }
+
+        const result = await response.json();
+        console.log("Configuratie succesvol opgeslagen in PIM-Lite:", result);
+        alert("Je geconfigureerde meubel is succesvol opgeslagen in de PIM-Lite!");
+
+    } catch (error) {
+        // Vang fouten op van zowel de upload als de fetch
+        console.error("Fout bij het opslaan van configuratie of uploaden van afbeelding:", error);
+        alert(`Er is een fout opgetreden: ${error.message}.`);
+        throw error;
+    }
+}
