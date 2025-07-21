@@ -19,7 +19,7 @@ if (windowHeight < windowWidth) {
         console.warn("Element with ID 'downloadModel' not found. Model export functionality might be unavailable.");
     }
 
-     const saveConfigButtonButton = document.getElementById('saveConfig');
+    const saveConfigButtonButton = document.getElementById('saveConfig');
     if (saveConfigButtonButton) {
         saveConfigButtonButton.addEventListener('click', () => {
             mainModule.exportDataToPim(FEATUREDMODEL);
@@ -271,8 +271,7 @@ function updateControlPanel(model, selectedLayer, expandedLayer) {
 
     model.width = width;
     model.depth = depth;
-    model.depth = numberOfSeats;
-    console.log(model)
+    model.numberOfSeats = numberOfSeats;
 
     // seatHeight
     let seatHeightRadios = document.querySelectorAll(`input[type=radio][name="seatHeight"]`);
@@ -372,6 +371,8 @@ function updateControlPanel(model, selectedLayer, expandedLayer) {
     model.upholstery.pricegroup = ALLCOLORS.upholsteries[upholsteryIndex].colorPricegroup;
     model.upholstery.structure = ALLCOLORS.upholsteries[upholsteryIndex].colorStructure;
     model.upholstery.pathThumb = ALLCOLORS.upholsteries[upholsteryIndex].colorPathThumb;
+    // colorGroup for pim
+    model.upholstery.colorGroup = ALLCOLORS.upholsteries[upholsteryIndex].colorGroup;
 
     if (uap.getDevice().type === 'mobile' || uap.getDevice().type === 'tablet' || uap.getDevice().withFeatureCheck().type === 'tablet') {
         upholsteryValue.forEach(item => item.addEventListener('mouseover', () => {
