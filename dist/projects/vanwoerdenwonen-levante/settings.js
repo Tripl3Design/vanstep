@@ -29,14 +29,76 @@ if (windowHeight < windowWidth) {
     }
 }
 
-// Functie om een unieke ID te genereren (bijvoorbeeld een UUID v4)
-// Je kunt een library gebruiken zoals 'uuid' (npm install uuid) of een simpele functie maken
-function generateUniqueId() {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-        var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
-        return v.toString(16);
-    });
+function sortObjectKeysAndArrayElements(modelConfig) {
+    // Als het geen object is of null, geef het direct terug
+    if (typeof modelConfig !== 'object' || modelConfig === null) {
+        return modelConfig;
+    }
+
+    // Als het een array is:
+    if (Array.isArray(modelConfig)) {
+        // Recursief sorteren van elk element binnen de array
+        const sortedArray = modelConfig.map(sortObjectKeysAndArrayElements);
+
+        // Cruciale stap: Sorteren van de array-elementen zelf
+        // Voor nu sorteren we alfabetisch op de stringified versie van het object.
+        // Dit is een eenvoudige fallback, maar voor complexe modulaire banken
+        // met variabele volgordes kan dit leiden tot verschillende hashes voor
+        // logisch identieke configuraties als de stringified volgorde varieert.
+        return sortedArray.sort((a, b) => {
+            // // Optioneel: Meer robuuste sorteeropties voor modulaire bankelementen
+            // // Voorkeur 1: Sorteer op 'elementId' als deze bestaat
+            // if (a && b && a.elementId && b.elementId) {
+            //     return String(a.elementId).localeCompare(String(b.elementId));
+            // }
+            // // Voorkeur 2: Sorteer op 'position' als deze bestaat (bijv. 0, 1, 2)
+            // if (a && b && a.position !== undefined && b.position !== undefined) {
+            //     return a.position - b.position;
+            // }
+            // Fallback: Sorteer op de stringified versie van het object.
+            return JSON.stringify(a).localeCompare(JSON.stringify(b));
+        });
+    }
+
+    // Voor reguliere objecten: sorteer de keys alfabetisch
+    const sortedKeys = Object.keys(modelConfig).sort();
+    const newObj = {};
+    for (const key of sortedKeys) {
+        newObj[key] = sortObjectKeysAndArrayElements(modelConfig[key]); // Recursieve oproep
+    }
+    return newObj;
 }
+
+function getStandardizedJsonString(configJson) {
+    // Maak een diepe kopie en sorteer de sleutels en array-elementen consistent.
+    // JSON.parse(JSON.stringify(configJson)) zorgt voor een diepe kopie.
+    const standardizedConfig = sortObjectKeysAndArrayElements(JSON.parse(JSON.stringify(configJson)));
+
+    return JSON.stringify(standardizedConfig);
+}
+
+
+async function generateSha256Hash(inputString) {
+    const textEncoder = new TextEncoder();
+    const data = textEncoder.encode(inputString);
+
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer)); // Converteer buffer naar byte array
+    const hexHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join(''); // Bytes naar hexadecimaal
+
+    return hexHash;
+}
+
+async function generateProductSkuFromConfig(configJson) {
+    const standardizedJsonString = getStandardizedJsonString(configJson);
+    console.log("Gestandaardiseerde JSON voor hash:", standardizedJsonString);
+
+    const sku = await generateSha256Hash(standardizedJsonString);
+
+    console.log("Gegenereerde SKU:", sku);
+    return sku;
+}
+
 
 
 
@@ -187,11 +249,14 @@ function updateControlPanel(model, selectedLayer, expandedLayer) {
         controlPanel(settings, ALLMODELS, elem, expandedLayer);
     }
 
+    model.brand = brand;
+    model.product = product;
+    model.title = title;
+
     // type
     let typeRadios = document.querySelectorAll(`input[type=radio][name="type"]`);
     typeRadios.forEach(radio => radio.addEventListener('click', () => {
         model.type = radio.value;
-
 
         updateControlPanel(model, `type`);
         updateFeaturedModel(model);
@@ -206,6 +271,7 @@ function updateControlPanel(model, selectedLayer, expandedLayer) {
 
     model.width = width;
     model.depth = depth;
+    model.depth = numberOfSeats;
     console.log(model)
 
     // seatHeight
@@ -344,22 +410,6 @@ function updateControlPanel(model, selectedLayer, expandedLayer) {
 
     // upholsteryDuotone
     if (model.upholsteryDuotone) {
-        /*
-        let upholsteryDuotoneCategory = document.querySelectorAll(`input[type=radio][name="upholsteriesDuotoneCategory"]`);
-        upholsteryDuotoneCategory.forEach(radio => { radio.replaceWith(radio.cloneNode(true)) });
-        upholsteryDuotoneCategory = document.querySelectorAll(`input[type=radio][name="upholsteriesDuotoneCategory"]`);
-        document.getElementById(`upholsteriesDuotoneCategory_${model.upholsteryDuotone.category}`).checked = true;
-
-        upholsteryDuotoneCategory.forEach(radio => radio.addEventListener('click', () => {
-            model.upholsteryDuotone.category = radio.value;
-            document.getElementById(`upholsteriesDuotoneCategory_${model.upholsteryDuotone.category}`).checked = true;
-
-            updateControlPanel(model, `upholsteryDuotone`);
-            updateFeaturedModel(model);
-            showSelected(false);
-        }));
-*/
-
         const upholsteryDuotone = model.upholsteryDuotone.path;
         let upholsteryDuotoneIndex = ALLCOLORS.upholsteries.findIndex(item => item.colorPath === upholsteryDuotone);
         var upholsteryDuotoneValue = document.querySelectorAll(`.upholsteryDuotoneColors_colorButton`);

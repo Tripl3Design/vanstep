@@ -1095,10 +1095,6 @@ async function uploadScreenshotAndGetUrl() {
 const PIM_LITE_API_URL = "https://receiveconfiguredproduct-k6mygszfiq-uc.a.run.app/receiveConfiguredProduct"; 
 
 
-
-// Ensure PIM_LITE_API_URL and generateUniqueId() are defined and accessible.
-// Also ensure uploadScreenshotAndGetUrl() is defined and accessible.
-
 export async function exportDataToPim(modelConfig) {
     console.log("Model JSON ontvangen in exportDataToPim:", modelConfig);
 
@@ -1123,7 +1119,8 @@ export async function exportDataToPim(modelConfig) {
         }
 
         // Genereer ALTIJD een NIEUWE, unieke SKU voor dit document.
-        dataToSend.sku = generateUniqueId(); 
+        //dataToSend.sku = generateUniqueId(modelConfig); 
+        dataToSend.sku = await generateProductSkuFromConfig(modelConfig);
         
         // Wijs de ZOWEENS GEGENEREERDE EN GEÜPLOADE afbeelding URL toe aan het 'image' veld.
         dataToSend.image = imageUrl; 
