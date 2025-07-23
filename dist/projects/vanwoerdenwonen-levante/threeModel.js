@@ -57,7 +57,7 @@ export function initThree(containerElem) {
     directionalLight.castShadow = true;
     directionalLight.shadow.mapSize.width = 2048;  // Standaard is 512, verhoog voor scherpere schaduwen
     directionalLight.shadow.mapSize.height = 2048;
-    directionalLight.shadow.radius = 2;  // Verklein voor scherpere schaduwen (0 = hard, hoger = zachter)
+    directionalLight.shadow.radius = 2;
     scene.add(directionalLight);
 
     // OrbitControls setup
@@ -71,7 +71,6 @@ export function initThree(containerElem) {
     controls.target.set(0, 0.5, 0);
     controls.update();
 
-    // Ground plane setup
     addGround();
 
     // desktop version
@@ -84,7 +83,6 @@ export function initThree(containerElem) {
         }
     }
 
-    // Start the render loop
     render();
 }
 
@@ -146,7 +144,7 @@ const levante_footstool_mirrorUrl = projectmap + 'gltf/levante_footstool_mirror.
 const levante_legs_footstoolUrl = projectmap + 'gltf/levante_legs_footstool.gltf';
 const levante_legs_footstool_mirrorUrl = projectmap + 'gltf/levante_legs_footstool_mirror.gltf';
 
-const textureCache = {}; // Cache voor opgeslagen textures
+const textureCache = {};
 
 function loadTexture(path) {
     if (textureCache[path]) {
@@ -161,7 +159,6 @@ function loadTexture(path) {
 function createPBRMaterial(materialType, hexColor = null, texturePath = null) {
     let material;
 
-    // Gebruik een standaard kleur als hexColor null is
     const color = hexColor ? new THREE.Color(`#${hexColor}`) : new THREE.Color(0xffffff);
 
     if (materialType === 'boucle') {
@@ -229,19 +226,16 @@ function loadAndTransformModel(
         loader.load(url, function (gltf) {
             let loadedModel = gltf.scene;
 
-            // Center the model in the scene
             const box = new THREE.Box3().setFromObject(loadedModel);
             const center = box.getCenter(new THREE.Vector3());
             loadedModel.position.sub(center); // Center the model at (0, 0, 0)
 
-            // Apply materials to the model
             loadedModel.traverse((child) => {
                 if (child.isMesh) {
                     if (child.material) {
                         child.material.dispose();
                     }
 
-                    // Apply the duotone or regular material
                     if (texturePath_duotone && child.material.name === "duotone") {
                         child.material = createPBRMaterial(materialTypeDuotone, hexColor_duotone, texturePath_duotone);
                     } else {
@@ -253,7 +247,6 @@ function loadAndTransformModel(
                 }
             });
 
-            // Apply transformations and add to group
             transforms.forEach(transform => {
                 const mesh = loadedModel.clone();
                 mesh.position.copy(transform.position || new THREE.Vector3());
@@ -262,11 +255,10 @@ function loadAndTransformModel(
                 group.add(mesh);
             });
 
-            //loadedModel.visible = true;
 
-            resolve(); // Resolve the promise when loading is complete
+            resolve();
         }, undefined, function (error) {
-            reject(error); // Reject the promise if there's an error
+            reject(error);
         });
     });
 }
@@ -275,7 +267,6 @@ function loadAndTransformModel(
 const models = [];
 
 export async function loadModelData(model) {
-    // Remove old models from the scene
     models.forEach(modelGroup => {
         if (scene.children.includes(modelGroup)) {
             scene.remove(modelGroup);
@@ -307,18 +298,14 @@ export async function loadModelData(model) {
             { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0)) }
         ];
 
-        // Load the leg model
         loadPromises.push(loadAndTransformModel(levante_legs_sofa_25Url, legTransforms, group, '000000', null, 'paint', null, null, null));
 
-        // Load the upholstery model, handling the duotone condition
         if (model.upholsteryDuotone) {
             loadPromises.push(loadAndTransformModel(levante_sofa_25Url, elementTransforms, group, null, model.upholstery.path, model.upholstery.structure, null, model.upholsteryDuotone.path, model.upholsteryDuotone.structure));
         } else {
             loadPromises.push(loadAndTransformModel(levante_sofa_25Url, elementTransforms, group, null, model.upholstery.path, model.upholstery.structure, null, null, null));
         }
     } else if (model.type == "art3002") {
-
-
         let legTransforms = [
             { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0) }
         ];
@@ -327,13 +314,10 @@ export async function loadModelData(model) {
             { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0) }
         ];
 
-
-        // Laad de poten (legs)
         loadPromises.push(
             loadAndTransformModel(levante_legs_sofa_3Url, legTransforms, group, '000000', null, 'paint', null, null, null)
         );
 
-        // Laad de bekleding (upholstery)
         if (model.upholsteryDuotone) {
             loadPromises.push(
                 loadAndTransformModel(levante_sofa_3Url, elementTransforms, group, null, model.upholstery.path, model.upholstery.structure, null, model.upholsteryDuotone.path, model.upholsteryDuotone.structure)
@@ -344,12 +328,7 @@ export async function loadModelData(model) {
             );
         }
 
-        // Wacht tot ALLE modellen geladen zijn voordat ze aan de scene worden toegevoegd
-
-
     } else if (model.type == "art6093" || model.type == "art6091") {
-
-
         let legTransforms = [
             { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0) }
         ];
@@ -358,12 +337,10 @@ export async function loadModelData(model) {
             { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0) }
         ];
 
-        // Laad de poten (legs)
         loadPromises.push(
             loadAndTransformModel(levante_legs_sofa_25Url, legTransforms, group, '000000', null, 'paint', null, null, null)
         );
 
-        // Controleer het type model en laad de juiste bekleding (upholstery)
         if (model.type == "art6093") {
             if (model.upholsteryDuotone) {
                 loadPromises.push(
@@ -386,13 +363,7 @@ export async function loadModelData(model) {
             }
         }
 
-        // Wacht tot ALLE modellen geladen zijn voordat ze aan de scene worden toegevoegd
-
-
-
     } else if (model.type == "art5310" || model.type == "art5314") {
-
-
         let legTransforms = [
             { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0) }
         ];
@@ -401,7 +372,6 @@ export async function loadModelData(model) {
             { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0) }
         ];
 
-        // Laden van de poten (legs)
         if (model.type == "art5310") {
             loadPromises.push(
                 loadAndTransformModel(levante_leg_corner_rightUrl, legTransforms, group, '000000', null, 'paint', null, null, null),
@@ -416,7 +386,6 @@ export async function loadModelData(model) {
             );
         }
 
-        // Laden van de bekleding (upholstery)
         if (model.type == "art5310") {
             if (model.upholsteryDuotone) {
                 loadPromises.push(
@@ -443,10 +412,7 @@ export async function loadModelData(model) {
             }
         }
 
-
     } else if (model.type == "art5311" || model.type == "art5316") {
-
-
         let legTransformsRight = [
             { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0.35) },
         ];
@@ -460,21 +426,18 @@ export async function loadModelData(model) {
             { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0) },
         ];
 
-        // Kies de juiste URL's afhankelijk van het model type
         const legRightUrl = model.type == "art5311" ? levante_leg_corner_rightUrl : levante_leg_corner_right_mirrorUrl;
         const legMiddleUrl = model.type == "art5311" ? levante_leg_corner_middleUrl : levante_leg_corner_middle_mirrorUrl;
         const legLeftUrl = model.type == "art5311" ? levante_leg_corner_leftUrl : levante_leg_corner_left_mirrorUrl;
         const maleUrl = model.type == "art5311" ? levante_s_maleUrl : levante_s_male_mirrorUrl;
         const femaleUrl = model.type == "art5311" ? levante_l_femaleUrl : levante_l_female_mirrorUrl;
 
-        // Maak een array van promises voor het laden van alle modellen
         loadPromises = [
             loadAndTransformModel(legRightUrl, legTransformsRight, group, '000000', null, 'paint'),
             loadAndTransformModel(legMiddleUrl, legTransformsMiddle, group, '000000', null, 'paint'),
             loadAndTransformModel(legLeftUrl, legTransformsLeft, group, '000000', null, 'paint')
         ];
 
-        // Voeg de stoffering modellen toe als duotone aanwezig is
         if (model.upholsteryDuotone) {
             loadPromises.push(
                 loadAndTransformModel(maleUrl, elementTransforms, group, null, model.upholstery.path, model.upholstery.structure, null, model.upholsteryDuotone.path, model.upholsteryDuotone.structure),
@@ -487,10 +450,7 @@ export async function loadModelData(model) {
             );
         }
 
-
     } else if (model.type == "art5312" || model.type == "art5315") {
-
-
         let legTransformsRight = [
             { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0.2) },
         ];
@@ -504,21 +464,18 @@ export async function loadModelData(model) {
             { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0) },
         ];
 
-        // Kies de juiste URL's afhankelijk van het model type
         const legRightUrl = model.type == "art5312" ? levante_leg_corner_rightUrl : levante_leg_corner_right_mirrorUrl;
         const legMiddleUrl = model.type == "art5312" ? levante_leg_corner_middleUrl : levante_leg_corner_middle_mirrorUrl;
         const legLeftUrl = model.type == "art5312" ? levante_leg_corner_leftUrl : levante_leg_corner_left_mirrorUrl;
         const maleUrl = model.type == "art5312" ? levante_m_maleUrl : levante_m_male_mirrorUrl;
         const femaleUrl = model.type == "art5312" ? levante_m_femaleUrl : levante_m_female_mirrorUrl;
 
-        // Maak een array van promises voor het laden van alle modellen
         loadPromises = [
             loadAndTransformModel(legRightUrl, legTransformsRight, group, '000000', null, 'paint'),
             loadAndTransformModel(legMiddleUrl, legTransformsMiddle, group, '000000', null, 'paint'),
             loadAndTransformModel(legLeftUrl, legTransformsLeft, group, '000000', null, 'paint')
         ];
 
-        // Voeg de stoffering modellen toe als duotone aanwezig is
         if (model.upholsteryDuotone) {
             loadPromises.push(
                 loadAndTransformModel(maleUrl, elementTransforms, group, null, model.upholstery.path, model.upholstery.structure, null, model.upholsteryDuotone.path, model.upholsteryDuotone.structure),
@@ -531,13 +488,7 @@ export async function loadModelData(model) {
             );
         }
 
-        // Wacht tot alle modellen geladen zijn voordat we ze aan de scène toevoegen
-
-
     } else if (model.type == "art5313" || model.type == "art5317") {
-
-
-        // Transformaties voor de benen
         let legTransformsRight = [
             { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0.2) },
         ];
@@ -551,21 +502,18 @@ export async function loadModelData(model) {
             { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0) },
         ];
 
-        // Kies de juiste URL's afhankelijk van het model type
         const legRightUrl = model.type == "art5313" ? levante_leg_corner_rightUrl : levante_leg_corner_right_mirrorUrl;
         const legMiddleUrl = model.type == "art5313" ? levante_leg_corner_middleUrl : levante_leg_corner_middle_mirrorUrl;
         const legLeftUrl = model.type == "art5313" ? levante_leg_corner_leftUrl : levante_leg_corner_left_mirrorUrl;
         const maleUrl = model.type == "art5313" ? levante_m_maleUrl : levante_m_male_mirrorUrl;
         const femaleUrl = model.type == "art5313" ? levante_l_femaleUrl : levante_l_female_mirrorUrl;
 
-        // Maak een array van promises voor het laden van alle modellen
         loadPromises = [
             loadAndTransformModel(legRightUrl, legTransformsRight, group, '000000', null, 'paint'),
             loadAndTransformModel(legMiddleUrl, legTransformsMiddle, group, '000000', null, 'paint'),
             loadAndTransformModel(legLeftUrl, legTransformsLeft, group, '000000', null, 'paint')
         ];
 
-        // Voeg de stoffering modellen toe als duotone aanwezig is
         if (model.upholsteryDuotone) {
             loadPromises.push(
                 loadAndTransformModel(maleUrl, elementTransforms, group, null, model.upholstery.path, model.upholstery.structure, null, model.upholsteryDuotone.path, model.upholsteryDuotone.structure),
@@ -578,13 +526,7 @@ export async function loadModelData(model) {
             );
         }
 
-        // Wacht tot alle modellen geladen zijn voordat we ze aan de scène toevoegen
-
-
     } else if (model.type == "art846" || model.type == "art553") {
-
-
-        // Transformaties voor de benen en elementen
         let legTransforms = [
             { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0) },
         ];
@@ -592,19 +534,16 @@ export async function loadModelData(model) {
             { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0) },
         ];
 
-        // Kies de juiste URL's voor de benen en stoelafbeeldingen afhankelijk van het model type
         const legLeftUrl = model.type == "art846" ? levante_leg_corner_leftUrl : levante_leg_corner_left_mirrorUrl;
         const longchairUrl = model.type == "art846" ? levante_leg_longchairUrl : levante_leg_longchair_mirrorUrl;
         const maleUrl = model.type == "art846" ? levante_s_maleUrl : levante_s_male_mirrorUrl;
         const femaleUrl = model.type == "art846" ? levante_longchairUrl : levante_longchair_mirrorUrl;
 
-        // Maak een array van promises voor het laden van de modellen
         loadPromises = [
             loadAndTransformModel(legLeftUrl, legTransforms, group, '000000', null, 'paint'),
             loadAndTransformModel(longchairUrl, legTransforms, group, '000000', null, 'paint')
         ];
 
-        // Voeg de stoffering modellen toe als duotone aanwezig is
         if (model.upholsteryDuotone) {
             loadPromises.push(
                 loadAndTransformModel(maleUrl, elementTransforms, group, null, model.upholstery.path, model.upholstery.structure, null, model.upholsteryDuotone.path, model.upholsteryDuotone.structure),
@@ -617,19 +556,12 @@ export async function loadModelData(model) {
             );
         }
 
-        // Wacht tot alle modellen geladen zijn voordat we ze aan de scène toevoegen
-
-
     } else if (model.type == "art598" || model.type == "art860") {
-
-
-        // Transformaties voor de benen en elementen
         let legTransforms;
         let elementTransforms = [
             { position: new THREE.Vector3(0, (model.seatHeight == 47 ? 0.03 : 0), 0) },
         ];
 
-        // Laad benen op basis van het type
         if (model.type == "art598") {
             legTransforms = [
                 { position: new THREE.Vector3(-0.25, (model.seatHeight == 47 ? 0.03 : 0), 0) },
@@ -658,7 +590,6 @@ export async function loadModelData(model) {
             );
         }
 
-        // Laad de elementen afhankelijk van het type en de stoffering
         if (model.type == "art598") {
             if (model.upholsteryDuotone) {
                 loadPromises.push(
@@ -685,14 +616,8 @@ export async function loadModelData(model) {
             }
         }
 
-        // Wacht tot alle modellen geladen zijn voordat we ze aan de scène toevoegen
-
-
     }
     if (model.footstool == true) {
-
-
-        // Leg-transformatie afhankelijk van modeltype
         let legTransforms;
         if (model.type == 'art2502' || model.type == 'art3002' || model.type == 'art846' || model.type == 'art553' || model.type == 'art598' || model.type == 'art860' || model.type == 'art6093' || model.type == 'art9091') {
             legTransforms = [
@@ -712,15 +637,10 @@ export async function loadModelData(model) {
             ];
         }
 
-        // Array om alle promises op te slaan
-
-
-        // Laad de benen van de stoel
         loadPromises.push(
             loadAndTransformModel(levante_legs_footstoolUrl, legTransforms, group, '000000', null, 'paint', null, null, null)
         );
 
-        // Element-transformatie afhankelijk van modeltype
         let elementTransforms;
         if (model.type == 'art2502' || model.type == 'art3002' || model.type == 'art846' || model.type == 'art553' || model.type == 'art598' || model.type == 'art860' || model.type == 'art6093' || model.type == 'art9091') {
             elementTransforms = [
@@ -740,20 +660,17 @@ export async function loadModelData(model) {
             ];
         }
 
-        // Laad de elementen van de stoel
         loadPromises.push(
             loadAndTransformModel(levante_footstoolUrl, elementTransforms, group, null, model.upholstery.path, model.upholstery.structure, null, null, null)
         );
 
-
-
     }
     try {
-        await Promise.all(loadPromises); // Wait for all promises to resolve
-        scene.add(group); // Add the group containing the loaded models to the scene
-        models.push(group); // Add the group to the models array
+        await Promise.all(loadPromises);
+        scene.add(group);
+        models.push(group);
     } catch (error) {
-        console.error("Error loading models:", error); // Handle any errors that occurred during loading
+        console.error("Error loading models:", error);
     }
 }
 
@@ -772,7 +689,6 @@ function onWindowResize(container, camera, renderer) {
     camera.updateProjectionMatrix();
     renderer.setSize(width, height);
 
-    // Optioneel: Schaal de rendering voor high-DPI schermen
     renderer.setPixelRatio(window.devicePixelRatio || 1);
 }
 
@@ -781,43 +697,35 @@ export function fullscreenToggle() {
     var modelviewerCol = document.getElementById('modelviewerCol');
 
     if (controlpanelCol.classList.contains('d-none')) {
-        // Show control panel and shrink model viewer to 50%
         modelviewerCol.classList.add('col-md-6');
         modelviewerCol.style.width = '50%';
         controlpanelCol.classList.remove('d-none');
         document.getElementById('fullscreen').innerHTML = '<span class="material-symbols-outlined m-0 p-1">open_in_full</span>';
     } else {
-        // Hide control panel and make model viewer full width
         modelviewerCol.classList.remove('col-md-6');
         modelviewerCol.style.width = '100%';
         controlpanelCol.classList.add('d-none');
         document.getElementById('fullscreen').innerHTML = '<span class="material-symbols-outlined m-0 p-1">close_fullscreen</span>';
     }
 
-    // Get new dimensions of the modelviewerCol
     const newWidth = modelviewerCol.offsetWidth;
     const newHeight = modelviewerCol.offsetHeight;
 
-    // Resize the Three.js renderer
     renderer.setSize(newWidth, newHeight);
 
-    // Update the camera aspect ratio and projection matrix
     camera.aspect = newWidth / newHeight;
     camera.updateProjectionMatrix();
 }
 
 function dataURLToBlob(dataURL) {
-    // Split the data URL into its parts
     const byteString = atob(dataURL.split(',')[1]);
     const mimeString = dataURL.split(',')[0].split(':')[1].split(';')[0];
 
-    // Create a Uint8Array to hold the binary data
     const arrayBuffer = new Uint8Array(byteString.length);
     for (let i = 0; i < byteString.length; i++) {
         arrayBuffer[i] = byteString.charCodeAt(i);
     }
 
-    // Create a Blob from the binary data
     return new Blob([arrayBuffer], { type: mimeString });
 }
 
@@ -839,13 +747,9 @@ export function captureScreenshot() {
 
     context.drawImage(originalCanvas, offsetX, offsetY, size, size, 0, 0, size, size);
 
-    // Convert the canvas content to a data URL
     const dataURL = squareCanvas.toDataURL('image/png');
-
-    // Convert the data URL to a Blob
     const blob = dataURLToBlob(dataURL);
 
-    // Return both the dataURL and the Blob
     return { dataURL, blob };
 }
 
@@ -1062,16 +966,16 @@ async function uploadScreenshotAndGetUrl() {
         // --- STAP 2: Upload de Blob naar Firebase Storage (MODULAIRE SYNTAX) ---
         // Gebruik window.storage (of importeer 'storage' als module)
         const storageInstance = window.storage; // Haal de storage instantie op
-        
+
         // Genereer een unieke naam voor het bestand in Storage
-        const filename = `product_renders/${Date.now()}_${Math.random().toString(36).substring(2, 15)}.png`; 
-        
+        const filename = `product_renders/${Date.now()}_${Math.random().toString(36).substring(2, 15)}.png`;
+
         // Maak een Storage Reference met de modulaire 'ref' functie
         // Gebruik window.ref (of importeer 'ref' als module)
         const imageRef = window.ref(storageInstance, filename); // <-- Aangepast!
 
         console.log(`Uploading image to: ${filename}`);
-        
+
         // Upload de bytes (Blob) met de modulaire 'uploadBytes' functie
         // Gebruik window.uploadBytes (of importeer 'uploadBytes' als module)
         const uploadTaskSnapshot = await window.uploadBytes(imageRef, blob); // <-- Aangepast!
@@ -1084,7 +988,7 @@ async function uploadScreenshotAndGetUrl() {
         console.log('Download URL for image:', downloadURL);
 
         return downloadURL; // Return the URL
-        
+
     } catch (e) {
         console.error("Error during image upload:", e);
         throw e; // Re-throw the error for the calling function to handle
@@ -1092,7 +996,7 @@ async function uploadScreenshotAndGetUrl() {
 }
 
 
-const PIM_LITE_API_URL = "https://receiveconfiguredproduct-k6mygszfiq-uc.a.run.app/receiveConfiguredProduct"; 
+const PIM_LITE_API_URL = "https://receiveconfiguredproduct-k6mygszfiq-uc.a.run.app/receiveConfiguredProduct";
 
 
 export async function exportDataToPim(modelConfig) {
@@ -1102,30 +1006,30 @@ export async function exportDataToPim(modelConfig) {
         // --- STAP 1: Genereer en upload de afbeelding ---
         // Deze stap moet bovenaan in de try-block gebeuren,
         // voordat je het 'dataToSend' object samenstelt.
-        const imageUrl = await uploadScreenshotAndGetUrl(); 
+        const imageUrl = await uploadScreenshotAndGetUrl();
         if (!imageUrl) {
             throw new Error("Afbeelding URL kon niet worden gegenereerd of geüpload.");
         }
 
         // --- STAP 2: Bereid de data voor met de afbeelding URL ---
         // Begin met een kopie van de originele modelConfig
-        let dataToSend = { ...modelConfig }; 
-        
+        let dataToSend = { ...modelConfig };
+
         // Verwijder het oude 'id' veld als het in modelConfig zit.
         // We gebruiken 'sku' als de primaire unieke identifier voor het document.
         if (dataToSend.id) {
             console.warn("Oud 'id' veld gevonden in modelConfig. Dit wordt verwijderd ten gunste van 'sku'.", dataToSend.id);
-            delete dataToSend.id; 
+            delete dataToSend.id;
         }
 
         // Genereer ALTIJD een NIEUWE, unieke SKU voor dit document.
         //dataToSend.sku = generateUniqueId(modelConfig); 
         dataToSend.sku = await generateProductSkuFromConfig(modelConfig);
-        
-        // Wijs de ZOWEENS GEGENEREERDE EN GEÜPLOADE afbeelding URL toe aan het 'image' veld.
-        dataToSend.image = imageUrl; 
 
-        console.log("Payload die naar PIM-Lite wordt gestuurd:", dataToSend); 
+        // Wijs de ZOWEENS GEGENEREERDE EN GEÜPLOADE afbeelding URL toe aan het 'image' veld.
+        dataToSend.image = imageUrl;
+
+        console.log("Payload die naar PIM-Lite wordt gestuurd:", dataToSend);
 
         // --- STAP 3: Verstuur de JSON naar de Cloud Function ---
         const response = await fetch(PIM_LITE_API_URL, {

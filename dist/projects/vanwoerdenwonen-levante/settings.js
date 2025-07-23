@@ -249,6 +249,7 @@ function updateControlPanel(model, selectedLayer, expandedLayer) {
         controlPanel(settings, ALLMODELS, elem, expandedLayer);
     }
 
+    // general
     model.brand = brand;
     model.product = product;
     model.title = title;
@@ -273,6 +274,16 @@ function updateControlPanel(model, selectedLayer, expandedLayer) {
     model.depth = depth;
     model.numberOfSeats = numberOfSeats;
 
+    // category (after type declaration)
+    model.category = {
+        name: 'sofa'
+    };
+    if (model.type == 'art2502' || model.type == 'art3002') {
+        model.category.type = 'straight';
+    } else {
+        model.category.type = 'corner';
+    }
+
     // seatHeight
     let seatHeightRadios = document.querySelectorAll(`input[type=radio][name="seatHeight"]`);
     seatHeightRadios.forEach(radio => radio.addEventListener('click', () => {
@@ -285,22 +296,24 @@ function updateControlPanel(model, selectedLayer, expandedLayer) {
     document.getElementById(`seatHeight_${model.seatHeight}`).checked = true;
     document.getElementById('seatHeightText').textContent = `${model.seatHeight} cm`;
     /*
-        // legs
-        let legRadios = document.querySelectorAll(`input[type=radio][name="leg"]`);
-        legRadios.forEach(radio => radio.addEventListener('click', () => {
-            model.legs = radio.value;
-    
-            updateControlPanel(model, `options`);
-            updateFeaturedModel(model);
-            showSelected(false);
-        }));
-        if (model.legs == 'legsStraight') {
-            document.getElementById('legsText').textContent = 'rechte poten';
-            document.getElementById('legsStraight').checked = true;
-        } else {
-            document.getElementById('legsText').textContent = 'gebogen poten';
-            document.getElementById('legsBent').checked = true;
-        }
+
+    // legs
+    let legRadios = document.querySelectorAll(`input[type=radio][name="leg"]`);
+    legRadios.forEach(radio => radio.addEventListener('click', () => {
+        model.legs = radio.value;
+
+        updateControlPanel(model, `options`);
+        updateFeaturedModel(model);
+        showSelected(false);
+    }));
+    if (model.legs == 'legsStraight') {
+        document.getElementById('legsText').textContent = 'rechte poten';
+        document.getElementById('legsStraight').checked = true;
+    } else {
+        document.getElementById('legsText').textContent = 'gebogen poten';
+        document.getElementById('legsBent').checked = true;
+    }
+
     */
     // duotone
     let duotoneCheckbox = document.getElementById('duotone');
