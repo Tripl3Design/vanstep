@@ -1,4 +1,3 @@
-
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
@@ -949,6 +948,160 @@ export async function exportModelAndData(modelConfig) {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+export async function exportModelWidthDataToPim(modelConfig) {
+    console.log("Model JSON ontvangen in exportModelAndData (GLB Upload naar PIM):", modelConfig);
+
+    const originalSceneUserData = { ...scene.userData }; // Bewaar de originele userData
+
+    // Sla de modelConfig op in de 'extras' van de scene's userData
+    scene.userData.extras = {
+        ...scene.userData.extras,
+        modelConfig: modelConfig
+    };
+
+    let glbBlob = null;
+    let productSku; // Declareer productSku hier
+    const uniqueFileId = crypto.randomUUID(); // Unieke ID voor het GLB-bestand
+
+    try {
+        // --- 0. Authenticeer anoniem voor PIM Firebase (nodig voor Storage Rules) ---
+        console.log("Authenticeer anoniem bij PIM Firebase...");
+        //await signInAnonymously(pimAuth);
+        console.log("Succesvol anoniem geauthenticeerd bij PIM Firebase.");
+
+        // --- STAP 1: Genereer ALTIJD een NIEUWE, unieke SKU voor dit document. ---
+        // Hier wordt de SKU gegenereerd. Als generateProductSkuFromConfig bestaat en een SKU teruggeeft, gebruiken we die.
+        // Anders genereren we een geheel nieuwe UUID.
+        if (typeof generateProductSkuFromConfig === 'function') {
+            const generatedSku = await generateProductSkuFromConfig(modelConfig);
+            if (generatedSku) {
+                productSku = generatedSku;
+                console.log(`SKU gegenereerd via generateProductSkuFromConfig: ${productSku}`);
+            } else {
+                productSku = crypto.randomUUID(); // Fallback als de functie niets teruggeeft
+                console.warn("generateProductSkuFromConfig retourneerde geen geldige SKU. Een nieuwe UUID is gegenereerd als fallback.");
+            }
+        } else {
+            productSku = crypto.randomUUID(); // Fallback als de functie niet bestaat
+            console.warn("generateProductSkuFromConfig functie niet gevonden. Een nieuwe UUID is gegenereerd als fallback.");
+        }
+        // Failsafe: Zorg ervoor dat productSku nooit leeg is
+        if (!productSku) {
+            productSku = crypto.randomUUID(); // Final failsafe
+            console.error("Failsafe: productSku was nog steeds leeg, nieuwe UUID gegenereerd.");
+        }
+
+        // --- STAP 2: Exporteer het 3D-model als GLB ---
+        console.log("Start GLB export...");
+        const exporter = new GLTFExporter();
+        const glbOptions = {
+            binary: true, // Exporteer als GLB (binair)
+        };
+
+        await new Promise((resolve, reject) => {
+            exporter.parse(
+                scene,
+                function (result) {
+                    if (result instanceof ArrayBuffer) {
+                        glbBlob = new Blob([result], { type: 'model/gltf-binary' });
+                        console.log("GLB Blob succesvol gecreëerd.");
+                        resolve();
+                    } else {
+                        console.error("GLB export heeft geen ArrayBuffer opgeleverd.");
+                        reject(new Error("GLB export mislukt: geen binaire data."));
+                    }
+                },
+                function (error) {
+                    console.error('Fout tijdens GLB export:', error);
+                    reject(error);
+                },
+                glbOptions
+            );
+        });
+
+        if (!glbBlob) {
+            throw new Error("Geen GLB Blob gecreëerd om te uploaden.");
+        }
+
+        // --- STAP 3: Upload het GLB naar PIM Firebase Storage ---
+        const glbStoragePath = `configured_3d_models/${productSku}/${uniqueFileId}.glb`;
+        console.log(`Uploaden GLB naar ${glbStoragePath}...`);
+        const glbRef = ref(pimStorage, glbStoragePath);
+        const glbUploadResult = await uploadBytes(glbRef, glbBlob);
+        const uploadedGlbUrl = await getDownloadURL(glbUploadResult.ref);
+        console.log('GLB Upload succesvol:', uploadedGlbUrl);
+
+        // --- STAP 4: Bereid de data voor met de GLB URL ---
+        let dataToSend = { ...modelConfig };
+
+        // Verwijder het oude 'id' veld als het in modelConfig zit.
+        if (dataToSend.id) {
+            console.warn("Oud 'id' veld gevonden in modelConfig. Dit wordt verwijderd ten gunste van 'sku'.", dataToSend.id);
+            delete dataToSend.id;
+        }
+
+        // Zorg ervoor dat de SKU correct is ingesteld in de data die naar Firestore gaat
+        dataToSend.sku = productSku;
+        dataToSend.gltfStoragePath = glbStoragePath; // Pad naar GLB in Storage
+        dataToSend.gltfUrl = uploadedGlbUrl; // Publieke URL van het GLB
+        // Alle screenshot-gerelateerde velden zijn verwijderd
+
+        console.log("Payload die naar PIM Firestore wordt gestuurd:", dataToSend);
+
+        // --- STAP 5: Verstuur de JSON naar Firestore ---
+        // Hier wordt de data direct naar PIM Firestore geschreven via de client SDK.
+        const pimProductConfigRef = doc(pimFirestore, 'pim_3d_model_configs', productSku);
+        await setDoc(pimProductConfigRef, {
+            ...dataToSend, // De gecombineerde dataToSend inclusief gltfUrl, sku etc.
+            lastUploaded: serverTimestamp()
+        }, { merge: true });
+        console.log(`PIM Firestore geüpdatet voor SKU: ${productSku}.`);
+
+        alert('Model en configuratie succesvol opgeslagen in PIM!');
+
+        return {
+            uploadedGlbUrl: uploadedGlbUrl,
+            message: 'Model en configuratie succesvol opgeslagen in PIM!'
+        };
+
+    } catch (error) {
+        console.error("Fout bij het opslaan van configuratie of uploaden van bestanden naar PIM:", error);
+        alert(`Er is een fout opgetreden: ${error.message}.`);
+        throw error;
+    } finally {
+        // --- Voeg de ground terug toe na de export ---
+        scene.userData = originalSceneUserData;
+        console.log("Scene userData hersteld na export.");
+        addGround();
+        console.log("Ground added back after export.");
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 async function uploadScreenshotAndGetUrl() {
     try {
         if (!mainModule || !mainModule.renderer || !mainModule.scene || !mainModule.camera) {
@@ -1045,6 +1198,19 @@ export async function exportDataToPim(modelConfig) {
             throw new Error(`HTTP error! Status: ${response.status}, Bericht: ${errorText}`);
         }
 
+
+
+
+
+        exportModelWidthDataToPim(modelConfig);
+
+
+
+
+
+
+
+
         const result = await response.json();
         console.log("Configuratie succesvol opgeslagen in PIM-Lite:", result);
         alert("Je geconfigureerde meubel is succesvol opgeslagen in de PIM-Lite!");
@@ -1054,5 +1220,156 @@ export async function exportDataToPim(modelConfig) {
         console.error("Fout bij het opslaan van configuratie of uploaden van afbeelding:", error);
         alert(`Er is een fout opgetreden: ${error.message}.`);
         throw error;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+export async function exportModelAndDataNew(modelConfig) {
+    console.log("Model JSON ontvangen in exportModelAndData (GLB Upload naar PIM):", modelConfig);
+
+    const originalSceneUserData = { ...scene.userData }; // Bewaar de originele userData
+
+    // Sla de modelConfig op in de 'extras' van de scene's userData
+    scene.userData.extras = {
+        ...scene.userData.extras,
+        modelConfig: modelConfig
+    };
+
+    let glbBlob = null;
+    let productSku; // Declareer productSku hier
+
+    try {
+        console.log("Authenticeer anoniem bij PIM Firebase...");
+        await signInAnonymously(pimAuth);
+        console.log("Succesvol anoniem geauthenticeerd bij PIM Firebase.");
+
+        const generatedSku = await generateProductSkuFromConfig(modelConfig);
+
+        productSku = generatedSku;
+        console.log(`SKU gegenereerd via generateProductSkuFromConfig: ${productSku}`);
+
+        console.log("Bezig met het vastleggen van een screenshot...");
+        const { blob: screenshotBlob } = captureScreenshot();
+        const screenshotStoragePath = `products_by_sku/${productSku}/thumbnail-temp.png`;
+        const screenshotRef = ref(pimStorage, screenshotStoragePath);
+        const screenshotUploadResult = await uploadBytes(screenshotRef, screenshotBlob);
+        const uploadedScreenshotUrl = await getDownloadURL(screenshotUploadResult.ref);
+        console.log('Screenshot upload succesvol:', uploadedScreenshotUrl);
+
+        console.log(`Screenshot geüpload. Bezig met exporteren en uploaden van het 3D-model...`);
+
+        const exporter = new GLTFExporter();
+        const glbOptions = {
+            binary: true,
+        };
+
+        await new Promise((resolve, reject) => {
+            exporter.parse(
+                scene,
+                function (result) {
+                    if (result instanceof ArrayBuffer) {
+                        glbBlob = new Blob([result], { type: 'model/gltf-binary' });
+                        console.log("GLB Blob succesvol gecreëerd.");
+                        resolve();
+                    } else {
+                        console.error("GLB export heeft geen ArrayBuffer opgeleverd.");
+                        reject(new Error("GLB export mislukt: geen binaire data."));
+                    }
+                },
+                function (error) {
+                    console.error('Fout tijdens GLB export:', error);
+                    reject(error);
+                },
+                glbOptions
+            );
+        });
+
+        if (!glbBlob) {
+            throw new Error("Geen GLB Blob gecreëerd om te uploaden.");
+        }
+
+        const glbStoragePath = `products_by_sku/${productSku}/3d-model.glb`;
+        console.log(`Uploaden GLB naar ${glbStoragePath}...`);
+        const glbRef = ref(pimStorage, glbStoragePath);
+        const glbUploadResult = await uploadBytes(glbRef, glbBlob);
+        const uploadedGlbUrl = await getDownloadURL(glbUploadResult.ref);
+        console.log('GLB Upload succesvol:', uploadedGlbUrl);
+
+        let dataToSend = { ...modelConfig };
+
+        // Verwijder het oude 'id' veld als het in modelConfig zit.
+        if (dataToSend.id) {
+            console.warn("Oud 'id' veld gevonden in modelConfig. Dit wordt verwijderd ten gunste van 'sku'.", dataToSend.id);
+            delete dataToSend.id;
+        }
+
+        dataToSend.sku = productSku;
+        dataToSend.gltfUrl = uploadedGlbUrl;
+        dataToSend.image = uploadedScreenshotUrl;
+
+        console.log("Payload die naar PIM Firestore wordt gestuurd:", dataToSend);
+
+        // --- STAP 5: Verstuur de JSON naar Firestore ---
+        // Hier wordt de data direct naar PIM Firestore geschreven via de client SDK.
+        const pimProductConfigRef = doc(pimFirestore, 'configuredProducts', productSku);
+        await setDoc(pimProductConfigRef, {
+            ...dataToSend, // De gecombineerde dataToSend inclusief gltfUrl, sku etc.
+            lastUploaded: serverTimestamp()
+        }, { merge: true });
+        console.log(`PIM Firestore geüpdatet voor SKU: ${productSku}.`);
+
+        alert('Model en configuratie succesvol opgeslagen in PIM!');
+
+        return {
+            uploadedGlbUrl: uploadedGlbUrl,
+            message: 'Model en configuratie succesvol opgeslagen in PIM!'
+        };
+
+    } catch (error) {
+        console.error("Fout bij het opslaan van configuratie of uploaden van bestanden naar PIM:", error);
+        alert(`Er is een fout opgetreden: ${error.message}.`);
+        throw error;
+    } finally {
+        // --- Voeg de ground terug toe na de export ---
+        scene.userData = originalSceneUserData;
+        console.log("Scene userData hersteld na export.");
+        addGround();
+        console.log("Ground added back after export.");
     }
 }

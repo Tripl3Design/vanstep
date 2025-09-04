@@ -431,10 +431,10 @@
 
   <!-- Firebase, maar met `defer` -->
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
-    import { getFirestore, collection, addDoc, getDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
-    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-storage.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDoc, setDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-storage.js";
+    import { getAuth, onAuthStateChanged, signInAnonymously } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyC0XTl5lSTSN0mxCqGsYxsrIpFtoU-ooEI",
@@ -444,7 +444,18 @@
       messagingSenderId: "663075472335",
       appId: "1:663075472335:web:bde178dfb46caaf1f808ba"
     };
+
+    const firebasePimConfig = {
+      apiKey: "AIzaSyBVSvhGRbGYz0kpetXYV90eZTvHxcDMVA0",
+      authDomain: "tripletise-pim.firebaseapp.com",
+      projectId: "tripletise-pim",
+      storageBucket: "tripletise-pim.firebasestorage.app",
+      messagingSenderId: "938165221424",
+      appId: "1:938165221424:web:236ca8932bd3c112ab95f5"
+    };
+
     const app = initializeApp(firebaseConfig);
+    //const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     const storage = getStorage(app);
     const auth = getAuth(app);
@@ -454,12 +465,29 @@
     window.collection = collection;
     window.addDoc = addDoc;
     window.getDoc = getDoc;
+    window.setDoc = setDoc;
     window.doc = doc;
     window.serverTimestamp = serverTimestamp;
     window.storage = storage;
     window.ref = ref;
     window.uploadBytes = uploadBytes;
     window.getDownloadURL = getDownloadURL;
+
+    window.signInAnonymously = signInAnonymously;
+
+
+
+
+    // Initialiseer Firebase PIM Client App
+    const pimApp = initializeApp(firebasePimConfig, 'pimClientApp');
+    const pimStorage = getStorage(pimApp);
+    const pimFirestore = getFirestore(pimApp);
+    const pimAuth = getAuth(pimApp);
+
+    window.pimStorage = pimStorage;
+    window.pimFirestore = pimFirestore;
+    window.pimAuth = pimAuth;
+    
   </script>
 
   <!-- Voorkomen dat herladen problemen geeft -->
