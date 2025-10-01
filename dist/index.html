@@ -32,9 +32,9 @@
   <!-- Kritieke kleine scripts -->
   <script>
     console.log('%cThis configurator is made by TripleDesign. Visit tripledesign.nl for more info!', 'background:red;color:#fff;font-weight: bold;');
-    const brand = 'vanwoerdenwonen';
-    const product = 'levante';
-    const title = 'Bank Evan';
+    const brand = 'vanstep';
+    const product = 'vanstep';
+    const title = 'Van Step';
 
     const capitalizeFirstLetter = (str) => str.charAt(0).toUpperCase() + str.slice(1);
     document.title = `${capitalizeFirstLetter(title)} | ${capitalizeFirstLetter(brand)}`;
@@ -138,7 +138,7 @@
           let htmlContent = `
   <div style="height: 100%; background: #d4d4d4;" class="col-md-6 col-12 vh-100 m-0 p-0" id="modelviewerCol">
     <div class="brandlogo position-absolute top-0 start-0 pt-5 ps-5">
-      <img src="img/logo_${brand}.webp" class="img-fluid">
+      <img src="img/logo_${brand}.svg" class="img-fluid">
     </div>
 
     <div class="row m-0 p-0">
@@ -418,12 +418,12 @@
   </div>
 
   <!-- Externe scripts met `defer` -->
-  <script src="projects/vanwoerdenwonen-levante/pdf.js" defer></script>
-  <script src="projects/vanwoerdenwonen-levante/pricing.js" defer></script>
+  <script src="projects/vanstep-vanstep/pdf.js" defer></script>
+  <script src="projects/vanstep-vanstep/pricing.js" defer></script>
   <script src="js/controlpanel.js" defer></script>
   <script src="js/colorChanger.js" defer></script>
 
-  <script src="projects/vanwoerdenwonen-levante/settings.js" defer></script>
+  <script src="projects/vanstep-vanstep/settings.js" defer></script>
 
   <!-- PDFMake -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.12/pdfmake.min.js"></script>
@@ -438,9 +438,9 @@
 
     const firebaseConfig = {
       apiKey: "AIzaSyC0XTl5lSTSN0mxCqGsYxsrIpFtoU-ooEI",
-      authDomain: "vanwoerdenwonen-tripletise.firebaseapp.com",
-      projectId: "vanwoerdenwonen-tripletise",
-      storageBucket: "vanwoerdenwonen-tripletise.appspot.com",
+      authDomain: "vanstep-tripletise.firebaseapp.com",
+      projectId: "vanstep-tripletise",
+      storageBucket: "vanstep-tripletise.appspot.com",
       messagingSenderId: "663075472335",
       appId: "1:663075472335:web:bde178dfb46caaf1f808ba"
     };
@@ -487,7 +487,7 @@
     window.pimStorage = pimStorage;
     window.pimFirestore = pimFirestore;
     window.pimAuth = pimAuth;
-    
+
   </script>
 
   <!-- Voorkomen dat herladen problemen geeft -->

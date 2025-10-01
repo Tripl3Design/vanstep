@@ -69,15 +69,21 @@
 }
 
 .accordion-button:not(.collapsed) {
-    background-color: red; /* or any color you prefer */
-    color: red; /* Optional: Set a text color to ensure readability */
-    box-shadow: none; /* Optional: Remove the box shadow */
+    background-color: red;
+    /* or any color you prefer */
+    color: red;
+    /* Optional: Set a text color to ensure readability */
+    box-shadow: none;
+    /* Optional: Remove the box shadow */
 }
 
 .accordion-button-bg {
-    background-color: red; /* To ensure consistent styling */
-    color: #000; /* Set a text color for inactive state as well */
-    border: none; /* Optional: Remove border if needed */
+    background-color: red;
+    /* To ensure consistent styling */
+    color: #000;
+    /* Set a text color for inactive state as well */
+    border: none;
+    /* Optional: Remove border if needed */
 }
 
 
@@ -91,8 +97,8 @@
 
 :root {
     --bs-primary: red;
-    --bs-accordion-color:red;
-  }
+    --bs-accordion-color: red;
+}
 
 
 
@@ -130,19 +136,10 @@
 
 
 
-
-
-
-@font-face {
-    font-family: 'Helvetica Neue';
-    src: url('font/HelveticaNeueMedium.otf') format('otf');
-    font-weight: normal;
-    font-style: normal;
-  }
-
-  body {
-    font-family: 'Helvetica Neue', sans-serif;
-  }
+body {
+    /* Roboto wordt geladen via Google Fonts in index.html */
+    font-family: 'Roboto', sans-serif;
+}
 
 .brandlogo {
 
@@ -150,27 +147,33 @@
 }
 
 .productname {
- 
+
     font-size: (calc(1.75rem + .75vw));
 }
 
 
 .colorButton {
-    box-shadow: none; /* From .shadow-none */
-    border: 1px solid white; /* From .border-white */
+    box-shadow: none;
+    /* From .shadow-none */
+    border: 1px solid white;
+    /* From .border-white */
 }
 
 .colorButton:hover {
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* From .shadow */
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    /* From .shadow */
 }
 
 .colorButtonActive {
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* From .shadow */
-    border: 1px solid white; /* From .border-white */
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    /* From .shadow */
+    border: 1px solid white;
+    /* From .border-white */
 }
 
 .colorButtonDisabled {
     filter: grayscale(100%);
     opacity: 0.5;
-    box-shadow: none; /* From .shadow-none */
+    box-shadow: none;
+    /* From .shadow-none */
 }

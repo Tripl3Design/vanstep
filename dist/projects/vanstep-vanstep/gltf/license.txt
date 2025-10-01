@@ -1,0 +1,11 @@
+Model Information:
+* title:	Mercedes-Benz Sprinter
+* source:	https://sketchfab.com/3d-models/mercedes-benz-sprinter-152f62800be34652af0545487129ca2e
+* author:	Savelliy 07 (https://sketchfab.com/savelliy07)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Mercedes-Benz Sprinter" (https://sketchfab.com/3d-models/mercedes-benz-sprinter-152f62800be34652af0545487129ca2e) by Savelliy 07 (https://sketchfab.com/savelliy07) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
