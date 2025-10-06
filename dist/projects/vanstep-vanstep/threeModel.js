@@ -9,8 +9,7 @@ import { USDZExporter } from 'three/addons/exporters/USDZExporter.js';
 export let scene, camera, renderer, controls, rgbeLoader;
 let groundGeometry, groundMaterial, ground;
 
-// Gebruik een relatief pad, dat werkt zowel lokaal als online.
-export let projectmap = './';
+export let projectmap = '/projects/vanstep-vanstep/';
 
 export function initThree(containerElem) {
     // Scene setup
@@ -95,22 +94,7 @@ function addGround() {
     scene.add(ground);
 }
 
-const mercedes_sprinter_url = projectmap + 'gltf/scene.gltf';
-const textureCache = {};
-
-function loadTexture(path) {
-    if (textureCache[path]) {
-        return textureCache[path];
-    } else {
-        const texture = new THREE.TextureLoader().load(path);
-        textureCache[path] = texture;
-        return texture;
-    }
-}
-
-// Removed createPBRMaterial as mercedes_sprinter is expected to have its own materials.
-// If specific parts of the mercedes_sprinter need custom materials, this function
-// or a similar one would need to be re-introduced and called conditionally.
+const mercedes_sprinter_url = projectmap + 'gltf/mercedes_sprinter.gltf';
 
 function loadAndTransformModel(
     url,
@@ -156,7 +140,7 @@ function loadAndTransformModel(
 
 const models = [];
 
-export async function loadModelData() {
+export async function loadModelData(modelData) {
     models.forEach(modelGroup => {
         if (scene.children.includes(modelGroup)) {
             scene.remove(modelGroup);
@@ -179,8 +163,21 @@ export async function loadModelData() {
 
     let loadPromises = [];
 
-    // Load the Mercedes Sprinter model unconditionally
-    loadPromises.push(loadAndTransformModel(mercedes_sprinter_url, [{}], group));
+    // Load the model based on the type from modelData
+    if (modelData && modelData.type) {
+        console.log("Loading model of type:", modelData.type);
+        const modelUrl = projectmap + `gltf/${modelData.type}.gltf`;
+        const modelTransforms = [{
+            scale: new THREE.Vector3(0.005, 0.005, 0.005)
+        }];
+        loadPromises.push(loadAndTransformModel(modelUrl, modelTransforms, group));
+    } else {
+        // Fallback or default model if needed
+        const sprinterTransform = [{
+            scale: new THREE.Vector3(0.005, 0.005, 0.005)
+        }];
+        loadPromises.push(loadAndTransformModel(mercedes_sprinter_url, sprinterTransform, group));
+    }
 
     try {
         await Promise.all(loadPromises);
