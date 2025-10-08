@@ -330,8 +330,6 @@ function updateControlPanel(model, selectedLayer, expandedLayer) {
         document.getElementById('reverseLightsText').textContent = model.vanstep.reverseLights ? 'met lichten' : 'zonder lichten';
         document.getElementById('colorText').textContent = model.vanstep.color.color === 'black' ? 'zwart' : 'blank';
         document.getElementById('sandedText').textContent = model.vanstep.color.sanded ? 'geschuurd' : 'ongeschuurd';
-
-        update(model);
     }
 
     document.getElementById('collapsibleStair').checked = !!model.stair;

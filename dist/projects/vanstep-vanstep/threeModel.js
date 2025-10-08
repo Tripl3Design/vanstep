@@ -168,13 +168,13 @@ export async function loadModelData(modelData) {
         console.log("Loading model of type:", modelData.type);
         const modelUrl = projectmap + `gltf/${modelData.type}.gltf`;
         const modelTransforms = [{
-            scale: new THREE.Vector3(0.005, 0.005, 0.005)
+            scale: new THREE.Vector3(1, 1, 1)
         }];
         loadPromises.push(loadAndTransformModel(modelUrl, modelTransforms, group));
     } else {
         // Fallback or default model if needed
         const sprinterTransform = [{
-            scale: new THREE.Vector3(0.005, 0.005, 0.005)
+            scale: new THREE.Vector3(1, 1, 1)
         }];
         loadPromises.push(loadAndTransformModel(van_url, sprinterTransform, group));
     }
