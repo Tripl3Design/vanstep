@@ -94,7 +94,7 @@ function addGround() {
     scene.add(ground);
 }
 
-const mercedes_sprinter_url = projectmap + 'gltf/mercedes_sprinter.gltf';
+const van_url = projectmap + 'gltf/van.gltf';
 
 function loadAndTransformModel(
     url,
@@ -113,7 +113,7 @@ function loadAndTransformModel(
 
             loadedModel.traverse((child) => {
                 if (child.isMesh) {
-                    // For mercedes_sprinter, we assume it comes with its own materials.
+                    // For van, we assume it comes with its own materials.
                     // We do not override them here.
 
                     child.castShadow = true;
@@ -176,7 +176,7 @@ export async function loadModelData(modelData) {
         const sprinterTransform = [{
             scale: new THREE.Vector3(0.005, 0.005, 0.005)
         }];
-        loadPromises.push(loadAndTransformModel(mercedes_sprinter_url, sprinterTransform, group));
+        loadPromises.push(loadAndTransformModel(van_url, sprinterTransform, group));
     }
 
     try {
