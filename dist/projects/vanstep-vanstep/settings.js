@@ -247,7 +247,53 @@ function updateControlPanel(model, selectedLayer, expandedLayer) {
         }
     };
 
-    // van
+    const handleOptionChange = (elementId, modelPath, isObjectToggle = false, defaultObject = {}) => {
+        const element = document.getElementById(elementId);
+        if (element) {
+            element.addEventListener('change', (e) => {
+                let path = modelPath.split('.');
+                let parent = model;
+                let lastKey = path.pop();
+
+                for (const key of path) {
+                    if (!parent[key]) parent[key] = {};
+                    parent = parent[key];
+                }
+
+                if (isObjectToggle) {
+                    if (e.target.checked) {
+                        parent[lastKey] = defaultObject;
+                    } else {
+                        delete parent[lastKey];
+                    }
+                } else {
+                    parent[lastKey] = e.target.checked;
+                }
+
+                console.log('Model geüpdatet:', JSON.stringify(model, null, 2));
+                updateFeaturedModel(model);
+            });
+        }
+    };
+
+    const handleBooleanChange = (elementId, modelPath) => {
+        const element = document.getElementById(elementId);
+        if (element) {
+            element.addEventListener('change', (e) => {
+                let path = modelPath.split('.');
+                let current = model;
+                for (let i = 0; i < path.length - 1; i++) {
+                    if (!current[path[i]]) current[path[i]] = {};
+                    current = current[path[i]];
+                }
+                current[path[path.length - 1]] = e.target.checked;
+
+                console.log('Model geüpdatet:', JSON.stringify(model, null, 2));
+                updateFeaturedModel(model);
+            });
+        }
+    };
+
     if (model.van) {
         setRadioChecked('vanBrand', model.van.brand);
         setRadioChecked('vanType', model.van.type);
@@ -255,20 +301,62 @@ function updateControlPanel(model, selectedLayer, expandedLayer) {
         setRadioChecked('rearWheel', model.van.rearWheel);
 
         console.log(model.van.type);
+
         document.getElementById('vanBrandText').textContent = model.van.brand;
-        document.getElementById('vanTypeText').textContent = model.van.type;
+        document.getElementById('vanTypeText').textContent = model.van.type.toUpperCase();
     }
+
+    // vanstep
+    const vanstepEnabled = !!model.vanstep;
+    document.getElementById('vanstep').checked = vanstepEnabled;
+    handleOptionChange('vanstep', 'vanstep', true, { "color": { "color": "black", "sanded": false } });
+
+
+    if (vanstepEnabled) {
+        // De 'towbar' accordion is nu voor 'vanstep' opties
+        document.getElementById('towbar').checked = !!model.vanstep.towbar;
+        document.getElementById('lightingplug').checked = model.vanstep.towbar?.lightingPlug || false;
+        document.getElementById('reverseLights').checked = !!model.vanstep.reverseLights;
+
+
+
+        // Event listeners voor vanstep opties
+        handleOptionChange('towbar', 'vanstep.towbar', true, { "detacheble": false, "catchJaw": false, "lightingPlug": false });
+        handleBooleanChange('lightingplug', 'vanstep.towbar.lightingPlug');
+        handleOptionChange('reverseLights', 'vanstep.reverseLights', true, { "dashboardSwitch": "original" });
+
+        // Update de samenvatting voor elke optie apart
+        document.getElementById('towbarText').textContent = model.vanstep.towbar ? 'met trekhaaak' : 'zonder trekhaak';
+        document.getElementById('reverseLightsText').textContent = model.vanstep.reverseLights ? 'met lichten' : 'zonder lichten';
+        document.getElementById('colorText').textContent = model.vanstep.color.color === 'black' ? 'zwart' : 'blank';
+        document.getElementById('sandedText').textContent = model.vanstep.color.sanded ? 'geschuurd' : 'ongeschuurd';
+    }
+
+    document.getElementById('collapsibleStair').checked = !!model.stair;
+    document.getElementById('sidebars').checked = !!model.sidebars;
+    document.getElementById('sunVisor').checked = !!model.sunvisor;
+
+    handleOptionChange('collapsibleStair', 'stair', true, { "color": "standard", "height": false });
+    handleOptionChange('sidebars', 'sidebars', true, { "color": "standard", "step": false });
+    handleOptionChange('sunVisor', 'sunvisor', true, { "color": "black" });
 
     // color
     if (model.vanstep && model.vanstep.color) {
         setRadioChecked('vanstepColor', model.vanstep.color.color);
+        if (document.getElementById('sanded')) {
+            document.getElementById('sanded').checked = model.vanstep.color.sanded || false;
+        }
     }
 
-    // Event listener voor kleurverandering om 'geschuurd' optie te tonen/verbergen
+    // Event listeners voor kleur en 'sanded'
     document.querySelectorAll('input[name="vanstepColor"]').forEach(radio => {
         radio.addEventListener('change', (event) => {
             const sandedOptionContainer = document.getElementById('sandedOptionContainer');
             const sandedCheckbox = document.getElementById('sanded');
+
+            if (model.vanstep && model.vanstep.color) {
+                model.vanstep.color.color = event.target.value;
+            }
 
             if (event.target.value === 'black') {
                 sandedOptionContainer.classList.remove('d-none');
@@ -276,16 +364,19 @@ function updateControlPanel(model, selectedLayer, expandedLayer) {
                 sandedOptionContainer.classList.add('d-none');
                 if (sandedCheckbox) {
                     sandedCheckbox.checked = false;
-                    // Update het model object als de optie wordt verborgen
                     if (model.vanstep && model.vanstep.color) {
                         model.vanstep.color.sanded = false;
                     }
                 }
             }
+            console.log('Model geüpdatet:', JSON.stringify(model, null, 2));
+            updateFeaturedModel(model);
         });
         // Trigger de change event om de initiële staat correct in te stellen
         if (radio.checked) radio.dispatchEvent(new Event('change'));
     });
+
+    handleBooleanChange('sanded', 'vanstep.color.sanded');
 
 
 
@@ -365,7 +456,7 @@ async function handleModelSelection() {
 function initSettings(model) {
     const accordions = {};
 
-    accordions.vanBrand = {
+    accordions.van = {
         title: "merk en type bus",
         options: ['vanBrand', 'vanType'],
         display: "d-block",
@@ -436,62 +527,91 @@ function initSettings(model) {
         </div>`
     };
 
-    accordions.towbar = {
-        title: "trekhaak",
-        options: ['towbar', 'lightingplug', 'color', 'sanded', 'reverseLights'],
+    accordions.options = {
+        title: "opties",
+        options: [],
         display: "d-block",
         code: /*html*/`
         <div class="row m-0 p-0 pb-xxl-4 pb-xl-4 pb-3">
-            <div class="d-flex flex-wrap justify-content-start m-0 p-0">
-                <!-- Trekhaak aan/uit -->
+            <div class="d-flex justify-content-start m-0 p-0">
                 <div class="card border-0 grid gap row-gap-3 me-5">
-                    <div class="fst-italic">trekhaak:</div>
                     <div class="h6 fw-normal form-check form-switch">
-                        <input type="checkbox" class="form-check-input" name="towbar" id="towbar">
+                        <input type="checkbox" class="form-check-input" name="vanstep" id="vanstep">
+                        <label class="form-check-label" for="vanstep">vanstep</label>
                     </div>
-                </div>
-
-                <!-- Verlichtingsstekker aan/uit -->
-                <div class="card border-0 grid gap row-gap-3 me-5">
-                    <div class="fst-italic">verlichtingsstekker:</div>
                     <div class="h6 fw-normal form-check form-switch">
-                        <input type="checkbox" class="form-check-input" name="lightingplug" id="lightingplug">
+                        <input type="checkbox" class="form-check-input" name="collapsibleStair" id="collapsibleStair">
+                        <label class="form-check-label" for="collapsibleStair">inklapbare trap</label>
                     </div>
-                </div>
-
-                <!-- Kleur van de VanStep -->
-                <div class="card border-0 grid gap row-gap-3 me-5">
-                    <div class="fst-italic">kleur:</div>
-                    <div class="h6 fw-normal form-check">
-                        <input type="radio" class="form-check-input" name="vanstepColor" value="blank" id="vanstepColor_blank">
-                        <label class="form-check-label" for="vanstepColor_blank">blank</label>
-                    </div>
-                    <div class="h6 fw-normal form-check">
-                        <input type="radio" class="form-check-input" name="vanstepColor" value="black" id="vanstepColor_black">
-                        <label class="form-check-label" for="vanstepColor_black">zwart</label>
-                    </div>
-                </div>
-
-                <!-- Geschuurd (alleen bij kleur zwart) -->
-                <div id="sandedOptionContainer" class="card border-0 grid gap row-gap-3 me-5 d-none">
-                    <div class="fst-italic">afwerking:</div>
                     <div class="h6 fw-normal form-check form-switch">
-                        <label class="form-check-label" for="sanded">geschuurd</label>
-                        <input type="checkbox" class="form-check-input" name="sanded" id="sanded">
+                        <input type="checkbox" class="form-check-input" name="sidebars" id="sidebars">
+                        <label class="form-check-label" for="sidebars">sidebars</label>
                     </div>
-                </div>
-
-                <!-- Achteruitrijlichten -->
-                <div class="card border-0 grid gap row-gap-3 me-5">
-                    <div class="fst-italic">achteruitrijlichten:</div>
-                     <div class="h6 fw-normal form-check form-switch">
-                        <input type="checkbox" class="form-check-input" name="reverseLights" id="reverseLights">
+                    <div class="h6 fw-normal form-check form-switch">
+                        <input type="checkbox" class="form-check-input" name="sunVisor" id="sunVisor">
+                        <label class="form-check-label" for="sunVisor">zonneklep</label>
                     </div>
                 </div>
             </div>
         </div>`
-    }
+    };
 
+    if (model.vanstep) {
+        accordions.vanstepColor = {
+            title: "vanstep afwerking",
+            options: ['color', 'sanded', 'towbar', 'reverseLights'],
+            display: "d-block",
+            code: /*html*/`
+            <div class="row m-0 p-0 pb-xxl-4 pb-xl-4 pb-3 gy-4">
+                <div class="col-12 col-md-auto">
+                    <div class="fst-italic mb-2">Kleur & afwerking</div>
+                    <div class="h6 fw-normal form-check">
+                        <input type="radio" class="form-check-input" name="vanstepColor" value="blank" id="vanstepColor_blank">
+                        <label class="form-check-label" for="vanstepColor_blank">Blank</label>
+                    </div>
+                    <div class="h6 fw-normal form-check">
+                        <input type="radio" class="form-check-input" name="vanstepColor" value="black" id="vanstepColor_black">
+                        <label class="form-check-label" for="vanstepColor_black">Zwart</label>
+                    </div>
+                    <!-- Geschuurd (alleen bij kleur zwart) -->
+                    <div id="sandedOptionContainer" class="h6 fw-normal form-check form-switch ps-5 d-none">
+                        <input type="checkbox" class="form-check-input" name="sanded" id="sanded">
+                        <label class="form-check-label" for="sanded">Geschuurd</label>
+                    </div>
+                </div>
+            </div>`
+        }
+
+        accordions.vanstepTowbar = {
+            title: "vanstep opties",
+            options: ['color', 'sanded', 'towbar', 'reverseLights'],
+            display: "d-block",
+            code: /*html*/`
+            <div class="row m-0 p-0 pb-xxl-4 pb-xl-4 pb-3 gy-4">
+                <!-- Kolom 1: Trekhaak & Verlichting (met extra marge aan de rechterkant) -->
+                <div class="col-12 col-md-auto me-md-5">
+                    <div class="fst-italic mb-2">Trekhaak & verlichting</div>
+                    <div class="h6 fw-normal form-check form-switch">
+                        <input type="checkbox" class="form-check-input" name="towbar" id="towbar">
+                        <label class="form-check-label" for="towbar">Trekhaak</label>
+                    </div>
+                    <div class="h6 fw-normal form-check form-switch">
+                        <input type="checkbox" class="form-check-input" name="lightingplug" id="lightingplug">
+                        <label class="form-check-label" for="lightingplug">Verlichtingsstekker</label>
+                    </div>
+                    <div class="h6 fw-normal form-check form-switch">
+                        <input type="checkbox" class="form-check-input" name="reverseLights" id="reverseLights">
+                        <label class="form-check-label" for="reverseLights">Achteruitrijlichten</label>
+                    </div>
+                </div>
+
+                <!-- Kolom 2: Kleur & Afwerking -->
+                
+            </div>`
+        }
+
+
+    }
 
     return { accordions };
 }

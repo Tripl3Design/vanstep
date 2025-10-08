@@ -29,6 +29,9 @@
     "stair": {
       "color": "standard",
       "height": false
+    },
+    "sunvisor": {
+      "color": "black"
     }
   }
 ]
