@@ -3,7 +3,7 @@
     {
       "bufferView": 0,
       "componentType": 5126,
-      "count": 140,
+      "count": 172,
       "max": [
         702.9033813476563,
         60.22908020019531,
@@ -20,7 +20,7 @@
       "bufferView": 0,
       "byteOffset": 12,
       "componentType": 5126,
-      "count": 140,
+      "count": 172,
       "type": "VEC3"
     },
     {
@@ -36,20 +36,20 @@
   "bufferViews": [
     {
       "buffer": 0,
-      "byteLength": 4480,
+      "byteLength": 5504,
       "byteStride": 32,
       "target": 34962
     },
     {
       "buffer": 0,
       "byteLength": 2256,
-      "byteOffset": 4480,
+      "byteOffset": 5504,
       "target": 34963
     }
   ],
   "buffers": [
     {
-      "byteLength": 6736,
+      "byteLength": 7760,
       "uri": "vanstep.bin"
     }
   ],
@@ -122,9 +122,9 @@
         1.0,
         0.0,
         0.0,
-        -0.016244543075561522,
-        0.3546951904296875,
-        -3.76601025390625,
+        -0.016244544982910156,
+        0.24768521118164064,
+        -3.70625537109375,
         1.0
       ]
     }

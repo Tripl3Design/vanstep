@@ -109,50 +109,62 @@ function loadAndTransformModel(
             const center = box.getCenter(new THREE.Vector3());
             loadedModel.position.sub(center);
 
-            loadedModel.traverse((child) => {
-                if (child.isMesh) {
-                    if (url === vanstep_url) {
-                        textureLoader.load(projectmap + 'gltf/textures/albedo_staal.png', (texture) => {
-                            texture.flipY = false; // GLTF textures might need this
-                            const newMaterial = new THREE.MeshStandardMaterial({
-                                map: texture,
-                                metalness: 0.8,
-                                roughness: 0.5
-                            });
-                            child.material = newMaterial;
-                        });
-                    } else if (url === sidebar_url) {
-                        const newMaterial = new THREE.MeshStandardMaterial({
-                            color: 0x1a1a1a, // Donkergrijs/zwart
-                            metalness: 0.8,
-                            roughness: 0.6
-                        });
-                        child.material = newMaterial;
-                    } else {
-                        const newMaterial = new THREE.MeshStandardMaterial({
-                            color: 0xd3d3d3,
-                            transparent: false,
-                            opacity: 1,
-                            metalness: 0.0,
-                            roughness: 1.0
-                        });
-                        child.material = newMaterial;
+            const applyMaterial = (child) => {
+                return new Promise((materialResolve) => {
+                    if (!child.isMesh) {
+                        materialResolve();
+                        return;
                     }
+
+                    if (url === vanstep_url) {
+                        const texturePath = projectmap + 'gltf/textures/albedo_staal.png';
+                        textureLoader.load(
+                            texturePath,
+                            (texture) => { // onLoad
+                                texture.flipY = false;
+                                const newMaterial = new THREE.MeshStandardMaterial({
+                                    map: texture,
+                                    metalness: 0.8,
+                                    roughness: 0.5
+                                });
+                                child.material = newMaterial;
+                                materialResolve();
+                            },
+                            undefined, // onProgress
+                            (error) => { // onError
+                                console.error('Fout bij het laden van de textuur:', texturePath, error);
+                                child.material = new THREE.MeshStandardMaterial({ color: 0xff0000 }); // Maak rood bij fout
+                                materialResolve(); // Toch resolven om de app niet te breken
+                            }
+                        );
+                    } else if (url === sidebar_url) {
+                        child.material = new THREE.MeshStandardMaterial({ color: 0x1a1a1a, metalness: 0.8, roughness: 0.6 });
+                        materialResolve();
+                    } else {
+                        child.material = new THREE.MeshStandardMaterial({ color: 0xd3d3d3, metalness: 0.0, roughness: 1.0 });
+                        materialResolve();
+                    }
+
                     child.castShadow = true;
                     child.receiveShadow = true;
-                }
+                });
+            };
+
+            const materialPromises = [];
+            loadedModel.traverse((child) => {
+                materialPromises.push(applyMaterial(child));
             });
 
-            transforms.forEach(transform => {
-                const mesh = loadedModel.clone();
-                mesh.position.copy(transform.position || new THREE.Vector3());
-                mesh.rotation.copy(transform.rotation || new THREE.Euler(0, 0, 0));
-                mesh.scale.copy(transform.scale || new THREE.Vector3(1, 1, 1));
-                group.add(mesh);
+            Promise.all(materialPromises).then(() => {
+                transforms.forEach(transform => {
+                    const mesh = loadedModel.clone();
+                    mesh.position.copy(transform.position || new THREE.Vector3());
+                    mesh.rotation.copy(transform.rotation || new THREE.Euler(0, 0, 0));
+                    mesh.scale.copy(transform.scale || new THREE.Vector3(1, 1, 1));
+                    group.add(mesh);
+                });
+                resolve();
             });
-
-
-            resolve();
         }, undefined, function (error) {
             reject(error);
         });
