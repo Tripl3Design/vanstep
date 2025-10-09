@@ -101,7 +101,7 @@
 `);
         // mobile version
         if (windowHeight > windowWidth) {
-          document.write( /*html*/ `
+          document.write( /*html*/`
             <div style="height: 100%; background: #d4d4d4;" class="col-12 vh-100 m-0 p-0" id="modelviewerCol">
                             <div class="position-absolute w-100">
                               <div style="letter-spacing: 1.5px;" class="h2 text-center m-0 p-0 mt-4" id="producttitleMobile">
@@ -115,7 +115,7 @@
 
                              <div style="position: fixed; bottom: 100px;" class="col-12 w-100 text-center">
                               <div class="btn-group btn-group-lg m-0 p-0" role="group" aria-label="buttongroup" style="gap: 10px;">
-                                
+                                <!--
                                 <button type="button" class="d-flex btn rounded-pill btn-sm btn-dark m-0" onclick="shareWithWhatsApp()">
                                   <span class="material-symbols-outlined m-0 p-1">share</span>
                                 </button>
@@ -124,7 +124,7 @@
                                     <span class="material-symbols-outlined m-0 p-1">view_in_ar</span>
                                     <span style="font-size: .75rem; margin-top: 6px;">&nbsp;&nbsp;bekijk in de ruimte&nbsp;&nbsp;</span>
                                 </button>
-
+-->
                                 <button type="button" class="d-flex btn rounded-pill btn-sm btn-dark m-0 " onclick="downloadPdf()">
                                     <span class="material-symbols-outlined m-0 p-1">picture_as_pdf</span><span style="font-size: .75rem; margin-top: 6px;">&nbsp;&nbsp;offerte&nbsp;&nbsp;</span>
                                 </button>
@@ -135,7 +135,7 @@
 
 
           // Begin met de HTML-opbouw
-          let htmlContent = `
+          let htmlContent = /*html*/`
   <div style="height: 100%; background: #d4d4d4;" class="col-md-6 col-12 vh-100 m-0 p-0" id="modelviewerCol">
     <div class="brandlogo position-absolute top-0 start-0 pt-5 ps-5">
       <img src="img/logo_${brand}.svg" class="img-fluid">
@@ -154,36 +154,39 @@
           //if (result.device.type === 'mobile' || result.device.type === 'tablet' || /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent)) {
 
           if (uap.getDevice().type === 'mobile' || uap.getDevice().type === 'tablet' || uap.getDevice().withFeatureCheck().type === 'tablet') {
-            htmlContent += `
+            htmlContent += /*html*/`
+            <!--
               <button id="arButton" type="button" class="btn btn-sm btn-outline-dark rounded-0 p-1 m-1"">
                 <span class="material-symbols-outlined m-0 p-1">view_in_ar</span>AR
               </button>
+              -->
             `;
           } else {
-            htmlContent += `
+
+            htmlContent += /*html*/`
+            <!--
               <button type="button" class="btn btn-sm btn-outline-dark rounded-0 p-1 m-1" onclick="shareTroughQr()">
                 <span class="material-symbols-outlined m-0 p-1">view_in_ar</span>
               </button>
+              -->
             `;
           }
 
           // **Voeg de overige knoppen toe**
-          htmlContent += `
+          htmlContent += /*html*/`
+          <!--
             <button type="button" class="btn btn-sm btn-outline-dark rounded-0 p-1 m-1" onclick="shareWithWhatsApp()">
               <span class="material-symbols-outlined m-0 p-1">share</span>
             </button>
+            -->
             <button type="button" class="btn btn-sm btn-outline-dark rounded-0 p-1 m-1" onclick="downloadPdf()">
               <span class="material-symbols-outlined m-0 p-1">picture_as_pdf</span>
             </button>
+          <!--
             <button id="downloadModel" type="button" class="btn btn-sm btn-outline-dark rounded-0 p-1 m-1">
               <span class="material-symbols-outlined m-0 p-1">download</span>
             </button>
-
- <button id="saveConfig" type="button" class="btn btn-sm btn-outline-dark rounded-0 p-1 m-1">
-<!--document.getElementById('saveConfigButton').addEventListener('click', sendConfiguredProductToPimLite);-->
-  <span class="material-symbols-outlined m-0 p-1">download</span>
-            </button>
-
+  -->
             <button id="fullscreen" type="button" class="btn btn-sm btn-outline-dark rounded-0 p-1 m-1">
               <span class="material-symbols-outlined m-0 p-1">open_in_full</span>
             </button>

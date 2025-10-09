@@ -3,9 +3,6 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
 
-import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
-import { USDZExporter } from 'three/addons/exporters/USDZExporter.js';
-
 export let scene, camera, renderer, controls, rgbeLoader;
 let groundGeometry, groundMaterial, ground;
 
@@ -27,7 +24,7 @@ export function initThree(containerElem) {
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1;
+    renderer.toneMappingExposure = 0.8;
 
     containerElem.appendChild(renderer.domElement);
 
@@ -38,24 +35,22 @@ export function initThree(containerElem) {
     resizeObserver.observe(modelviewer);
 
     rgbeLoader = new RGBELoader();
-    rgbeLoader.load(projectmap + 'img/hdri/yoga_room_2k.hdr', function (texture) {
+    rgbeLoader.load(projectmap + 'img/hdri/studio_small_08_1k.hdr', function (texture) {
         texture.mapping = THREE.EquirectangularReflectionMapping;
-        const envMap = texture.clone();
-        const exposure = 0.5;
-        scene.environment = envMap;
-        renderer.toneMappingExposure = exposure;
+        scene.environment = texture;
     });
 
-    const ambientLight = new THREE.AmbientLight(0x404040, 0.5);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 1);
     scene.add(ambientLight);
 
-    const directionalLight = new THREE.DirectionalLight(0xffcc00, 1);
-    directionalLight.position.set(5, 20, 5);
+    // Terug naar lagere intensiteit
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+    directionalLight.position.set(-5, 10, -10); // 180 graden gedraaid
     directionalLight.target.position.set(0, 0, 0);
     directionalLight.castShadow = true;
-    directionalLight.shadow.mapSize.width = 2048;  // Standaard is 512, verhoog voor scherpere schaduwen
+    directionalLight.shadow.mapSize.width = 2048;
     directionalLight.shadow.mapSize.height = 2048;
-    directionalLight.shadow.radius = 2;
+    directionalLight.shadow.radius = 8; // Hogere waarde voor zachtere schaduw
     scene.add(directionalLight);
 
     // OrbitControls setup
@@ -95,6 +90,8 @@ function addGround() {
 }
 
 const van_url = projectmap + 'gltf/van.gltf';
+const vanstep_url = projectmap + 'gltf/vanstep.gltf';
+const sidebar_url = projectmap + 'gltf/sidebar.gltf';
 
 function loadAndTransformModel(
     url,
@@ -103,19 +100,44 @@ function loadAndTransformModel(
 ) {
     return new Promise((resolve, reject) => {
         const loader = new GLTFLoader();
+        const textureLoader = new THREE.TextureLoader();
 
         loader.load(url, function (gltf) {
             let loadedModel = gltf.scene;
 
             const box = new THREE.Box3().setFromObject(loadedModel);
             const center = box.getCenter(new THREE.Vector3());
-            loadedModel.position.sub(center); // Center the model at (0, 0, 0)
+            loadedModel.position.sub(center);
 
             loadedModel.traverse((child) => {
                 if (child.isMesh) {
-                    // For van, we assume it comes with its own materials.
-                    // We do not override them here.
-
+                    if (url === vanstep_url) {
+                        textureLoader.load(projectmap + 'gltf/textures/albedo_staal.png', (texture) => {
+                            texture.flipY = false; // GLTF textures might need this
+                            const newMaterial = new THREE.MeshStandardMaterial({
+                                map: texture,
+                                metalness: 0.8,
+                                roughness: 0.5
+                            });
+                            child.material = newMaterial;
+                        });
+                    } else if (url === sidebar_url) {
+                        const newMaterial = new THREE.MeshStandardMaterial({
+                            color: 0x1a1a1a, // Donkergrijs/zwart
+                            metalness: 0.8,
+                            roughness: 0.6
+                        });
+                        child.material = newMaterial;
+                    } else {
+                        const newMaterial = new THREE.MeshStandardMaterial({
+                            color: 0xd3d3d3,
+                            transparent: false,
+                            opacity: 1,
+                            metalness: 0.0,
+                            roughness: 1.0
+                        });
+                        child.material = newMaterial;
+                    }
                     child.castShadow = true;
                     child.receiveShadow = true;
                 }
@@ -163,22 +185,29 @@ export async function loadModelData(modelData) {
 
     let loadPromises = [];
 
-    // Load the model based on the type from modelData
-    if (modelData && modelData.type) {
-        console.log("Loading model of type:", modelData.type);
-        const modelUrl = projectmap + `gltf/${modelData.type}.gltf`;
-        const modelTransforms = [{
-            scale: new THREE.Vector3(1, 1, 1)
-        }];
-        loadPromises.push(loadAndTransformModel(modelUrl, modelTransforms, group));
-    } else {
-        // Fallback or default model if needed
-        const sprinterTransform = [{
-            scale: new THREE.Vector3(1, 1, 1)
-        }];
-        loadPromises.push(loadAndTransformModel(van_url, sprinterTransform, group));
-    }
+    // Altijd het basismodel van de bus laden
+    loadPromises.push(loadAndTransformModel(van_url, [{}], group));
 
+    // Laad conditioneel de accessoires op basis van de modelData
+    if (modelData.vanstep) {
+        console.log("Loading accessory: vanstep");
+        loadPromises.push(loadAndTransformModel(vanstep_url, [{}], group));
+    }
+    if (modelData.sidebars) {
+        console.log("Loading accessory: sidebar");
+        loadPromises.push(loadAndTransformModel(sidebar_url, [{}], group));
+    }   /*
+    if (modelData.stair) {
+        console.log("Loading accessory: stair");
+        const url = projectmap + 'gltf/stair.gltf';
+        loadPromises.push(loadAndTransformModel(url, [{}], group));
+    }
+    if (modelData.sunvisor) {
+        console.log("Loading accessory: sunvisor");
+        const url = projectmap + 'gltf/sunvisor.gltf';
+        loadPromises.push(loadAndTransformModel(url, [{}], group));
+    }
+*/
     try {
         await Promise.all(loadPromises);
         scene.add(group);
@@ -265,626 +294,4 @@ export function captureScreenshot() {
     const blob = dataURLToBlob(dataURL);
 
     return { dataURL, blob };
-}
-
-const arButton = document.getElementById("arButton");
-
-if (arButton) {
-    arButton.addEventListener("click", async () => {
-        const loader = document.getElementById("loader");
-        loader.style.display = "flex"; // Laat de loader zien
-
-        try {
-            const { glbURL, usdzURL } = await exportModel();
-
-            if (uap.getOS().name.toLowerCase().includes("ios") || uap.getBrowser().name.toLowerCase().includes("safari")) {
-                if (!usdzURL) {
-                    throw new Error('USDZ URL ontbreekt.');
-                }
-                console.log('Generated URL (iOS):', usdzURL);
-
-                const a = document.createElement('a');
-                //a.href = usdzURL;
-                const noScaleURL = usdzURL.includes('?')
-                    ? `${usdzURL}&allowsContentScaling=0`
-                    : `${usdzURL}?allowsContentScaling=0`;
-                a.href = noScaleURL;
-
-                a.setAttribute('rel', 'ar');
-                const img = document.createElement('img');
-                img.src = 'img/logo_vanstep.webp';
-                img.alt = 'Bekijk in AR';
-                a.appendChild(img);
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-            } else {
-                if (!glbURL) {
-                    throw new Error('GLB URL ontbreekt.');
-                }
-
-                const intentUrl = `intent://arvr.google.com/scene-viewer/1.0?file=${encodeURIComponent(glbURL)}&mode=ar_only&resizable=false&disable_occlusion=true#Intent;scheme=https;package=com.google.ar.core;action=android.intent.action.VIEW;S.browser_fallback_url=vanstep.nl/ar;end;`;
-                console.log('Generated URL (Android):', intentUrl);
-                window.location.href = intentUrl;
-            }
-        } catch (error) {
-            console.error('Error during AR setup:', error);
-            alert('AR-ervaring kon niet worden gestart. Probeer opnieuw.');
-        } finally {
-            loader.style.display = "none"; // Verberg de loader
-        }
-    });
-} else {
-    console.warn("AR-knop niet gevonden, AR-functionaliteit wordt niet geladen.");
-}
-
-async function exportModel() {
-    const gltfExporter = new GLTFExporter();
-    const usdzExporter = new USDZExporter();
-    const options = {
-        binary: true,
-        includeCustomExtensions: true,
-    };
-
-    try {
-        scene.remove(ground);
-
-        if (uap.getOS().name.toLowerCase().includes("ios") || uap.getBrowser().name.toLowerCase().includes("safari")) {
-            // --- Generate USDZ ---
-            const usdzBlob = await usdzExporter.parseAsync(scene); // Use async parsing for reliability
-            console.log('USDZ Blob created:', usdzBlob);
-
-            if (!usdzBlob) {
-                throw new Error('USDZ Blob is undefined. Export failed.');
-            }
-
-            // Upload USDZ to storage
-            const metadata = {
-                contentType: 'model/vnd.usdz+zip', // Proper content type for USDZ
-            };
-            const usdzRef = ref(storage, 'usdzModels/model.usdz'); // Adjust path as needed
-            await uploadBytes(usdzRef, usdzBlob, metadata);
-            const usdzURL = await getDownloadURL(usdzRef);
-            console.log('USDZ model URL:', usdzURL);
-
-            // Return USDZ URL
-            return { usdzURL };
-
-        } else {
-            // --- Generate GLB ---
-            const glbBlob = await new Promise((resolve, reject) => {
-                gltfExporter.parse(
-                    scene,
-                    (result) => {
-                        const blob = new Blob([result], { type: 'model/gltf-binary' });
-                        console.log('GLB Blob created:', blob);
-                        resolve(blob);
-                    },
-                    (error) => {
-                        console.error('Error during GLB export:', error);
-                        reject(error);
-                    },
-                    options
-                );
-            });
-
-            // Upload GLB to storage
-            const glbRef = ref(storage, 'glbModels/model.glb'); // Adjust path as needed
-            await uploadBytes(glbRef, glbBlob);
-            const glbURL = await getDownloadURL(glbRef);
-            console.log('GLB model URL:', glbURL);
-
-            // Return GLB URL
-            return { glbURL };
-        }
-
-    } catch (error) {
-        // Handle any errors during the export process
-        console.error('Error during exportModel:', error);
-        throw error; // Re-throw to ensure errors are caught by the caller
-
-    } finally {
-        // Add the ground object back to the scene for consistency
-        addGround();
-    }
-}
-
-export async function exportModelAndData(modelConfig) {
-    console.log("Model JSON ontvangen in exportModelAndData:", modelConfig);
-
-    const originalSceneUserData = { ...scene.userData }; // Bewaar de originele userData
-
-    // Sla de modelConfig op in de 'extras' van de scene's userData
-    scene.userData.extras = {
-        ...scene.userData.extras,
-        modelConfig: modelConfig
-    };
-
-    const exporter = new GLTFExporter();
-    const options = { // Definieer export opties, zoals binary: true
-        binary: true,
-        // inclusief andere opties die je nodig hebt voor GLB export
-    };
-
-    // --- Verwijder de ground voordat je exporteert ---
-    if (ground && scene.children.includes(ground)) { // Controleer of 'ground' bestaat en in de scene is
-        scene.remove(ground);
-        console.log("Ground removed before export.");
-    }
-
-    try {
-        await new Promise((resolve, reject) => {
-            exporter.parse(
-                scene, // Exporteer de scene met de aangepaste userData
-                function (result) {
-                    let blob;
-                    if (result instanceof ArrayBuffer) {
-                        blob = new Blob([result], { type: 'model/gltf-binary' });
-                    } else {
-                        // Dit pad wordt meestal niet genomen als binary: true is ingesteld
-                        const json = JSON.stringify(result);
-                        blob = new Blob([json], { type: 'application/json' });
-                    }
-
-                    const link = document.createElement('a');
-                    link.href = URL.createObjectURL(blob);
-                    link.download = 'model_with_config.glb';
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                    URL.revokeObjectURL(link.href);
-
-                    resolve(); // Resolv de Promise na succesvolle export en download
-                },
-                function (error) { // Error callback voor exporter.parse
-                    console.error('Error during GLB export:', error);
-                    reject(error);
-                },
-                options // Geef de opties mee aan parse
-            );
-        });
-
-    } catch (error) {
-        console.error('Error during exportModelAndData:', error);
-        throw error; // Her-gooi de fout zodat de aanroepende functie deze kan afhandelen
-    } finally {
-        // --- Voeg de ground terug toe na de export ---
-        // Herstel de originele scene.userData, ongeacht of de export succesvol was
-        scene.userData = originalSceneUserData;
-        console.log("Scene userData hersteld na export.");
-
-        // Voeg ground terug toe
-        addGround();
-        console.log("Ground added back after export.");
-    }
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-export async function exportModelWidthDataToPim(modelConfig) {
-    console.log("Model JSON ontvangen in exportModelAndData (GLB Upload naar PIM):", modelConfig);
-
-    const originalSceneUserData = { ...scene.userData }; // Bewaar de originele userData
-
-    // Sla de modelConfig op in de 'extras' van de scene's userData
-    scene.userData.extras = {
-        ...scene.userData.extras,
-        modelConfig: modelConfig
-    };
-
-    let glbBlob = null;
-    let productSku; // Declareer productSku hier
-    const uniqueFileId = crypto.randomUUID(); // Unieke ID voor het GLB-bestand
-
-    try {
-        // --- 0. Authenticeer anoniem voor PIM Firebase (nodig voor Storage Rules) ---
-        console.log("Authenticeer anoniem bij PIM Firebase...");
-        //await signInAnonymously(pimAuth);
-        console.log("Succesvol anoniem geauthenticeerd bij PIM Firebase.");
-
-        // --- STAP 1: Genereer ALTIJD een NIEUWE, unieke SKU voor dit document. ---
-        // Hier wordt de SKU gegenereerd. Als generateProductSkuFromConfig bestaat en een SKU teruggeeft, gebruiken we die.
-        // Anders genereren we een geheel nieuwe UUID.
-        if (typeof generateProductSkuFromConfig === 'function') {
-            const generatedSku = await generateProductSkuFromConfig(modelConfig);
-            if (generatedSku) {
-                productSku = generatedSku;
-                console.log(`SKU gegenereerd via generateProductSkuFromConfig: ${productSku}`);
-            } else {
-                productSku = crypto.randomUUID(); // Fallback als de functie niets teruggeeft
-                console.warn("generateProductSkuFromConfig retourneerde geen geldige SKU. Een nieuwe UUID is gegenereerd als fallback.");
-            }
-        } else {
-            productSku = crypto.randomUUID(); // Fallback als de functie niet bestaat
-            console.warn("generateProductSkuFromConfig functie niet gevonden. Een nieuwe UUID is gegenereerd als fallback.");
-        }
-        // Failsafe: Zorg ervoor dat productSku nooit leeg is
-        if (!productSku) {
-            productSku = crypto.randomUUID(); // Final failsafe
-            console.error("Failsafe: productSku was nog steeds leeg, nieuwe UUID gegenereerd.");
-        }
-
-        // --- STAP 2: Exporteer het 3D-model als GLB ---
-        console.log("Start GLB export...");
-        const exporter = new GLTFExporter();
-        const glbOptions = {
-            binary: true, // Exporteer als GLB (binair)
-        };
-
-        await new Promise((resolve, reject) => {
-            exporter.parse(
-                scene,
-                function (result) {
-                    if (result instanceof ArrayBuffer) {
-                        glbBlob = new Blob([result], { type: 'model/gltf-binary' });
-                        console.log("GLB Blob succesvol gecreëerd.");
-                        resolve();
-                    } else {
-                        console.error("GLB export heeft geen ArrayBuffer opgeleverd.");
-                        reject(new Error("GLB export mislukt: geen binaire data."));
-                    }
-                },
-                function (error) {
-                    console.error('Fout tijdens GLB export:', error);
-                    reject(error);
-                },
-                glbOptions
-            );
-        });
-
-        if (!glbBlob) {
-            throw new Error("Geen GLB Blob gecreëerd om te uploaden.");
-        }
-
-        // --- STAP 3: Upload het GLB naar PIM Firebase Storage ---
-        const glbStoragePath = `configured_3d_models/${productSku}/${uniqueFileId}.glb`;
-        console.log(`Uploaden GLB naar ${glbStoragePath}...`);
-        const glbRef = ref(pimStorage, glbStoragePath);
-        const glbUploadResult = await uploadBytes(glbRef, glbBlob);
-        const uploadedGlbUrl = await getDownloadURL(glbUploadResult.ref);
-        console.log('GLB Upload succesvol:', uploadedGlbUrl);
-
-        // --- STAP 4: Bereid de data voor met de GLB URL ---
-        let dataToSend = { ...modelConfig };
-
-        // Verwijder het oude 'id' veld als het in modelConfig zit.
-        if (dataToSend.id) {
-            console.warn("Oud 'id' veld gevonden in modelConfig. Dit wordt verwijderd ten gunste van 'sku'.", dataToSend.id);
-            delete dataToSend.id;
-        }
-
-        // Zorg ervoor dat de SKU correct is ingesteld in de data die naar Firestore gaat
-        dataToSend.sku = productSku;
-        dataToSend.gltfStoragePath = glbStoragePath; // Pad naar GLB in Storage
-        dataToSend.gltfUrl = uploadedGlbUrl; // Publieke URL van het GLB
-        // Alle screenshot-gerelateerde velden zijn verwijderd
-
-        console.log("Payload die naar PIM Firestore wordt gestuurd:", dataToSend);
-
-        // --- STAP 5: Verstuur de JSON naar Firestore ---
-        // Hier wordt de data direct naar PIM Firestore geschreven via de client SDK.
-        const pimProductConfigRef = doc(pimFirestore, 'pim_3d_model_configs', productSku);
-        await setDoc(pimProductConfigRef, {
-            ...dataToSend, // De gecombineerde dataToSend inclusief gltfUrl, sku etc.
-            lastUploaded: serverTimestamp()
-        }, { merge: true });
-        console.log(`PIM Firestore geüpdatet voor SKU: ${productSku}.`);
-
-        alert('Model en configuratie succesvol opgeslagen in PIM!');
-
-        return {
-            uploadedGlbUrl: uploadedGlbUrl,
-            message: 'Model en configuratie succesvol opgeslagen in PIM!'
-        };
-
-    } catch (error) {
-        console.error("Fout bij het opslaan van configuratie of uploaden van bestanden naar PIM:", error);
-        alert(`Er is een fout opgetreden: ${error.message}.`);
-        throw error;
-    } finally {
-        // --- Voeg de ground terug toe na de export ---
-        scene.userData = originalSceneUserData;
-        console.log("Scene userData hersteld na export.");
-        addGround();
-        console.log("Ground added back after export.");
-    }
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-async function uploadScreenshotAndGetUrl() {
-    try {
-        if (!mainModule || !mainModule.renderer || !mainModule.scene || !mainModule.camera) {
-            console.error("mainModule of onderdelen ontbreken voor screenshot.");
-            throw new Error("Configurator modules niet klaar voor screenshot.");
-        }
-
-        const { dataURL, blob } = captureScreenshot(); // Je bestaande functie
-
-        if (dataURL === 'data:,') {
-            console.warn("DataURL is empty after screenshot, canvas might be empty or 0x0.");
-            throw new Error("Empty image generated, screenshot failed.");
-        }
-
-        // --- STAP 2: Upload de Blob naar Firebase Storage (MODULAIRE SYNTAX) ---
-        // Gebruik window.storage (of importeer 'storage' als module)
-        const storageInstance = window.storage; // Haal de storage instantie op
-
-        // Genereer een unieke naam voor het bestand in Storage
-        const filename = `product_renders/${Date.now()}_${Math.random().toString(36).substring(2, 15)}.png`;
-
-        // Maak een Storage Reference met de modulaire 'ref' functie
-        // Gebruik window.ref (of importeer 'ref' als module)
-        const imageRef = window.ref(storageInstance, filename); // <-- Aangepast!
-
-        console.log(`Uploading image to: ${filename}`);
-
-        // Upload de bytes (Blob) met de modulaire 'uploadBytes' functie
-        // Gebruik window.uploadBytes (of importeer 'uploadBytes' als module)
-        const uploadTaskSnapshot = await window.uploadBytes(imageRef, blob); // <-- Aangepast!
-        console.log('Image uploaded successfully!');
-
-        // --- STAP 3: Krijg de public download URL (MODULAIRE SYNTAX) ---
-        // Gebruik de modulaire 'getDownloadURL' functie
-        // Gebruik window.getDownloadURL (of importeer 'getDownloadURL' als module)
-        const downloadURL = await window.getDownloadURL(imageRef); // <-- Aangepast!
-        console.log('Download URL for image:', downloadURL);
-
-        return downloadURL; // Return the URL
-
-    } catch (e) {
-        console.error("Error during image upload:", e);
-        throw e; // Re-throw the error for the calling function to handle
-    }
-}
-
-
-const PIM_LITE_API_URL = "https://receiveconfiguredproduct-k6mygszfiq-uc.a.run.app/receiveConfiguredProduct";
-
-
-export async function exportDataToPim(modelConfig) {
-    console.log("Model JSON ontvangen in exportDataToPim:", modelConfig);
-
-    try {
-        // --- STAP 1: Genereer en upload de afbeelding ---
-        // Deze stap moet bovenaan in de try-block gebeuren,
-        // voordat je het 'dataToSend' object samenstelt.
-        const imageUrl = await uploadScreenshotAndGetUrl();
-        if (!imageUrl) {
-            throw new Error("Afbeelding URL kon niet worden gegenereerd of geüpload.");
-        }
-
-        // --- STAP 2: Bereid de data voor met de afbeelding URL ---
-        // Begin met een kopie van de originele modelConfig
-        let dataToSend = { ...modelConfig };
-
-        // Verwijder het oude 'id' veld als het in modelConfig zit.
-        // We gebruiken 'sku' als de primaire unieke identifier voor het document.
-        if (dataToSend.id) {
-            console.warn("Oud 'id' veld gevonden in modelConfig. Dit wordt verwijderd ten gunste van 'sku'.", dataToSend.id);
-            delete dataToSend.id;
-        }
-
-        // Genereer ALTIJD een NIEUWE, unieke SKU voor dit document.
-        //dataToSend.sku = generateUniqueId(modelConfig); 
-        dataToSend.sku = await generateProductSkuFromConfig(modelConfig);
-
-        // Wijs de ZOWEENS GEGENEREERDE EN GEÜPLOADE afbeelding URL toe aan het 'image' veld.
-        dataToSend.image = imageUrl;
-
-        console.log("Payload die naar PIM-Lite wordt gestuurd:", dataToSend);
-
-        // --- STAP 3: Verstuur de JSON naar de Cloud Function ---
-        const response = await fetch(PIM_LITE_API_URL, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(dataToSend)
-        });
-
-        if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(`HTTP error! Status: ${response.status}, Bericht: ${errorText}`);
-        }
-
-
-
-
-
-        exportModelWidthDataToPim(modelConfig);
-
-
-
-
-
-
-
-
-        const result = await response.json();
-        console.log("Configuratie succesvol opgeslagen in PIM-Lite:", result);
-        alert("Je geconfigureerde meubel is succesvol opgeslagen in de PIM-Lite!");
-
-    } catch (error) {
-        // Vang fouten op van zowel de upload als de fetch
-        console.error("Fout bij het opslaan van configuratie of uploaden van afbeelding:", error);
-        alert(`Er is een fout opgetreden: ${error.message}.`);
-        throw error;
-    }
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-export async function exportModelAndDataNew(modelConfig) {
-    console.log("Model JSON ontvangen in exportModelAndData (GLB Upload naar PIM):", modelConfig);
-
-    const originalSceneUserData = { ...scene.userData }; // Bewaar de originele userData
-
-    // Sla de modelConfig op in de 'extras' van de scene's userData
-    scene.userData.extras = {
-        ...scene.userData.extras,
-        modelConfig: modelConfig
-    };
-
-    let glbBlob = null;
-    let productSku; // Declareer productSku hier
-
-    try {
-        console.log("Authenticeer anoniem bij PIM Firebase...");
-        await signInAnonymously(pimAuth);
-        console.log("Succesvol anoniem geauthenticeerd bij PIM Firebase.");
-
-        const generatedSku = await generateProductSkuFromConfig(modelConfig);
-
-        productSku = generatedSku;
-        console.log(`SKU gegenereerd via generateProductSkuFromConfig: ${productSku}`);
-
-        console.log("Bezig met het vastleggen van een screenshot...");
-        const { blob: screenshotBlob } = captureScreenshot();
-        const screenshotStoragePath = `products_by_sku/${productSku}/thumbnail-temp.png`;
-        const screenshotRef = ref(pimStorage, screenshotStoragePath);
-        const screenshotUploadResult = await uploadBytes(screenshotRef, screenshotBlob);
-        const uploadedScreenshotUrl = await getDownloadURL(screenshotUploadResult.ref);
-        console.log('Screenshot upload succesvol:', uploadedScreenshotUrl);
-
-        console.log(`Screenshot geüpload. Bezig met exporteren en uploaden van het 3D-model...`);
-
-        const exporter = new GLTFExporter();
-        const glbOptions = {
-            binary: true,
-        };
-
-        await new Promise((resolve, reject) => {
-            exporter.parse(
-                scene,
-                function (result) {
-                    if (result instanceof ArrayBuffer) {
-                        glbBlob = new Blob([result], { type: 'model/gltf-binary' });
-                        console.log("GLB Blob succesvol gecreëerd.");
-                        resolve();
-                    } else {
-                        console.error("GLB export heeft geen ArrayBuffer opgeleverd.");
-                        reject(new Error("GLB export mislukt: geen binaire data."));
-                    }
-                },
-                function (error) {
-                    console.error('Fout tijdens GLB export:', error);
-                    reject(error);
-                },
-                glbOptions
-            );
-        });
-
-        if (!glbBlob) {
-            throw new Error("Geen GLB Blob gecreëerd om te uploaden.");
-        }
-
-        const glbStoragePath = `products_by_sku/${productSku}/3d-model.glb`;
-        console.log(`Uploaden GLB naar ${glbStoragePath}...`);
-        const glbRef = ref(pimStorage, glbStoragePath);
-        const glbUploadResult = await uploadBytes(glbRef, glbBlob);
-        const uploadedGlbUrl = await getDownloadURL(glbUploadResult.ref);
-        console.log('GLB Upload succesvol:', uploadedGlbUrl);
-
-        let dataToSend = { ...modelConfig };
-
-        // Verwijder het oude 'id' veld als het in modelConfig zit.
-        if (dataToSend.id) {
-            console.warn("Oud 'id' veld gevonden in modelConfig. Dit wordt verwijderd ten gunste van 'sku'.", dataToSend.id);
-            delete dataToSend.id;
-        }
-
-        dataToSend.sku = productSku;
-        dataToSend.gltfUrl = uploadedGlbUrl;
-        dataToSend.image = uploadedScreenshotUrl;
-
-        console.log("Payload die naar PIM Firestore wordt gestuurd:", dataToSend);
-
-        // --- STAP 5: Verstuur de JSON naar Firestore ---
-        // Hier wordt de data direct naar PIM Firestore geschreven via de client SDK.
-        const pimProductConfigRef = doc(pimFirestore, 'configuredProducts', productSku);
-        await setDoc(pimProductConfigRef, {
-            ...dataToSend, // De gecombineerde dataToSend inclusief gltfUrl, sku etc.
-            lastUploaded: serverTimestamp()
-        }, { merge: true });
-        console.log(`PIM Firestore geüpdatet voor SKU: ${productSku}.`);
-
-        alert('Model en configuratie succesvol opgeslagen in PIM!');
-
-        return {
-            uploadedGlbUrl: uploadedGlbUrl,
-            message: 'Model en configuratie succesvol opgeslagen in PIM!'
-        };
-
-    } catch (error) {
-        console.error("Fout bij het opslaan van configuratie of uploaden van bestanden naar PIM:", error);
-        alert(`Er is een fout opgetreden: ${error.message}.`);
-        throw error;
-    } finally {
-        // --- Voeg de ground terug toe na de export ---
-        scene.userData = originalSceneUserData;
-        console.log("Scene userData hersteld na export.");
-        addGround();
-        console.log("Ground added back after export.");
-    }
 }
