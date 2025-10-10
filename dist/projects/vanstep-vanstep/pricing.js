@@ -1,132 +1,108 @@
-//price & articleList
+// Global variable to hold the current model configuration
+let currentConfiguredModel = {};
+
+/**
+ * Calculates the total price based on the selected model options.
+ * @param {object} model - The configuration object for the van.
+ */
 function pricing(model) {
+    // Store the latest model configuration globally for other functions to use.
+    currentConfiguredModel = model;
+
     let totalPrice = 0;
+    const basePrice = ALLCOMPONENTS.basePrice || 0;
+    totalPrice += basePrice;
 
-    const pricegroup = model.upholstery.pricegroup;
-    let price = ALLCOMPONENTS.elements[model.type].prices[pricegroup];
+    // Add price for vanstep if selected
+    if (model.vanstep) {
+        totalPrice += ALLCOMPONENTS.accessories.vanstep.price || 0;
 
-    if (model.upholsteryDuotone != null && model.type != 'art9085110') {
-        let additionalPrice = ALLCOMPONENTS.elements[model.type].prices.A18.fabric;
-        totalPrice += additionalPrice;
+        // Add price for towbar if selected
+        if (model.vanstep.towbar) {
+            totalPrice += ALLCOMPONENTS.accessories.vanstep.options.towbar.price || 0;
+        }
+        // Add price for reverse lights if selected
+        if (model.vanstep.reverseLights) {
+            totalPrice += ALLCOMPONENTS.accessories.vanstep.options.reverseLights.price || 0;
+        }
     }
 
-    if (model.footstool == true) {
-        let footstoolPrice = ALLCOMPONENTS.elements.art9085110.prices[pricegroup];
-        totalPrice += footstoolPrice;
+    // Add price for sidebars if selected
+    if (model.sidebars) {
+        totalPrice += ALLCOMPONENTS.accessories.sidebars.price || 0;
     }
 
-    totalPrice += price;
+    // Add price for stair if selected
+    if (model.stair) {
+        totalPrice += ALLCOMPONENTS.accessories.stair.price || 0;
+    }
 
-    // Calculate 10% off
-    let discountedPrice = totalPrice * 0.9;
+    // Add price for sunvisor if selected
+    if (model.sunvisor) {
+        totalPrice += ALLCOMPONENTS.accessories.sunvisor.price || 0;
+    }
 
-    // --- VOEG PRIJSINFORMATIE TOE AAN HET MODEL OBJECT ---
-    // Voeg de originele en de afgeprijsde prijs toe aan het model object
-    model.pricing = {
-        originalPrice: totalPrice.toFixed(0),
-        discountedPrice: discountedPrice.toFixed(0),
-        currency: 'EUR' // Optioneel: voeg valuta toe
+    // --- ADD PRICING INFORMATION TO THE MODEL OBJECT ---
+    model.pricing = { // Rond de totaalprijs af op hele euro's
+        totalPrice: Math.round(totalPrice),
+        currency: 'EUR'
     };
 
-    // Globale variabelen om prijs en model op te slaan (voor andere delen van je code)
-    currentModel = model;
-    currentTotalPrice = discountedPrice.toFixed(0);
+    updatePriceDisplay(Math.round(totalPrice)); // Rond de weergegeven prijs ook af
+}
 
-    const addToCartButton = document.getElementById('add-to-cart-button');
-    if (addToCartButton) {
-        // Zorg ervoor dat de event listener maar één keer wordt toegevoegd,
-        // of verwijder de oude eerst om dubbele listeners te voorkomen bij herhaaldelijk aanroepen van pricing().
-        // De { once: true } optie is hier prima als de knop maar één keer wordt aangeklikt per pagina load.
-        // Echter, als pricing vaker wordt aangeroepen (bij elke modelverandering),
-        // kun je beter de listener verwijderen en opnieuw toevoegen.
-        // Voorbeeld:
-        addToCartButton.removeEventListener('click', handleAddToCartClick); // Verwijder eerdere
-        addToCartButton.addEventListener('click', handleAddToCartClick);
+/**
+ * Updates the price display in the HTML.
+ * @param {number} totalPrice - The calculated total price.
+ */
+function updatePriceDisplay(totalPrice) {
+    const priceElements = document.querySelectorAll('.productInfoPrice');
+    if (priceElements.length > 0) {
+        const priceHTML = `
+            <div class="h5 fw-bold"> <!-- De prijs wordt hier al afgerond door de aanroep van updatePriceDisplay -->
+                <span id="totalPrice">€ ${totalPrice},-</span>
+            </div>
+        `;
+        priceElements.forEach(el => {
+            el.innerHTML = priceHTML;
+        });
     } else {
-        console.error("Element met ID 'add-to-cart-button' niet gevonden!");
-    }
-
-    const priceElement = document.querySelector('.productInfoPrice');
-    if (priceElement) {
-        let priceHTML = ''; // Declareer priceHTML met let of const
-        // If device is mobile, add the shopping cart icon
-        if (windowHeight > windowWidth && (uap.getDevice().type === 'mobile' || uap.getDevice().type === 'tablet' || uap.getDevice().withFeatureCheck().type === 'tablet')) {
-            priceHTML = `
-                <div>
-                    <span>bestel &nbsp;&nbsp;</span>
-                    <span class="original-price-mobile" style="">€ ${totalPrice.toFixed(0)},-&nbsp;&nbsp;</span>
-                    <span id="totalPrice" class="discounted-price">€ ${discountedPrice.toFixed(0)},-</span>
-                </div>
-            `;
-        } else {
-            priceHTML = `
-                <div class="h5 fw-bold">
-                    <span>van </span>
-                    <span class="original-price" style="color: black;">€ ${totalPrice.toFixed(0)} ,- voor </span>
-                    <span id="totalPrice" class="discounted-price">€ ${discountedPrice.toFixed(0)},-</span>
-                </div>
-            `;
-        }
-
-        // Insert the price HTML into the price element
-        priceElement.innerHTML = priceHTML;
-    }
-
-    // CSS voor diagonale streep toevoegen
-    // Let op: het dynamisch toevoegen van <style> tags per keer dat `pricing` wordt aangeroepen
-    // kan leiden tot veel onnodige <style> tags in de <head>.
-    // Overweeg om deze CSS in een apart CSS-bestand te plaatsen of eenmalig dynamisch toe te voegen.
-    const originalPriceElement = document.querySelector('.original-price');
-    const originalPriceElementMobile = document.querySelector('.original-price-mobile');
-
-    // Dit blok kan vereenvoudigd worden. Je voegt dezelfde CSS toe voor desktop en mobile,
-    // alleen met verschillende selectors. Better to manage this with proper CSS classes.
-    if (originalPriceElement || originalPriceElementMobile) {
-        const targetElement = originalPriceElement || originalPriceElementMobile;
-        targetElement.style.display = 'inline-block';
-        targetElement.style.position = 'relative';
-
-        // Check if the style tag already exists to avoid duplicates
-        if (!document.getElementById('price-strike-style')) {
-            const style = document.createElement('style');
-            style.id = 'price-strike-style'; // Voeg een ID toe om te controleren
-            style.innerHTML = `
-                .original-price::after,
-                .original-price-mobile::after {
-                    content: '';
-                    position: absolute;
-                    top: 10px;
-                    /* Pas right aan per klasse als nodig */
-                    width: 50%; /* Voor desktop */
-                    height: 100%;
-                    border-top: 2px solid red;
-                    transform: rotate(-10deg);
-                    transform-origin: 80 -80;
-                }
-                .original-price::after {
-                    right: 65px; /* Specifiek voor desktop */
-                }
-                .original-price-mobile::after {
-                    right: 10px; /* Specifiek voor mobile */
-                    width: 80%; /* Grotere breedte voor mobile */
-                }
-            `;
-            document.head.appendChild(style);
-        }
+        console.warn("Element with class 'productInfoPrice' not found.");
     }
 }
 
+/**
+ * Handles the click event for the 'Add to Cart' button.
+ */
 function handleAddToCartClick() {
-    const { dataURL, blob } = mainModule.captureScreenshot();
+    if (!mainModule || typeof mainModule.captureScreenshot !== 'function') {
+        console.error("mainModule or captureScreenshot function is not available.");
+        return;
+    }
+
+    const { dataURL } = mainModule.captureScreenshot();
     const product = {
-        model: currentModel,
-        price: currentTotalPrice,
+        model: currentConfiguredModel, // Use the globally stored model
+        price: currentConfiguredModel.pricing.totalPrice,
         imageUrl: dataURL
     };
 
+    // Communicate with the parent window
     parent.postMessage({ action: 'showSidebar' }, '*');
     parent.postMessage({ action: 'addToCart', product: product }, '*');
     parent.postMessage({ action: 'showCheckoutButton' }, '*');
-
-    document.getElementById('add-to-cart-button').removeEventListener('click', handleAddToCartClick);
 }
+
+// --- INITIALIZE EVENT LISTENERS ONCE ---
+// We use DOMContentLoaded to ensure the button exists before adding a listener.
+document.addEventListener('DOMContentLoaded', () => {
+    // Use event delegation for dynamically added buttons if necessary,
+    // but for now, we find them on load.
+    const addToCartButton = document.getElementById('add-to-cart-button');
+    if (addToCartButton) {
+        addToCartButton.addEventListener('click', handleAddToCartClick);
+    } else {
+        // This might not be an error if the button is only for a specific view (e.g., desktop/mobile)
+        console.log("Element with ID 'add-to-cart-button' not found on initial load. This might be expected.");
+    }
+});

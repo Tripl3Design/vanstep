@@ -1,5 +1,5 @@
 function createPdf(model, mainImage, title, fsid) {
-    const configuratorUrl = `${document.referrer}?brand=${brand}&product=${product}&fsid=${fsid}`;
+    const configuratorUrl = `${window.location.origin}${window.location.pathname}?brand=${brand}&product=${product}&fsid=${fsid}`;
     const now = new Date();
     const padToTwoDigits = (number) => (number < 10 ? '0' + number : number);
     // Datum en tijd formatteren als DD-MM-YYYY_HH-MM
@@ -13,16 +13,36 @@ function createPdf(model, mainImage, title, fsid) {
 
     const price = document.getElementById('totalPrice').textContent;
 
-    let upholsteryTable = [
-        [{ text: '', fontSize: 10 }, { text: 'type', fontSize: 10, bold: true }, { text: 'collectie', fontSize: 10, bold: true }, { text: 'naam', fontSize: 10, bold: true }, { text: 'prijsgroep', fontSize: 10, bold: true },],
-        [{ text: 'zitting en rug', fontSize: 10, bold: true }, { text: 'stof', fontSize: 10 }, { text: model.upholstery.type, fontSize: 10 }, { text: model.upholstery.name, fontSize: 10 }, { text: model.upholstery.pricegroup, fontSize: 10 }]
+    // --- Bouw de tabel met geselecteerde accessoires ---
+    let accessoriesTableBody = [
+        [{ text: 'Onderdeel', bold: true, fontSize: 10 }, { text: 'Optie', bold: true, fontSize: 10 }, { text: 'Prijs', bold: true, alignment: 'right', fontSize: 10 }]
     ];
 
-    if (model.upholsteryDuotone) {
-        upholsteryTable.push(
-            [{ text: 'achterkant rug', fontSize: 10, bold: true }, { text: 'stof', fontSize: 10 }, { text: model.upholsteryDuotone.type, fontSize: 10 }, { text: model.upholsteryDuotone.name, fontSize: 10 }, { text: model.upholsteryDuotone.pricegroup, fontSize: 10 }]
-        );
+    // Basisprijs
+    accessoriesTableBody.push(['Basisprijs', '', { text: `€ ${ALLCOMPONENTS.basePrice},-`, alignment: 'right', fontSize: 10 }]);
+
+    if (model.vanstep) {
+        accessoriesTableBody.push(['VanStep', `Kleur: ${model.vanstep.color.color}`, { text: `€ ${ALLCOMPONENTS.accessories.vanstep.price},-`, alignment: 'right', fontSize: 10 }]);
+        if (model.vanstep.color.sanded) {
+            accessoriesTableBody.push(['', 'Afwerking: Geschuurd', { text: 'inbegrepen', alignment: 'right', fontSize: 10 }]);
+        }
+        if (model.vanstep.towbar) {
+            accessoriesTableBody.push(['', 'Optie: Trekhaak', { text: `€ ${ALLCOMPONENTS.accessories.vanstep.options.towbar.price},-`, alignment: 'right', fontSize: 10 }]);
+        }
+        if (model.vanstep.reverseLights) {
+            accessoriesTableBody.push(['', 'Optie: Achteruitrijlichten', { text: `€ ${ALLCOMPONENTS.accessories.vanstep.options.reverseLights.price},-`, alignment: 'right', fontSize: 10 }]);
+        }
     }
+    if (model.sidebars) {
+        accessoriesTableBody.push(['Sidebars', '', { text: `€ ${ALLCOMPONENTS.accessories.sidebars.price},-`, alignment: 'right', fontSize: 10 }]);
+    }
+    if (model.stair) {
+        accessoriesTableBody.push(['Inklapbare trap', '', { text: `€ ${ALLCOMPONENTS.accessories.stair.price},-`, alignment: 'right', fontSize: 10 }]);
+    }
+    if (model.sunvisor) {
+        accessoriesTableBody.push(['Zonneklep', '', { text: `€ ${ALLCOMPONENTS.accessories.sunvisor.price},-`, alignment: 'right', fontSize: 10 }]);
+    }
+    // --- Einde tabelbouw ---
 
     var docDefinition = {
         pageSize: 'A4',
@@ -51,29 +71,31 @@ function createPdf(model, mainImage, title, fsid) {
                     x2: 536, y2: 0,
                     lineWidth: 0.2
                 }], margin: [0, 210, 0, 0]
-            },
-            { text: 'Type', bold: true, fontSize: 12, margin: [0, 15, 0, 5] },
+            }, // Specificatie van de bus
+            { text: 'Specificaties Voertuig', bold: true, fontSize: 12, margin: [0, 15, 0, 5] },
             {
                 layout: 'noBorders',
                 table: {
                     headerRows: 0,
-                    widths: [100, 'auto'],
+                    widths: [100, '*', 100, '*'],
                     body: [
-                        [{ text: 'type', fontSize: 10, bold: true }, { text: `Evan`, fontSize: 10 }],
-                        [{
-                            text: 'artikelnummer',
-                            fontSize: 10,
-                            bold: true
-                        }, {
-                            text: model.footstool
-                                ? `${model.type.substring(3)} (bank) & 9085110 (voetenbank)`
-                                : `${model.type.substring(3)}`,
-                            fontSize: 10
-                        }]
+                        [
+                            { text: 'Merk', fontSize: 10, bold: true },
+                            { text: `${model.van.brand.charAt(0).toUpperCase() + model.van.brand.slice(1)}`, fontSize: 10 },
+                            { text: 'Type', fontSize: 10, bold: true },
+                            { text: `${model.van.type.toUpperCase()}`, fontSize: 10 }
+                        ],
+                        [
+                            { text: 'Aandrijving', fontSize: 10, bold: true },
+                            { text: `${model.van.drive.toUpperCase()}`, fontSize: 10 },
+                            { text: 'Achterwielen', fontSize: 10, bold: true },
+                            { text: `${model.van.rearWheel === 'srw' ? 'Enkellucht' : 'Dubbellucht'}`, fontSize: 10 }
+                        ]
                     ]
                 },
                 margin: [0, 5, 0, 0]
             },
+
             {
                 canvas: [{
                     type: 'line',
@@ -82,54 +104,13 @@ function createPdf(model, mainImage, title, fsid) {
                     lineWidth: 0.2
                 }], margin: [0, 15, 0, 0]
             },
-            { text: 'Afmetingen', bold: true, fontSize: 12, margin: [0, 15, 0, 5] },
+            { text: 'Gekozen Accessoires', bold: true, fontSize: 12, margin: [0, 15, 0, 5] },
             {
                 layout: 'noBorders',
                 table: {
-                    headerRows: 0,
-                    widths: [100, 'auto'],
-                    body: [
-                        [{ text: 'breedte', fontSize: 10, bold: true }, { text: `${ALLCOMPONENTS.elements[model.type].width} cm`, fontSize: 10 }],
-                        [{ text: 'diepte', fontSize: 10, bold: true }, { text: `${ALLCOMPONENTS.elements[model.type].depth} cm`, fontSize: 10 }],
-                        [{ text: 'hoogte', fontSize: 10, bold: true }, { text: `84 cm`, fontSize: 10 }]
-                    ]
-                }, margin: [0, 5, 0, 0]
-            },
-            {
-                canvas: [{
-                    type: 'line',
-                    x1: 0, y1: 0,
-                    x2: 536, y2: 0,
-                    lineWidth: 0.2
-                }], margin: [0, 15, 0, 0]
-            },
-            { text: 'Opties', bold: true, fontSize: 12, margin: [0, 15, 0, 5] },
-            {
-                layout: 'noBorders',
-                table: {
-                    headerRows: 0,
-                    widths: [100, 'auto'],
-                    body: [
-                        [{ text: 'zithoogte', fontSize: 10, bold: true }, { text: `${model.seatHeight} cm`, fontSize: 10 }],
-                        // [{ text: 'voetenbank', fontSize: 10, bold: true }, { text: `${(model.footstool === true) ? 'ja' : 'nee'}`, fontSize: 10 }]
-                    ]
-                }, margin: [0, 5, 0, 0]
-            },
-            {
-                canvas: [{
-                    type: 'line',
-                    x1: 0, y1: 0,
-                    x2: 536, y2: 0,
-                    lineWidth: 0.2
-                }], margin: [0, 15, 0, 0]
-            },
-            { text: 'Bekleding', bold: true, fontSize: 12, margin: [0, 15, 0, 5] },
-            {
-                layout: 'noBorders',
-                table: {
-                    headerRows: 1, // ✅ Zet header row correct
-                    widths: [100, 75, 75, 75, 75],
-                    body: upholsteryTable
+                    headerRows: 1,
+                    widths: ['*', '*', 'auto'],
+                    body: accessoriesTableBody
                 },
                 margin: [0, 5, 0, 0]
             },
@@ -147,7 +128,7 @@ function createPdf(model, mainImage, title, fsid) {
                 table: {
                     headerRows: 0,
                     widths: [100, 'auto'],
-                    body: [
+                    body: [ // Totaalprijs
                         [{ text: 'Prijs :', fontSize: 12, bold: true }, { text: `${price}`, fontSize: 12, bold: true }],
 
                     ]

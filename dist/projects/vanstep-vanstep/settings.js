@@ -7,44 +7,14 @@ var FEATUREDMODEL;
 const urlParams = new URLSearchParams(window.location.search);
 
 let mainModule = null;
+let isInitialized = false; // Vlag om te controleren of listeners zijn geïnitialiseerd
 
-// desktop version
-if (windowHeight < windowWidth) {
-    const downloadModelButton = document.getElementById('downloadModel');
-    if (downloadModelButton) {
-        downloadModelButton.addEventListener('click', () => {
-            mainModule.exportModelAndData(FEATUREDMODEL);
-        });
-    } else {
-        console.warn("Element with ID 'downloadModel' not found. Model export functionality might be unavailable.");
-    }
-
-    const saveConfigButtonButton = document.getElementById('saveConfig');
-    if (saveConfigButtonButton) {
-        saveConfigButtonButton.addEventListener('click', () => {
-            //mainModule.exportDataToPim(FEATUREDMODEL);
-            mainModule.exportModelAndDataNew(FEATUREDMODEL);
-        });
-    } else {
-        console.warn("Element with ID 'saveConfig' not found. Model export functionality might be unavailable.");
-    }
-}
-
+// --- SKU GENERATION ---
 function sortObjectKeysAndArrayElements(value) {
-    if (value === null || typeof value !== 'object') {
-        return value;
-    }
-
+    if (value === null || typeof value !== 'object') return value;
     if (Array.isArray(value)) {
-        return value.map(sortObjectKeysAndArrayElements).sort((a, b) => {
-            const stringA = JSON.stringify(a);
-            const stringB = JSON.stringify(b);
-            if (stringA < stringB) return -1;
-            if (stringA > stringB) return 1;
-            return 0;
-        });
+        return value.map(sortObjectKeysAndArrayElements).sort((a, b) => JSON.stringify(a).localeCompare(JSON.stringify(b)));
     }
-
     const sortedKeys = Object.keys(value).sort();
     const sortedObject = {};
     for (const key of sortedKeys) {
@@ -55,42 +25,29 @@ function sortObjectKeysAndArrayElements(value) {
 
 function getStandardizedJsonString(configJson) {
     const tempConfig = JSON.parse(JSON.stringify(configJson));
-
-    // Verwijder de 'pricing' sleutel om de SKU los te koppelen van de prijs.
-    if ('pricing' in tempConfig) {
-        delete tempConfig.pricing;
-    }
-
+    if ('pricing' in tempConfig) delete tempConfig.pricing;
     const standardizedConfig = sortObjectKeysAndArrayElements(tempConfig);
     return JSON.stringify(standardizedConfig);
 }
 
 async function generateSha256Hash(inputString) {
-    const textEncoder = new TextEncoder();
-    const data = textEncoder.encode(inputString);
+    const data = new TextEncoder().encode(inputString);
     const hashBuffer = await crypto.subtle.digest('SHA-256', data);
     const hashArray = Array.from(new Uint8Array(hashBuffer));
-    const hexHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-    return hexHash;
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
 async function generateProductSkuFromConfig(configJson) {
     const standardizedJsonString = getStandardizedJsonString(configJson);
-    console.log("Gestandaardiseerde JSON voor hash:", standardizedJsonString);
-
     const sku = await generateSha256Hash(standardizedJsonString);
-    console.log("Gegenereerde SKU:", sku);
+    console.log("Generated SKU:", sku);
     return sku;
 }
 
-
-
-
+// --- PDF & SHARING ---
 async function downloadPdf() {
     try {
-        // Verkrijg zowel de dataURL als de Blob van de screenshot
-        const { dataURL, blob } = mainModule.captureScreenshot();
-
+        const { dataURL } = mainModule.captureScreenshot();
         const docRef = await addDoc(collection(db, "clientModels"), {
             brand: brand,
             product: product,
@@ -99,359 +56,208 @@ async function downloadPdf() {
             timestamp: serverTimestamp()
         });
         console.log("Document saved with ID: ", docRef.id);
-
-        // Gebruik de dataURL voor het maken van de PDF
         createPdf(FEATUREDMODEL, dataURL, title, docRef.id);
     } catch (e) {
-        console.error("Error: ", e);
-    }
-}
-/*
-async function generateImage() {
-    try {
-        if (mainModule && mainModule.renderer && mainModule.scene && mainModule.camera) {
-            // De canvas heeft nu (tijdelijk) een grootte, dus toDataURL() zou moeten werken
-            const dataURL = mainModule.renderer.domElement.toDataURL('image/png');
-            const imageEl = document.querySelector('.productRender');
-
-            if (imageEl) {
-                if (dataURL === 'data:,') {
-                    console.warn("DataURL is leeg, waarschijnlijk is de canvas 0x0 of leeg gerenderd.");
-                    // Eventueel een fallback afbeelding tonen
-                    imageEl.src = 'https://firebasestorage.googleapis.com/v0/b/vanstep-tripletise.appspot.com/o/screenshots%2F1732545295859_screenshot.png?alt=media&token=9c7d7c26-3f52-4b1a-9f7c-2b349703bcf1';
-                } else {
-                    imageEl.src = dataURL;
-                    console.log("Afbeelding succesvol ingesteld met dataURL.");
-                }
-            } else {
-                console.warn("Kan productRender element niet vinden.");
-            }
-        } else {
-            console.error("mainModule of onderdelen ontbreken bij generateImage.");
-        }
-    } catch (e) {
-        console.error("Error bij het genereren van afbeelding:", e);
-    }
-}
-*/
-async function shareWithWhatsApp() {
-    console.log('shareWithWhatsApp');
-
-    try {
-        // Maak een screenshot en verkrijg zowel de dataURL als de Blob
-        const { dataURL, blob } = mainModule.captureScreenshot();
-
-        // Upload de Blob naar Firebase Storage
-        const storageRef = ref(storage, `screenshots/${Date.now()}_screenshot.png`);
-        await uploadBytes(storageRef, blob);
-        const imageUrl = await getDownloadURL(storageRef);
-        console.log("Screenshot uploaded and accessible at: ", imageUrl);
-
-        // Sla de configuratie op in Firestore
-        const docRef = await addDoc(collection(db, "clientModels"), {
-            brand: brand,
-            product: product,
-            from: document.referrer,
-            model: FEATUREDMODEL,
-            imageUrl: imageUrl, // voor Open Graph gebruik
-            timestamp: serverTimestamp()
-        });
-        console.log("Document saved with ID: ", docRef.id);
-
-        const configuratorUrl = `${document.referrer}?brand=${brand}&product=${product}&fsid=${docRef.id}`;
-        const message = `Bekijk mijn configurator design!\nKlik hier: ${configuratorUrl}`;
-        const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
-        window.open(whatsappUrl, '_blank');
-
-    } catch (e) {
-        console.error("Error: ", e);
+        console.error("Error creating PDF: ", e);
     }
 }
 
-async function shareTroughQr() {
-    console.log('shareTroughQr');
-
-    try {
-        // Sla de configuratie op in Firestore
-        const docRef = await addDoc(collection(db, "clientModels"), {
-            brand: brand,
-            product: product,
-            from: document.referrer,
-            model: FEATUREDMODEL,
-            timestamp: serverTimestamp()
-        });
-        console.log("Document saved with ID: ", docRef.id);
-
-        const configuratorUrl = `${document.referrer}?brand=${brand}&product=${product}&fsid=${docRef.id}`;
-
-        // QR-code genereren in de modal
-        let qrCanvas = document.getElementById("qrCanvas");
-        qrCanvas.innerHTML = "";
-
-        new QRCode(qrCanvas, {
-            text: configuratorUrl,
-            width: 200,
-            height: 200
-        });
-
-        // Open de Bootstrap modal
-        let qrModal = new bootstrap.Modal(document.getElementById("qrModal"));
-        qrModal.show();
-
-    } catch (e) {
-        console.error("Error: ", e);
-    }
-}
-
+// --- 3D MODEL & UI ---
 async function updateFeaturedModel(model) {
-    import('./threeModel.js')
-        .then(main => {
+    try {
+        if (!mainModule) {
+            const main = await import('./threeModel.js');
             const viewer = document.getElementById('modelviewer');
-
-            if (!mainModule) {
-                main.initThree(viewer);
-                mainModule = main;
-            }
-            if (mainModule && typeof mainModule.loadModelData === 'function') {
-                mainModule.loadModelData(model);
-            }
-            if (viewer) {
-                viewer.focus();
-            }
-        })
-        .catch(error => {
-            console.error('Error loading module:', error);
-        });
+            main.initThree(viewer);
+            mainModule = main;
+        }
+        if (mainModule && typeof mainModule.loadModelData === 'function') {
+            await mainModule.loadModelData(model);
+        }
+    } catch (error) {
+        console.error('Error loading 3D module:', error);
+    }
 }
 
-function updateControlPanel(model, selectedLayer, expandedLayer) {
-    const settings = initSettings(model);
+function updateUI(model) {
     const elem = document.getElementById('controlpanelContainer');
-    if (selectedLayer !== undefined) {
-        controlPanel_updateLayer(selectedLayer, settings);
-    } else {
-        controlPanel(settings, ALLMODELS, elem, expandedLayer);
-    }
 
-    // general
-    model.brand = brand;
-    model.product = product;
-    model.title = title;
+    // Sla de ID's op van de momenteel geopende accordeons
+    const expandedAccordionIds = [...elem.querySelectorAll('.accordion-button')]
+        .filter(btn => btn.getAttribute('aria-expanded') === 'true')
+        .map(btn => btn.getAttribute('data-bs-target'));
 
-    //van
-    const setRadioChecked = (name, value) => {
-        const selector = `input[type="radio"][name="${name}"][value="${value}"]`;
-        const radio = document.querySelector(selector);
-        if (radio) {
-            radio.checked = true;
+    const settings = initSettings(model);
+    controlPanel(settings, ALLMODELS, elem);
+
+    // Herstel de staat van de accordeons die open waren
+    expandedAccordionIds.forEach(id => {
+        const body = elem.querySelector(id);
+        const button = elem.querySelector(`[data-bs-target="${id}"]`);
+        if (body && button) {
+            body.classList.add('show');
+            button.classList.remove('collapsed');
+            button.setAttribute('aria-expanded', 'true');
         }
-    };
+    });
 
-    const handleOptionChange = (elementId, modelPath, isObjectToggle = false, defaultObject = {}) => {
-        const element = document.getElementById(elementId);
-        if (element) {
-            element.addEventListener('change', (e) => {
-                let path = modelPath.split('.');
-                let parent = model;
-                let lastKey = path.pop();
-
-                for (const key of path) {
-                    if (!parent[key]) parent[key] = {};
-                    parent = parent[key];
-                }
-
-                if (isObjectToggle) {
-                    if (e.target.checked) {
-                        parent[lastKey] = defaultObject;
-                    } else {
-                        delete parent[lastKey];
-                    }
-                } else {
-                    parent[lastKey] = e.target.checked;
-                }
-
-                console.log('Model geüpdatet:', JSON.stringify(model, null, 2));
-                updateFeaturedModel(model);
-            });
-        }
-    };
-
-    const handleBooleanChange = (elementId, modelPath) => {
-        const element = document.getElementById(elementId);
-        if (element) {
-            element.addEventListener('change', (e) => {
-                let path = modelPath.split('.');
-                let current = model;
-                for (let i = 0; i < path.length - 1; i++) {
-                    if (!current[path[i]]) current[path[i]] = {};
-                    current = current[path[i]];
-                }
-                current[path[path.length - 1]] = e.target.checked;
-
-                console.log('Model geüpdatet:', JSON.stringify(model, null, 2));
-                updateFeaturedModel(model);
-            });
-        }
-    };
-
+    // Update van state
     if (model.van) {
-        setRadioChecked('vanBrand', model.van.brand);
-        setRadioChecked('vanType', model.van.type);
-        setRadioChecked('vanDrive', model.van.drive);
-        setRadioChecked('rearWheel', model.van.rearWheel);
-
-        console.log(model.van.type);
-
+        document.querySelector(`input[name="vanBrand"][value="${model.van.brand}"]`).checked = true;
+        document.querySelector(`input[name="vanType"][value="${model.van.type}"]`).checked = true;
+        document.querySelector(`input[name="vanDrive"][value="${model.van.drive}"]`).checked = true;
+        document.querySelector(`input[name="rearWheel"][value="${model.van.rearWheel}"]`).checked = true;
         document.getElementById('vanBrandText').textContent = model.van.brand;
         document.getElementById('vanTypeText').textContent = model.van.type.toUpperCase();
     }
 
-    // vanstep
-    const vanstepEnabled = !!model.vanstep;
-    document.getElementById('vanstep').checked = vanstepEnabled;
-    handleOptionChange('vanstep', 'vanstep', true, { "color": { "color": "black", "sanded": false } });
-
-
-    if (vanstepEnabled) {
-        // De 'towbar' accordion is nu voor 'vanstep' opties
-        document.getElementById('towbar').checked = !!model.vanstep.towbar;
-        document.getElementById('lightingplug').checked = model.vanstep.towbar?.lightingPlug || false;
-        document.getElementById('reverseLights').checked = !!model.vanstep.reverseLights;
-
-
-
-        // Event listeners voor vanstep opties
-        handleOptionChange('towbar', 'vanstep.towbar', true, { "detacheble": false, "catchJaw": false, "lightingPlug": false });
-        handleBooleanChange('lightingplug', 'vanstep.towbar.lightingPlug');
-        handleOptionChange('reverseLights', 'vanstep.reverseLights', true, { "dashboardSwitch": "original" });
-
-        // Update de samenvatting voor elke optie apart
-        document.getElementById('towbarText').textContent = model.vanstep.towbar ? 'met trekhaaak' : 'zonder trekhaak';
-        document.getElementById('reverseLightsText').textContent = model.vanstep.reverseLights ? 'met lichten' : 'zonder lichten';
-        document.getElementById('colorText').textContent = model.vanstep.color.color === 'black' ? 'zwart' : 'blank';
-        document.getElementById('sandedText').textContent = model.vanstep.color.sanded ? 'geschuurd' : 'ongeschuurd';
-    }
-
+    // Update accessories state
+    document.getElementById('vanstep').checked = !!model.vanstep;
     document.getElementById('collapsibleStair').checked = !!model.stair;
     document.getElementById('sidebars').checked = !!model.sidebars;
     document.getElementById('sunVisor').checked = !!model.sunvisor;
 
-    handleOptionChange('collapsibleStair', 'stair', true, { "color": "standard", "height": false });
-    handleOptionChange('sidebars', 'sidebars', true, { "color": "standard", "step": false });
-    handleOptionChange('sunVisor', 'sunvisor', true, { "color": "black" });
+    if (model.vanstep) {
+        document.getElementById('towbar').checked = !!model.vanstep.towbar;
+        document.getElementById('lightingplug').checked = model.vanstep.towbar?.lightingPlug || false;
+        document.getElementById('reverseLights').checked = !!model.vanstep.reverseLights;
+        document.querySelector(`input[name="vanstepColor"][value="${model.vanstep.color.color}"]`).checked = true;
+        document.getElementById('sanded').checked = model.vanstep.color.sanded || false;
 
-    // color
-    if (model.vanstep && model.vanstep.color) {
-        setRadioChecked('vanstepColor', model.vanstep.color.color);
-        if (document.getElementById('sanded')) {
-            document.getElementById('sanded').checked = model.vanstep.color.sanded || false;
+        document.getElementById('towbarText').textContent = model.vanstep.towbar ? 'met trekhaak' : 'zonder trekhaak';
+        document.getElementById('reverseLightsText').textContent = model.vanstep.reverseLights ? 'met lichten' : 'zonder lichten';
+        document.getElementById('colorText').textContent = model.vanstep.color.color === 'black' ? 'zwart' : 'blank';
+        document.getElementById('sandedText').textContent = model.vanstep.color.sanded ? 'geschuurd' : 'ongeschuurd';
+
+        // Show/hide 'sanded' option
+        const sandedContainer = document.getElementById('sandedOptionContainer');
+        if (model.vanstep.color.color === 'black') {
+            sandedContainer.classList.remove('d-none');
+        } else {
+            sandedContainer.classList.add('d-none');
         }
     }
 
-    // Event listeners voor kleur en 'sanded'
-    document.querySelectorAll('input[name="vanstepColor"]').forEach(radio => {
-        radio.addEventListener('change', (event) => {
-            const sandedOptionContainer = document.getElementById('sandedOptionContainer');
-            const sandedCheckbox = document.getElementById('sanded');
-
-            if (model.vanstep && model.vanstep.color) {
-                model.vanstep.color.color = event.target.value;
-            }
-
-            if (event.target.value === 'black') {
-                sandedOptionContainer.classList.remove('d-none');
-            } else {
-                sandedOptionContainer.classList.add('d-none');
-                if (sandedCheckbox) {
-                    sandedCheckbox.checked = false;
-                    if (model.vanstep && model.vanstep.color) {
-                        model.vanstep.color.sanded = false;
-                    }
-                }
-            }
-            console.log('Model geüpdatet:', JSON.stringify(model, null, 2));
-            updateFeaturedModel(model);
-        });
-        // Trigger de change event om de initiële staat correct in te stellen
-        if (radio.checked) radio.dispatchEvent(new Event('change'));
-    });
-
-    handleBooleanChange('sanded', 'vanstep.color.sanded');
-
-
-
-
-
-
-
-
-
-    //pricing(model);
-
-    // is global FEATUREDMODEL for pdf really necessary?
+    pricing(model);
     FEATUREDMODEL = model;
-
 }
 
-function toggleFeaturedModels() {
-    let featuredModels = document.getElementById('featuredModels');
-    if (urlParams.has('noFeaturedModels')) {
-        featuredModels.classList.remove('d-block');
-        featuredModels.classList.add('d-none');
-    } else {
-        featuredModels.classList.remove('d-none');
-        featuredModels.classList.add('d-block');
-    }
+function initializeEventListeners() {
+    if (isInitialized) return;
+
+    const controlPanelContainer = document.getElementById('controlpanelContainer');
+
+    controlPanelContainer.addEventListener('change', (e) => {
+        const target = e.target;
+        if (target.type !== 'radio' && target.type !== 'checkbox') return;
+
+        const name = target.name;
+        const value = target.value;
+        const checked = target.checked;
+
+        let modelChanged = false;
+
+        // --- Handle Van Options ---
+        if (['vanBrand', 'vanType', 'vanDrive', 'rearWheel'].includes(name)) {
+            const key = name.replace('van', '').toLowerCase();
+            FEATUREDMODEL.van[key] = value;
+            modelChanged = true;
+        }
+
+        // --- Handle Main Accessories (On/Off) ---
+        const accessoryMap = {
+            'vanstep': { "color": { "color": "black", "sanded": false } },
+            'collapsibleStair': { "color": "standard", "height": false },
+            'sidebars': { "color": "standard", "step": false },
+            'sunVisor': { "color": "black" }
+        };
+        const accessoryName = { 'collapsibleStair': 'stair', 'sunVisor': 'sunvisor' }[name] || name;
+
+        if (accessoryMap[name]) {
+            if (checked) {
+                FEATUREDMODEL[accessoryName] = accessoryMap[name];
+            } else {
+                delete FEATUREDMODEL[accessoryName];
+            }
+            modelChanged = true;
+        }
+
+        // --- Handle VanStep Specific Options ---
+        if (FEATUREDMODEL.vanstep) {
+            if (name === 'vanstepColor') {
+                FEATUREDMODEL.vanstep.color.color = value;
+                if (value !== 'black') FEATUREDMODEL.vanstep.color.sanded = false; // Reset sanded if not black
+                modelChanged = true;
+            } else if (name === 'sanded') {
+                FEATUREDMODEL.vanstep.color.sanded = checked;
+                modelChanged = true;
+            } else if (name === 'towbar') {
+                if (checked) FEATUREDMODEL.vanstep.towbar = { "detacheble": false, "catchJaw": false, "lightingPlug": false };
+                else delete FEATUREDMODEL.vanstep.towbar;
+                modelChanged = true;
+            } else if (name === 'lightingplug') {
+                if (FEATUREDMODEL.vanstep.towbar) FEATUREDMODEL.vanstep.towbar.lightingPlug = checked;
+                modelChanged = true;
+            } else if (name === 'reverseLights') {
+                if (checked) FEATUREDMODEL.vanstep.reverseLights = { "dashboardSwitch": "original" };
+                else delete FEATUREDMODEL.vanstep.reverseLights;
+                modelChanged = true;
+            }
+        }
+
+        if (modelChanged) {
+            console.log('Model updated:', JSON.stringify(FEATUREDMODEL, null, 2));
+            updateUI(FEATUREDMODEL);
+            updateFeaturedModel(FEATUREDMODEL);
+        }
+    });
+
+    isInitialized = true;
 }
 
 function showFeaturedModel(model) {
-    updateControlPanel(model, undefined, undefined, 0);
-    updateFeaturedModel(model);
+    FEATUREDMODEL = JSON.parse(JSON.stringify(model)); // Deep copy to avoid mutation issues
+    updateUI(FEATUREDMODEL);
+    updateFeaturedModel(FEATUREDMODEL);
+    initializeEventListeners(); // Initialize listeners after first render
 }
 
 function showFeaturedModelByIndex(index) {
-    showFeaturedModel(JSON.parse(JSON.stringify(ALLMODELS[index])));
+    showFeaturedModel(ALLMODELS[index]);
 }
 
 async function handleModelSelection() {
-    //console.log(`BRAND: ${brand}, PRODUCT  ${product}, TITLE ${title}`);
+    try {
+        const [colors, models, components] = await Promise.all([
+            fetch(`projects/${brand}-${product}/colors.json`).then(res => res.json()),
+            fetch(`projects/${brand}-${product}/models.json`).then(res => res.json()),
+            fetch(`projects/${brand}-${product}/components.json`).then(res => res.json())
+        ]);
+        ALLCOLORS = colors;
+        ALLMODELS = models;
+        ALLCOMPONENTS = components;
 
-    const colorsPromise = fetch(`projects/${brand}-${product}/colors.json`).then(response => response.json());
-    ALLCOLORS = await colorsPromise;
-    const modelsPromise = fetch(`projects/${brand}-${product}/models.json`).then(response => response.json());
-    ALLMODELS = await modelsPromise;
-    const componentsPromise = fetch(`projects/${brand}-${product}/components.json`).then(response => response.json());
-    ALLCOMPONENTS = await componentsPromise;
-
-    let modelIndex;
-    let modelId;
-    let modelFsid;
-    let modelData;
-
-    if (urlParams.has('id')) {
-        modelId = urlParams.get('id');
-        modelIndex = ALLMODELS.findIndex((item) => item.id == modelId);
-        showFeaturedModel(ALLMODELS[modelIndex]);
-    } else if (urlParams.has('data')) {
-        modelData = urlParams.get('data');
-        let model = JSON.parse(decodeURIComponent(modelData));
-        showFeaturedModel(model);
-    } else if (urlParams.has('fsid')) {
-        modelFsid = urlParams.get('fsid');
-        const docRef = doc(db, "clientModels", modelFsid);
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists) {
-            modelData = docSnap.data().model;
-            showFeaturedModel(modelData);
-        } else {
-            console.error("No document found with FSID:", modelFsid);
+        let modelData;
+        if (urlParams.has('fsid')) {
+            const modelFsid = urlParams.get('fsid');
+            const docRef = doc(db, "clientModels", modelFsid);
+            const docSnap = await getDoc(docRef);
+            if (docSnap.exists()) {
+                modelData = docSnap.data().model;
+            } else {
+                console.error("No document found with FSID:", modelFsid);
+            }
+        } else if (urlParams.has('id')) {
+            const modelId = urlParams.get('id');
+            modelData = ALLMODELS.find((item) => item.id == modelId);
         }
-    } else {
-        modelIndex = Math.floor(Math.random() * ALLMODELS.length);
-        showFeaturedModel(ALLMODELS[modelIndex]);
+
+        showFeaturedModel(modelData || ALLMODELS[0]); // Fallback to first model
+
+    } catch (error) {
+        console.error("Failed to load initial data:", error);
     }
 }
-
 
 function initSettings(model) {
     const accordions = {};
@@ -528,7 +334,7 @@ function initSettings(model) {
     };
 
     accordions.options = {
-        title: "opties",
+        title: "accessoires",
         options: [],
         display: "d-block",
         code: /*html*/`
@@ -537,19 +343,19 @@ function initSettings(model) {
                 <div class="card border-0 grid gap row-gap-3 me-5">
                     <div class="h6 fw-normal form-check form-switch">
                         <input type="checkbox" class="form-check-input" name="vanstep" id="vanstep">
-                        <label class="form-check-label" for="vanstep">vanstep</label>
+                        <label class="form-check-label" for="vanstep">VanStep</label>
                     </div>
                     <div class="h6 fw-normal form-check form-switch">
                         <input type="checkbox" class="form-check-input" name="collapsibleStair" id="collapsibleStair">
-                        <label class="form-check-label" for="collapsibleStair">inklapbare trap</label>
+                        <label class="form-check-label" for="collapsibleStair">Inklapbare trap</label>
                     </div>
                     <div class="h6 fw-normal form-check form-switch">
                         <input type="checkbox" class="form-check-input" name="sidebars" id="sidebars">
-                        <label class="form-check-label" for="sidebars">sidebars</label>
+                        <label class="form-check-label" for="sidebars">Sidebars</label>
                     </div>
                     <div class="h6 fw-normal form-check form-switch">
                         <input type="checkbox" class="form-check-input" name="sunVisor" id="sunVisor">
-                        <label class="form-check-label" for="sunVisor">zonneklep</label>
+                        <label class="form-check-label" for="sunVisor">Zonneklep</label>
                     </div>
                 </div>
             </div>
@@ -557,38 +363,12 @@ function initSettings(model) {
     };
 
     if (model.vanstep) {
-        accordions.vanstepColor = {
-            title: "vanstep afwerking",
-            options: ['color', 'sanded', 'towbar', 'reverseLights'],
-            display: "d-block",
-            code: /*html*/`
-            <div class="row m-0 p-0 pb-xxl-4 pb-xl-4 pb-3 gy-4">
-                <div class="col-12 col-md-auto">
-                    <div class="fst-italic mb-2">Kleur & afwerking</div>
-                    <div class="h6 fw-normal form-check">
-                        <input type="radio" class="form-check-input" name="vanstepColor" value="blank" id="vanstepColor_blank">
-                        <label class="form-check-label" for="vanstepColor_blank">Blank</label>
-                    </div>
-                    <div class="h6 fw-normal form-check">
-                        <input type="radio" class="form-check-input" name="vanstepColor" value="black" id="vanstepColor_black">
-                        <label class="form-check-label" for="vanstepColor_black">Zwart</label>
-                    </div>
-                    <!-- Geschuurd (alleen bij kleur zwart) -->
-                    <div id="sandedOptionContainer" class="h6 fw-normal form-check form-switch ps-5 d-none">
-                        <input type="checkbox" class="form-check-input" name="sanded" id="sanded">
-                        <label class="form-check-label" for="sanded">Geschuurd</label>
-                    </div>
-                </div>
-            </div>`
-        }
-
-        accordions.vanstepTowbar = {
+        accordions.vanstepOptions = {
             title: "vanstep opties",
             options: ['color', 'sanded', 'towbar', 'reverseLights'],
             display: "d-block",
             code: /*html*/`
             <div class="row m-0 p-0 pb-xxl-4 pb-xl-4 pb-3 gy-4">
-                <!-- Kolom 1: Trekhaak & Verlichting (met extra marge aan de rechterkant) -->
                 <div class="col-12 col-md-auto me-md-5">
                     <div class="fst-italic mb-2">Trekhaak & verlichting</div>
                     <div class="h6 fw-normal form-check form-switch">
@@ -604,13 +384,23 @@ function initSettings(model) {
                         <label class="form-check-label" for="reverseLights">Achteruitrijlichten</label>
                     </div>
                 </div>
-
-                <!-- Kolom 2: Kleur & Afwerking -->
-                
+                <div class="col-12 col-md-auto">
+                    <div class="fst-italic mb-2">Kleur & afwerking</div>
+                    <div class="h6 fw-normal form-check">
+                        <input type="radio" class="form-check-input" name="vanstepColor" value="blank" id="vanstepColor_blank">
+                        <label class="form-check-label" for="vanstepColor_blank">Blank</label>
+                    </div>
+                    <div class="h6 fw-normal form-check">
+                        <input type="radio" class="form-check-input" name="vanstepColor" value="black" id="vanstepColor_black">
+                        <label class="form-check-label" for="vanstepColor_black">Zwart</label>
+                    </div>
+                    <div id="sandedOptionContainer" class="h6 fw-normal form-check form-switch ps-5 d-none">
+                        <input type="checkbox" class="form-check-input" name="sanded" id="sanded">
+                        <label class="form-check-label" for="sanded">Geschuurd</label>
+                    </div>
+                </div>
             </div>`
         }
-
-
     }
 
     return { accordions };
