@@ -1,0 +1,141 @@
+[
+  {
+    "id": 1,
+    "name": "vanstep blank",
+    "image": "https://vanstep-vanstep.web.app/projects/vanstep-vanstep/img/thumbnails/blank.jpg",
+    "van": {
+      "brand": "mercedes",
+      "type": "sprinter",
+      "lenght": "L2",
+      "height": "H1",
+      "drive": "rwd",
+      "rearWheel": "srw",
+      "color": "222222",
+      "country": "nl",
+      "licensePlate": "VZH-59-K",
+      "chassisNumber": ""
+    },
+    "vanstep": {
+      "color": {
+        "color": "blank"
+      },
+      "mounting": true
+    }
+  },
+  {
+    "id": 2,
+    "name": "vanstep black with towbar and lights",
+    "image": "https://vanstep-vanstep.web.app/projects/vanstep-vanstep/img/thumbnails/black_towbar_light.jpg",
+    "van": {
+      "brand": "mercedes",
+      "type": "sprinter",
+      "lenght": "L2",
+      "height": "H1",
+      "drive": "rwd",
+      "rearWheel": "srw",
+      "color": "222222",
+      "country": "nl",
+      "licensePlate": "VZH-59-K",
+      "chassisNumber": ""
+    },
+    "vanstep": {
+      "color": {
+        "color": "black"
+      },
+      "towbar": {
+        "type": "standard"
+      },
+      "lights": {
+        "dashboardSwitch": "original"
+      },
+      "mounting": true
+    }
+  },
+  {
+    "id": 3,
+    "name": "vanstep black sanded with towbar and lights",
+    "image": "https://vanstep-vanstep.web.app/projects/vanstep-vanstep/img/thumbnails/blackSanded_towbar_light.jpg",
+    "van": {
+      "brand": "mercedes",
+      "type": "sprinter",
+      "lenght": "L2",
+      "height": "H1",
+      "drive": "rwd",
+      "rearWheel": "srw",
+      "color": "222222",
+      "country": "nl",
+      "licensePlate": "VZH-59-K",
+      "chassisNumber": ""
+    },
+    "vanstep": {
+      "color": {
+        "color": "blackSanded"
+      },
+      "towbar": {
+        "type": "standard"
+      },
+      "lights": {
+        "dashboardSwitch": "original"
+      },
+      "mounting": true
+    }
+  },
+  {
+    "id": 4,
+    "name": "vanstep blank with towbar and lights",
+    "image": "https://vanstep-vanstep.web.app/projects/vanstep-vanstep/img/thumbnails/blank_towbar_light.jpg",
+    "van": {
+      "brand": "mercedes",
+      "type": "sprinter",
+      "lenght": "L2",
+      "height": "H1",
+      "drive": "rwd",
+      "rearWheel": "srw",
+      "color": "222222",
+      "country": "nl",
+      "licensePlate": "VZH-59-K",
+      "chassisNumber": ""
+    },
+    "vanstep": {
+      "color": {
+        "color": "blank"
+      },
+      "towbar": {
+        "type": "standard"
+      },
+      "lights": {
+        "dashboardSwitch": "original"
+      },
+      "mounting": true
+    }
+  },
+  {
+    "id": 5,
+    "name": "vanstep black sanded with towbar and lights",
+    "image": "https://vanstep-vanstep.web.app/projects/vanstep-vanstep/img/thumbnails/blackSanded_towbar_light.jpg",
+    "van": {
+      "brand": "mercedes",
+      "type": "sprinter",
+      "lenght": "L2",
+      "height": "H1",
+      "drive": "rwd",
+      "rearWheel": "srw",
+      "color": "222222",
+      "country": "nl",
+      "licensePlate": "VZH-59-K",
+      "chassisNumber": ""
+    },
+    "vanstep": {
+      "color": {
+        "color": "blackSanded"
+      },
+      "towbar": {
+        "type": "standard"
+      },
+      "lights": {
+        "dashboardSwitch": "original"
+      },
+      "mounting": true
+    }
+  }
+]

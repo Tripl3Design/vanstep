@@ -1,0 +1,29 @@
+{
+    "vancolors": [
+        {
+            "colorName": "white",
+            "colorHex": "F8F8F8",
+            "iconColor": "dark"
+        },
+        {
+            "colorName": "black",
+            "colorHex": "222222",
+            "iconColor": "light"
+        },
+        {
+            "colorName": "silver",
+            "colorHex": "C0C0C0",
+            "iconColor": "dark"
+        },
+        {
+            "colorName": "grey",
+            "colorHex": "808080",
+            "iconColor": "dark"
+        },
+        {
+            "colorName": "blue",
+            "colorHex": "1F385B",
+            "iconColor": "light"
+        }
+    ]
+}
